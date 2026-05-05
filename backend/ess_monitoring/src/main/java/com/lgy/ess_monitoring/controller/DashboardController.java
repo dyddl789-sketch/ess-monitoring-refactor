@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.lgy.ess_monitoring.dto.DashboardChartResponseDTO;
 import com.lgy.ess_monitoring.dto.DashboardSummaryDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceGroupDTO;
@@ -50,21 +51,28 @@ public class DashboardController {
             selectedDate = LocalDate.now().toString();
         }
 
-        log.info("getSummary() selectedDate => {}, memberId => {}, groupId => {}, deviceId => {}",
-                new Object[]{selectedDate, memberId, groupId, deviceId});
+        log.info("getSummary() selectedDate={}, memberId={}",
+                selectedDate, memberId);
 
-        return dashboardService.getDashboardSummary(memberId, selectedDate, groupId, deviceId);
+        return dashboardService.getDashboardSummary(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
     }
 
-    // 그룹별 장비 목록 조회
+    // 장비 상태 조회
     @ResponseBody
     @RequestMapping(
         value = "/devices",
         method = RequestMethod.GET,
         produces = "application/json; charset=UTF-8"
     )
-    public List<EssDeviceDTO> getDevicesByGroup(
+    public List<EssDeviceDTO> getDashboardDeviceStatusList(
+            String selectedDate,
             Integer groupId,
+            Integer deviceId,
             HttpSession session
     ) {
         Integer memberId = (Integer) session.getAttribute("memberId");
@@ -73,9 +81,19 @@ public class DashboardController {
             return null;
         }
 
-        log.info("getDevicesByGroup() memberId => {}, groupId => {}", memberId, groupId);
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            selectedDate = LocalDate.now().toString();
+        }
 
-        return dashboardService.getDevices(memberId, groupId);
+        log.info("getDashboardDeviceStatusList() memberId={}, selectedDate={}",
+                memberId, selectedDate);
+
+        return dashboardService.getDashboardDeviceStatusList(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
     }
 
     // 대시보드 메인 화면
@@ -89,16 +107,57 @@ public class DashboardController {
             return "redirect:/login";
         }
 
+        String selectedDate = LocalDate.now().toString();
+
         List<EssDeviceGroupDTO> groupList = dashboardService.getGroups(memberId);
-        List<EssDeviceDTO> deviceList = dashboardService.getDevices(memberId, null);
+        List<EssDeviceDTO> deviceList =
+                dashboardService.getDashboardDeviceStatusList(
+                        memberId,
+                        selectedDate,
+                        null,
+                        null
+                );
 
         log.info("groupList size => {}", groupList == null ? 0 : groupList.size());
         log.info("deviceList size => {}", deviceList == null ? 0 : deviceList.size());
 
-        model.addAttribute("selectedDate", LocalDate.now().toString());
+        model.addAttribute("selectedDate", selectedDate);
         model.addAttribute("groupList", groupList);
         model.addAttribute("deviceList", deviceList);
 
         return "dashboard_main";
     }
+    
+ // 발전량 차트 조회
+    @ResponseBody
+    @RequestMapping(
+        value = "/generationChart",
+        method = RequestMethod.GET,
+        produces = "application/json; charset=UTF-8"
+    )
+    public DashboardChartResponseDTO getGenerationChart(
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId,
+            HttpSession session
+    ) {
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            selectedDate = java.time.LocalDate.now().toString();
+        }
+
+        return dashboardService.getGenerationChart(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
+    }
+    
+    
 }

@@ -51,150 +51,84 @@
 
     <section class="card-grid">
 
-      <div class="card">
-        <div class="card-title">총 장비 수</div>
-        <div class="card-value" id="totalDeviceCount">-</div>
-        <div class="card-sub" id="deviceStatusCount">-</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">오늘 예상 발전량</div>
-        <div class="card-value" id="todayGenerationKwh">-</div>
-        <div class="card-sub">어제 대비 ▲ 12.5%</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">현재 평균 SOC</div>
-        <div class="card-value" id="averageSoc">-</div>
-        <div class="card-sub">어제 대비 ▲ 4.1%</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">오늘 예상 절감 금액</div>
-        <div class="card-value" id="todaySavedCost">-</div>
-        <div class="card-sub">어제 대비 ▲ 8.3%</div>
-      </div>
-
+	<div class="card">
+	  <div class="card-title">선택일 데이터 수집</div>
+	  <div class="card-value" id="collectedDeviceCount">-</div>
+	  <div class="card-sub" id="collectionSubInfo">-</div>
+	</div>
+	
+	<div class="card">
+	  <div class="card-title">선택일 예상 발전량</div>
+	  <div class="card-value" id="todayGenerationKwh">-</div>
+	  <div class="card-sub" id="generationSubInfo">선택일 수집 데이터 기준</div>
+	</div>
+	
+	<div class="card">
+	  <div class="card-title">선택일 평균 SOC</div>
+	  <div class="card-value" id="averageSoc">-</div>
+	  <div class="card-sub" id="socSubInfo">선택일 수집 데이터 기준</div>
+	</div>
+	
+	<div class="card">
+	  <div class="card-title">선택일 예상 절감 금액</div>
+	  <div class="card-value" id="todaySavedCost">-</div>
+	  <div class="card-sub" id="savedCostSubInfo">선택일 수집 데이터 기준</div>
+	</div>
+	
+	<div class="dashboard-note">
+  ※ 데이터 수집은 선택일에 측정 데이터가 존재한다는 뜻이며, 발전량이 0일 수도 있습니다.
+	</div>	
     </section>
 
     <section class="content-grid">
 
-      <div class="card">
-        <div class="section-title">그룹별 오늘 예상 발전량 (kWh)</div>
+		<div class="card">
+		  <!-- 기업: 그룹별 / 개인: 장비별 / 필터 선택 시 제목은 JS에서 변경 -->
+		  <div class="section-title" id="generationChartTitle">
+		    선택일 발전량
+		  </div>
+		
+		  <!-- 발전량 그래프 영역: JS에서 DB 조회 결과로 bar-item 생성 -->
+		  <div class="bar-chart" id="generationChart">
+		    <div class="empty-chart">데이터를 불러오는 중...</div>
+		  </div>
+		
+		  <!-- 표시 기준 안내 -->
+		  <div class="dashboard-note" id="generationChartNote">
+		    선택한 날짜와 필터 기준으로 발전량을 표시합니다.
+		  </div>
+		</div>
 
-        <div class="bar-chart">
-          <div class="bar-item">
-            <div class="bar-value">156.5</div>
-            <div class="bar" style="height:156px;"></div>
-            <div>서울공장</div>
-          </div>
-
-          <div class="bar-item">
-            <div class="bar-value">68.3</div>
-            <div class="bar" style="height:68px;"></div>
-            <div>부산물류센터</div>
-          </div>
-
-          <div class="bar-item">
-            <div class="bar-value">24.8</div>
-            <div class="bar" style="height:25px;"></div>
-            <div>대구지점</div>
-          </div>
-
-          <div class="bar-item">
-            <div class="bar-value">6.8</div>
-            <div class="bar" style="height:10px;"></div>
-            <div>전주사무소</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">장비별 현재 상태</div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>장비명</th>
-              <th>그룹</th>
-              <th>SOC</th>
-              <th>상태</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <c:choose>
-
-              <c:when test="${empty deviceList}">
-                <tr>
-                  <td colspan="4">등록된 장비가 없습니다.</td>
-                </tr>
-              </c:when>
-
-              <c:otherwise>
-                <c:forEach var="device" items="${deviceList}">
-                  <tr>
-
-                    <td>
-                      <a href="${pageContext.request.contextPath}/device/detail?deviceId=${device.deviceId}">
-                        ${device.deviceName}
-                      </a>
-                    </td>
-
-                    <td>
-                      <c:choose>
-                        <c:when test="${empty device.groupName}">
-                          -
-                        </c:when>
-                        <c:otherwise>
-                          ${device.groupName}
-                        </c:otherwise>
-                      </c:choose>
-                    </td>
-
-                    <td>
-                      <c:choose>
-                        <c:when test="${empty device.soc}">
-                          -
-                        </c:when>
-                        <c:otherwise>
-                          ${device.soc}%
-                        </c:otherwise>
-                      </c:choose>
-                    </td>
-
-                    <td>
-                      <c:choose>
-                        <c:when test="${device.status eq 'NORMAL'}">
-                          <span class="status-normal">정상</span>
-                        </c:when>
-
-                        <c:when test="${device.status eq 'WARNING'}">
-                          <span class="status-warning">경고</span>
-                        </c:when>
-
-                        <c:when test="${device.status eq 'ERROR'}">
-                          <span class="status-danger">에러</span>
-                        </c:when>
-
-                        <c:when test="${device.status eq 'OFFLINE'}">
-                          <span class="status-offline">오프라인</span>
-                        </c:when>
-
-                        <c:otherwise>
-                          -
-                        </c:otherwise>
-                      </c:choose>
-                    </td>
-
-                  </tr>
-                </c:forEach>
-              </c:otherwise>
-
-            </c:choose>
-          </tbody>
-        </table>
-      </div>
+		<div class="card">
+		  <div class="section-title">장비 리스트</div>
+		
+		  <table>
+		    <thead>
+		      <tr>
+		        <th>장비명</th>
+		        <th>그룹</th>
+		        <th>SOC</th>
+		        <th>상태</th>
+		        <th>상세</th>
+		      </tr>
+		    </thead>
+		
+		    <tbody id="deviceTableBody">
+		      <tr>
+		        <td colspan="5">데이터를 불러오는 중...</td>
+		      </tr>
+		    </tbody>
+		  </table>
+		
+		  <!-- 상태 설명 -->
+		  <div class="battery-status-guide">
+		    <span class="status-normal">정상</span> : SOC 40% 이상
+		    <span class="status-warning">경고</span> : SOC 20% 이상 40% 미만
+		    <span class="status-danger">에러</span> : SOC 20% 미만
+		    <span class="status-offline">오프라인</span> : SOC 0% 또는 미동작
+		    <span class="status-nodata">데이터 없음</span> : 데이터 없음
+		  </div>
+		</div>
 
     </section>
 

@@ -1,51 +1,36 @@
 package com.lgy.ess_monitoring.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.lgy.ess_monitoring.dto.EssMonitoringDTO;
-import com.lgy.ess_monitoring.service.EssMonitoringService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
+@RequestMapping("/monitoring")
 public class EssMonitoringController {
 
-    @Autowired
-    private EssMonitoringService service;
+    // 실시간 모니터링 메인 화면
+    @RequestMapping("/main")
+    public String monitoringMain(
+            Integer deviceId,
+            HttpSession session,
+            Model model
+    ) {
+        log.info("@# monitoringMain()");
 
-    @RequestMapping("/list")
-    public String list(HttpSession session, Model model) {
-        log.info("@# list()");
-
-        // 1. 로그인 체크
         Integer memberId = (Integer) session.getAttribute("memberId");
         log.info("@# session memberId => {}", memberId);
 
         if (memberId == null) {
-            return "redirect:login_view";
+            return "redirect:/login";
         }
 
-        // 2. 회원 기준 모니터링 데이터 조회
-        List<EssMonitoringDTO> list = service.getMonitoringListByMemberId(memberId);
+        model.addAttribute("deviceId", deviceId);
 
-        if (list == null) {
-            list = new ArrayList<>();
-        }
-
-        log.info("@# list size => {}", list.size());
-
-        // 3. JSP 전달
-        model.addAttribute("list", list);
-
-        return "list";
+        return "monitoring_main";
     }
 }

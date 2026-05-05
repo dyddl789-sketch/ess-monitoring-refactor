@@ -21,4 +21,5 @@ public class EssMonitoringDTO {
     private BigDecimal powerOutput; // 출력 전력 (kW)
 
     private Timestamp recordTime; // 측정 시간
+    
 }

@@ -25,5 +25,10 @@ public interface EssDeviceDAO {
     EssDeviceDTO deviceDetail(int deviceId);
 
     // 대시보드용 장비 상태 리스트
-    ArrayList<EssDeviceDTO> getDashboardDeviceStatusList(int memberId);
+    ArrayList<EssDeviceDTO> getDashboardDeviceStatusList(
+            @Param("memberId") int memberId,
+            @Param("selectedDate") String selectedDate,
+            @Param("groupId") Integer groupId,
+            @Param("deviceId") Integer deviceId
+    );
 }

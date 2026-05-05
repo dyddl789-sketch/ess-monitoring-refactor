@@ -1,84 +1,117 @@
-/* ===== 전체 레이아웃 ===== */
+/* 전체 레이아웃 */
 .layout {
     display: flex;
     min-height: 100vh;
-    background-color: #f5f7fa;
+    background: #f5f7fb;
 }
 
-/* ===== 사이드바 ===== */
+/* 사이드바 */
 .sidebar {
-    width: 240px;
-    background-color: #1e293b; /* 짙은 네이비 */
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0;
+    width: 70px;
+    min-height: 100vh;
+    background-color: #111827;
+    color: #ffffff;
+    flex-shrink: 0;
+    overflow-y: auto;
+    transition: width 0.25s ease;
 }
 
-/* ===== 로고 ===== */
-.sidebar .logo {
+/* 마우스 올리면 펼침 */
+.sidebar:hover {
+    width: 240px;
+}
+
+/* 헤더 */
+.sidebar-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    border-bottom: 1px solid #1f2937;
+}
+
+.logo {
     font-size: 18px;
     font-weight: bold;
-    text-align: center;
-    margin-bottom: 30px;
-    letter-spacing: 1px;
+    white-space: nowrap;
+    display: none;
 }
 
-/* ===== 메뉴 타이틀 ===== */
-.sidebar .menu-title {
-    font-size: 12px;
-    color: #94a3b8;
-    margin: 16px 20px 8px;
-    text-transform: uppercase;
-}
-
-/* ===== 기본 메뉴 ===== */
-.sidebar .menu-item {
+.sidebar:hover .logo {
     display: block;
+}
+
+.sidebar-toggle {
+    display: none;
+}
+
+/* 메뉴 타이틀 */
+.menu-title {
+    padding: 14px 20px 6px;
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: bold;
+    white-space: nowrap;
+    display: none;
+}
+
+.sidebar:hover .menu-title {
+    display: block;
+}
+
+/* 메뉴 */
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     padding: 12px 20px;
-    color: #cbd5f5;
     text-decoration: none;
+    color: #d1d5db;
     font-size: 14px;
+    white-space: nowrap;
     transition: background 0.2s, color 0.2s;
 }
 
-/* ===== hover ===== */
-.sidebar .menu-item:hover {
-    background-color: #334155;
+.menu-item:hover {
+    background-color: #1f2937;
     color: #ffffff;
 }
 
-/* ===== active 메뉴 ===== */
-.sidebar .menu-item.active {
-    background-color: #2563eb; /* 파랑 */
-    color: #ffffff;
-    font-weight: 600;
-}
-
-/* ===== 서브 메뉴 ===== */
-.sidebar .sub-menu {
-    display: flex;
-    flex-direction: column;
-}
-
-/* 서브 메뉴 링크 */
-.sidebar .sub-menu a {
-    display: block;
-    padding: 10px 30px;
-    font-size: 13px;
-    color: #cbd5f5;
-    text-decoration: none;
-    transition: background 0.2s;
-}
-
-/* 서브 메뉴 hover */
-.sidebar .sub-menu a:hover {
-    background-color: #334155;
+.menu-item.active {
+    background-color: #2563eb;
     color: #ffffff;
 }
 
-/* ===== 메인 영역 ===== */
+.menu-icon {
+    width: 24px;
+    min-width: 24px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.menu-text {
+    display: none;
+}
+
+.sidebar:hover .menu-text {
+    display: inline;
+}
+
+/* 오른쪽 본문 */
 .main {
     flex: 1;
-    padding: 24px;
+    min-width: 0;
+    padding: 26px 32px;
+    background: #f5f7fb;
+}
+
+/* 스크롤 */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 4px;
 }

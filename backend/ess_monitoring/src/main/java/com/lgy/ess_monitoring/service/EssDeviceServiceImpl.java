@@ -19,6 +19,10 @@ public class EssDeviceServiceImpl implements EssDeviceService {
     @Autowired
     private SqlSession sqlSession;
 
+    private EssDeviceDAO getDao() {
+        return sqlSession.getMapper(EssDeviceDAO.class);
+    }
+
     @Override
     public void insertDevice(EssDeviceDTO deviceDto) {
         if (deviceDto.getLatitude() != null && deviceDto.getLongitude() != null) {
@@ -38,37 +42,41 @@ public class EssDeviceServiceImpl implements EssDeviceService {
             log.warn("@# 좌표 없음 → nx/ny 계산 안됨");
         }
 
-        EssDeviceDAO deviceDao = sqlSession.getMapper(EssDeviceDAO.class);
-        deviceDao.insertDevice(deviceDto);
+        getDao().insertDevice(deviceDto);
     }
 
     @Override
     public ArrayList<EssDeviceDTO> getDeviceList(int memberId) {
-        EssDeviceDAO deviceDao = sqlSession.getMapper(EssDeviceDAO.class);
-        return deviceDao.getDeviceList(memberId);
+        return getDao().getDeviceList(memberId);
     }
 
     @Override
     public int getDeviceCount(int memberId) {
-        EssDeviceDAO deviceDao = sqlSession.getMapper(EssDeviceDAO.class);
-        return deviceDao.getDeviceCount(memberId);
+        return getDao().getDeviceCount(memberId);
     }
 
     @Override
     public int deleteDevice(int deviceId, int memberId) {
-        EssDeviceDAO deviceDao = sqlSession.getMapper(EssDeviceDAO.class);
-        return deviceDao.deleteDevice(deviceId, memberId);
+        return getDao().deleteDevice(deviceId, memberId);
     }
 
     @Override
     public EssDeviceDTO deviceDetail(int deviceId) {
-        EssDeviceDAO deviceDao = sqlSession.getMapper(EssDeviceDAO.class);
-        return deviceDao.deviceDetail(deviceId);
+        return getDao().deviceDetail(deviceId);
     }
 
     @Override
-    public ArrayList<EssDeviceDTO> getDashboardDeviceStatusList(int memberId) {
-        EssDeviceDAO deviceDao = sqlSession.getMapper(EssDeviceDAO.class);
-        return deviceDao.getDashboardDeviceStatusList(memberId);
+    public ArrayList<EssDeviceDTO> getDashboardDeviceStatusList(
+            int memberId,
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId
+    ) {
+        return getDao().getDashboardDeviceStatusList(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
     }
 }

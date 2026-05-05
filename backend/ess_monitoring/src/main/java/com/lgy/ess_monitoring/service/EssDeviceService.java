@@ -25,5 +25,10 @@ public interface EssDeviceService {
     EssDeviceDTO deviceDetail(int deviceId);
 
     // 대시보드 기기 상태 목록 조회
-    ArrayList<EssDeviceDTO> getDashboardDeviceStatusList(int memberId);
+    ArrayList<EssDeviceDTO> getDashboardDeviceStatusList(
+            int memberId,
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId
+    );
 }
