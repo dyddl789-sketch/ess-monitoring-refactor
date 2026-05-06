@@ -1,6 +1,7 @@
 package com.lgy.ess_monitoring.service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,11 @@ public class EssDeviceServiceImpl implements EssDeviceService {
 
     @Override
     public void insertDevice(EssDeviceDTO deviceDto) {
+        // 그룹 없음 처리
+        if (deviceDto.getGroupId() != null && deviceDto.getGroupId() == 0) {
+            deviceDto.setGroupId(null);
+        }
+    	
         if (deviceDto.getLatitude() != null && deviceDto.getLongitude() != null) {
             double latitude = deviceDto.getLatitude().doubleValue();
             double longitude = deviceDto.getLongitude().doubleValue();
@@ -78,5 +84,9 @@ public class EssDeviceServiceImpl implements EssDeviceService {
                 groupId,
                 deviceId
         );
+    }
+    @Override
+    public List<EssDeviceDTO> getAllActiveDevices() {
+        return getDao().getAllActiveDevices();
     }
 }

@@ -17,4 +17,8 @@ public interface EssMemberService {
 
     // 이메일 중복 체크
     int emailCheck(String email);
+    
+    EssMemberDTO getMemberInfo(int memberId);
+
+    int updateMemberInfo(EssMemberDTO member);
 }

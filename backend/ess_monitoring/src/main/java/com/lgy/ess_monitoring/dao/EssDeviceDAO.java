@@ -1,6 +1,7 @@
 package com.lgy.ess_monitoring.dao;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -31,4 +32,7 @@ public interface EssDeviceDAO {
             @Param("groupId") Integer groupId,
             @Param("deviceId") Integer deviceId
     );
+    
+ // 스케줄러용 전체 장비 조회
+    List<EssDeviceDTO> getAllActiveDevices();
 }

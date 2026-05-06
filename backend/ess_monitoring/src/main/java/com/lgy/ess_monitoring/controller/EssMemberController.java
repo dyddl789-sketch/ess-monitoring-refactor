@@ -148,4 +148,45 @@ public class EssMemberController {
     public String signup() {
         return "signup";
     }
+    
+ // 내 정보 화면
+    @RequestMapping("/member/info")
+    public String memberInfo(HttpSession session, Model model) {
+        log.info("@# memberInfo()");
+
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
+
+        EssMemberDTO member = memberService.getMemberInfo(memberId);
+
+        model.addAttribute("member", member);
+
+        return "member_info";
+    }
+
+    // 내 정보 수정
+    @RequestMapping("/member/update")
+    public String updateMemberInfo(EssMemberDTO memberDto,
+                                   HttpSession session) {
+        log.info("@# updateMemberInfo()");
+        log.info("@# memberDto => {}", memberDto);
+
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
+
+        memberDto.setMemberId(memberId);
+        memberService.updateMemberInfo(memberDto);
+
+        // 세션 이름도 최신화
+        session.setAttribute("memberName", memberDto.getMemberName());
+        session.setAttribute("memberAddress", memberDto.getAddress());
+
+        return "redirect:/member/info";
+    }
 }

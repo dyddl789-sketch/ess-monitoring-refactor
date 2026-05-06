@@ -93,33 +93,40 @@
     - 가까운 시간 순서대로 8개 정도만 가져옴
     - 상세화면 또는 메인 날씨 카드에서 사용 가능
 -->
-    <select id="getWeatherList"
-            parameterType="int"
-            resultType="com.lgy.ess_monitoring.dto.WeatherDataDTO">
-        SELECT
-            weather_id,
-            device_id,
-            fcst_date,
-            fcst_time,
-            sky_status,
-            rain_type,
-            rain_prob,
-            temperature,
-            humidity,
-            wind_speed,
-            solar_radiation,
-            ess_status,
-            created_at,
-            sunrise,
-            sunset,
-            base_date,
-            base_time
-        FROM weather_data
-        WHERE device_id = #{deviceId}
-          AND CONCAT(fcst_date, fcst_time) >= DATE_FORMAT(NOW(), '%Y%m%d%H%i')
-        ORDER BY fcst_date ASC, fcst_time ASC
-        LIMIT 8
-    </select>
+	<select id="getWeatherList"
+	        parameterType="int"
+	        resultType="com.lgy.ess_monitoring.dto.WeatherDataDTO">
+	    SELECT
+	        weather_id,
+	        device_id,
+	        fcst_date,
+	        fcst_time,
+	        sky_status,
+	        rain_type,
+	        rain_prob,
+	        temperature,
+	        humidity,
+	        wind_speed,
+	        solar_radiation,
+	        ess_status,
+	        created_at,
+	        sunrise,
+	        sunset,
+	        base_date,
+	        base_time
+	    FROM weather_data
+	    WHERE device_id = #{deviceId}
+	      AND CONCAT(base_date, base_time) = (
+	          SELECT CONCAT(base_date, base_time)
+	          FROM weather_data
+	          WHERE device_id = #{deviceId}
+	          ORDER BY base_date DESC, base_time DESC
+	          LIMIT 1
+	      )
+	      AND CONCAT(fcst_date, fcst_time) >= DATE_FORMAT(NOW(), '%Y%m%d%H00')
+	    ORDER BY fcst_date ASC, fcst_time ASC
+	    LIMIT 8
+	</select>
 
 
 <!--
@@ -127,33 +134,40 @@
     - 현재 시간 이후 가장 가까운 예보 1건
     - 상세화면 상단 카드의 "현재 날씨"에 사용
 -->
-    <select id="getCurrentWeather"
-            parameterType="int"
-            resultType="com.lgy.ess_monitoring.dto.WeatherDataDTO">
-        SELECT
-            weather_id,
-            device_id,
-            fcst_date,
-            fcst_time,
-            sky_status,
-            rain_type,
-            rain_prob,
-            temperature,
-            humidity,
-            wind_speed,
-            solar_radiation,
-            ess_status,
-            created_at,
-            sunrise,
-            sunset,
-            base_date,
-            base_time
-        FROM weather_data
-        WHERE device_id = #{deviceId}
-          AND CONCAT(fcst_date, fcst_time) >= DATE_FORMAT(NOW(), '%Y%m%d%H%i')
-        ORDER BY fcst_date ASC, fcst_time ASC
-        LIMIT 1
-    </select>
+	<select id="getCurrentWeather"
+	        parameterType="int"
+	        resultType="com.lgy.ess_monitoring.dto.WeatherDataDTO">
+	    SELECT
+	        weather_id,
+	        device_id,
+	        fcst_date,
+	        fcst_time,
+	        sky_status,
+	        rain_type,
+	        rain_prob,
+	        temperature,
+	        humidity,
+	        wind_speed,
+	        solar_radiation,
+	        ess_status,
+	        created_at,
+	        sunrise,
+	        sunset,
+	        base_date,
+	        base_time
+	    FROM weather_data
+	    WHERE device_id = #{deviceId}
+	      AND CONCAT(base_date, base_time) = (
+	          SELECT CONCAT(base_date, base_time)
+	          FROM weather_data
+	          WHERE device_id = #{deviceId}
+	          ORDER BY base_date DESC, base_time DESC
+	          LIMIT 1
+	      )
+	      AND CONCAT(fcst_date, fcst_time) >= DATE_FORMAT(NOW(), '%Y%m%d%H00')
+	    ORDER BY fcst_date ASC, fcst_time ASC
+	    LIMIT 1
+	</select>
 		
 		
 		

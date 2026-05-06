@@ -12,7 +12,12 @@ public interface EssMonitoringDAO {
     // 특정 디바이스 최신 데이터
     EssMonitoringDTO getLatestMonitoring(int deviceId);
 
-    // (필요 시 유지)
+    // 모니터링 데이터 저장
+    void insertMonitoring(EssMonitoringDTO dto);
+
+    // 전체 모니터링 수
     int getTotalCount();
+
+    // 회원별 모니터링 수
     int getMemberCount(int memberId);
 }

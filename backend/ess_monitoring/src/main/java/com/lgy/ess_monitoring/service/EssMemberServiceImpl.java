@@ -38,4 +38,19 @@ public class EssMemberServiceImpl implements EssMemberService {
         EssMemberDAO memberDao = sqlSession.getMapper(EssMemberDAO.class);
         return memberDao.emailCheck(email);
     }
+    
+
+    private EssMemberDAO getDao() {
+        return sqlSession.getMapper(EssMemberDAO.class);
+    }
+
+    @Override
+    public EssMemberDTO getMemberInfo(int memberId) {
+        return getDao().getMemberInfo(memberId);
+    }
+
+    @Override
+    public int updateMemberInfo(EssMemberDTO member) {
+        return getDao().updateMemberInfo(member);
+    }
 }

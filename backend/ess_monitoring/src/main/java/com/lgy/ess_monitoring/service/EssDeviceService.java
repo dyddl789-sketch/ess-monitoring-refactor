@@ -1,7 +1,7 @@
 package com.lgy.ess_monitoring.service;
 
 import java.util.ArrayList;
-
+import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
@@ -31,4 +31,5 @@ public interface EssDeviceService {
             Integer groupId,
             Integer deviceId
     );
+    List<EssDeviceDTO> getAllActiveDevices();
 }

@@ -3,9 +3,7 @@ package com.lgy.ess_monitoring.service;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -151,6 +149,8 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 
             urlBuilder.append("?serviceKey=").append(serviceKey);
             urlBuilder.append("&dataType=JSON");
+            urlBuilder.append("&pageNo=1");
+            urlBuilder.append("&numOfRows=1000");
             urlBuilder.append("&base_date=").append(baseDate);
             urlBuilder.append("&base_time=").append(baseTime);
             urlBuilder.append("&nx=").append(nx);
@@ -184,9 +184,11 @@ public class WeatherDataServiceImpl implements WeatherDataService {
                 WeatherDataDTO dto = map.get(key);
 
                 dto.setDeviceId(deviceId);
+                dto.setBaseDate(baseDate);
+                dto.setBaseTime(baseTime);
                 dto.setFcstDate(item.path("fcstDate").asText());
                 dto.setFcstTime(item.path("fcstTime").asText());
-
+                
                 String category = item.path("category").asText();
                 String value = item.path("fcstValue").asText();
 

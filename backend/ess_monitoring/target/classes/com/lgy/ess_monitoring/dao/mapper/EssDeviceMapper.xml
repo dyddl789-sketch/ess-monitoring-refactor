@@ -6,38 +6,72 @@
 
 <mapper namespace="com.lgy.ess_monitoring.dao.EssDeviceDAO">
 
-    <!-- 기기 등록 -->
-    <insert id="insertDevice" parameterType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
-        insert into ess_device (
-            member_id,
-            group_id,
-            device_name,
-            location,
-            capacity_kw,
-            device_type,
-            status,
-            install_date,
-            latitude,
-            longitude,
-            nx,
-            ny,
-            is_main
-        ) values (
-            #{memberId},
-            #{groupId},
-            #{deviceName},
-            #{location},
-            #{capacityKw},
-            #{deviceType},
-            #{status},
-            #{installDate},
-            #{latitude},
-            #{longitude},
-            #{nx},
-            #{ny},
-            'N'
-        )
-    </insert>
+	<!-- 장비 등록 -->
+	<insert id="insertDevice"
+        parameterType="com.lgy.ess_monitoring.dto.EssDeviceDTO"
+        useGeneratedKeys="true"
+        keyProperty="deviceId">
+	
+	    insert into ess_device (
+	
+	        member_id,
+	        group_id,
+	        device_name,
+	        location,
+	        capacity_kw,
+	        device_type,
+	        status,
+	        install_date,
+	
+	        latitude,
+	        longitude,
+	        nx,
+	        ny,
+	
+	        is_main,
+	
+	        ess_capacity_kwh,
+	        current_charge_kwh,
+	
+	        charge_efficiency,
+	        discharge_efficiency,
+	
+	        electricity_rate
+	
+	    ) values (
+	
+	        #{memberId},
+	
+	        #{groupId},
+	
+	        #{deviceName},
+	        #{location},
+	
+	        #{capacityKw},
+	
+	        #{deviceType},
+	        #{status},
+	
+	        #{installDate},
+	
+	        #{latitude},
+	        #{longitude},
+	
+	        #{nx},
+	        #{ny},
+	
+	        #{isMain},
+	
+	        #{essCapacityKwh},
+	        #{currentChargeKwh},
+	
+	        #{chargeEfficiency},
+	        #{dischargeEfficiency},
+	
+	        #{electricityRate}
+	    )
+	
+	</insert>
 
     <!-- 기기 목록 -->
     <select id="getDeviceList"
@@ -133,5 +167,32 @@
         where d.member_id = #{value}
         order by d.device_id desc
     </select>
-
+    
+	<!-- 스케줄러용 전체 장비 조회 -->
+	<select id="getAllActiveDevices"
+	        resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+	    SELECT
+	        device_id,
+	        member_id,
+	        group_id,
+	        device_name,
+	        location,
+	        capacity_kw,
+	        device_type,
+	        status,
+	        install_date,
+	        latitude,
+	        longitude,
+	        nx,
+	        ny,
+	        is_main,
+	        ess_capacity_kwh,
+	        current_charge_kwh,
+	        charge_efficiency,
+	        discharge_efficiency,
+	        electricity_rate
+	    FROM ess_device
+	    WHERE status != 'OFFLINE'
+	    ORDER BY device_id ASC
+	</select>
 </mapper>

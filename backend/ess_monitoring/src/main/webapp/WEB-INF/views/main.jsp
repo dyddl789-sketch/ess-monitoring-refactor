@@ -9,6 +9,8 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/main.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/header.css">
+<link rel="stylesheet"
+      href="${pageContext.request.contextPath}/resources/css/device_register.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4c85272f51538d1512f6a5f19d0c8e2a&libraries=services"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
@@ -77,11 +79,12 @@
                     <p>등록된 ESS 목록을 확인하고 상세 모니터링으로 이동합니다.</p>
                 </div>
 
-                <div class="main-guide-card" onclick="checkLogin(function(){ moveView('monitor', loadMonitor); })">
-                    <div class="main-guide-icon">●</div>
-                    <h4>통합 대시보드</h4>
-                    <p>SOC, 전압, 전류, 온도 등 주요 모니터링 정보를 확인합니다.</p>
-                </div>
+				<div class="main-guide-card"
+				     onclick="checkLogin(function(){ location.href='${pageContext.request.contextPath}/dashboard/main'; })">
+				    <div class="main-guide-icon">●</div>
+				    <h4>통합 대시보드</h4>
+				    <p>SOC, 전압, 전류, 발전량, 알림 현황을 한눈에 확인합니다.</p>
+				</div>
             </div>
 
         </section>
@@ -120,7 +123,12 @@
     </div>
 </div>
 
+<script>
+    const contextPath = '${pageContext.request.contextPath}';
+</script>
+
 <script src="${pageContext.request.contextPath}/resources/js/main.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/device_register.js"></script>
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>

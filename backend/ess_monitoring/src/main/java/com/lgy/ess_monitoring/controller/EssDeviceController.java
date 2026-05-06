@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.service.EssDeviceService;
+import com.lgy.ess_monitoring.service.SimulationService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +25,8 @@ public class EssDeviceController {
 
     @Autowired
     private EssDeviceService deviceService;
+    @Autowired
+    private SimulationService simulationService;
 
     // 장비 상태 화면
     @RequestMapping(value = "/status", method = RequestMethod.GET)
@@ -53,7 +56,7 @@ public class EssDeviceController {
         return "device/registerForm";
     }
 
-    // 장비 등록
+ // 장비 등록
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
     public String deviceRegister(EssDeviceDTO deviceDto, HttpSession session) {
@@ -66,17 +69,40 @@ public class EssDeviceController {
             return "login_required";
         }
 
+        // 로그인 회원 ID 세팅
         deviceDto.setMemberId(memberId);
 
+        // 상태 기본값
         if (deviceDto.getStatus() == null || deviceDto.getStatus().isEmpty()) {
             deviceDto.setStatus("NORMAL");
         }
 
+        // 장비 타입 기본값
+        if (deviceDto.getDeviceType() == null || deviceDto.getDeviceType().isEmpty()) {
+            deviceDto.setDeviceType("HYBRID");
+        }
+
+        // 대표 장비 기본값
+        if (deviceDto.getIsMain() == null || deviceDto.getIsMain().isEmpty()) {
+            deviceDto.setIsMain("N");
+        }
+
+        // 장비 등록
         deviceService.insertDevice(deviceDto);
+
+        // insert 후 생성된 deviceId
+        int deviceId = deviceDto.getDeviceId();
+
+        log.info("@# 등록된 deviceId => {}", deviceId);
+
+        // 장비 등록 직후 날씨 + 모니터링 시뮬레이션 생성
+        if (deviceId > 0) {
+            simulationService.runSimulation(deviceId);
+        }
 
         return "success";
     }
-
+    
     // 장비 목록 Ajax
     @RequestMapping(
         value = "/listAjax",

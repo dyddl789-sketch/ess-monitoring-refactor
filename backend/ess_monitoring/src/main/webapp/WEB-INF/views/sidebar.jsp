@@ -61,9 +61,9 @@
     </a>
   </c:if>
 
-  <a href="${pageContext.request.contextPath}/board" class="menu-item">
+  <a href="${pageContext.request.contextPath}/board_list" class="menu-item">
     <span class="menu-icon">💬</span>
-    <span class="menu-text">게시판</span>
+    <span class="menu-text">문의 게시판</span>
   </a>
 
   <a href="${pageContext.request.contextPath}/member/info" class="menu-item">

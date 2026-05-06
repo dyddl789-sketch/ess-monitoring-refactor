@@ -12,14 +12,56 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EssMonitoringDTO {
 
-    private int monitorId;        // PK
-    private int deviceId;         // 장비 ID (FK)
+    // ===============================
+    // 기본 정보
+    // ===============================
+    private int monitorId;
+    private int deviceId;
 
-    private BigDecimal voltage;   // 전압 (V)
-    private BigDecimal currentA;  // 전류 (A)
-    private BigDecimal soc;       // 충전율 (%)
-    private BigDecimal powerOutput; // 출력 전력 (kW)
+    // ===============================
+    // 전기 데이터
+    // ===============================
+    private BigDecimal voltage;           // 전압(V)
+    private BigDecimal currentA;          // 전류(A)
 
-    private Timestamp recordTime; // 측정 시간
-    
+    private BigDecimal soc;               // SOC(%)
+
+    private BigDecimal powerOutput;       // 출력 전력(kW)
+
+    // ===============================
+    // 발전 / 충전 / 사용
+    // ===============================
+    private BigDecimal solarGenerationKwh; // 태양광 발전량
+    private BigDecimal chargedEnergyKwh;   // 충전량
+    private BigDecimal usedEnergyKwh;      // 사용량
+
+    // ===============================
+    // 절감 금액
+    // ===============================
+    private BigDecimal savedCost;
+
+    // ===============================
+    // 시간
+    // ===============================
+    private Timestamp recordTime;
+
+    // ===============================
+    // JOIN용
+    // ===============================
+    private String deviceName;
+    private String location;
+    private String groupName;
+
+    // ===============================
+    // 날씨 정보 JOIN용
+    // ===============================
+    private String skyStatus;
+    private String rainType;
+    private BigDecimal temperature;
+
+    // ===============================
+    // 상태 표시용
+    // ===============================
+    private String deviceStatus;
+    private String alertStatus;
 }

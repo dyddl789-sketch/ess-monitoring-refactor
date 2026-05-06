@@ -17,4 +17,10 @@ public interface EssMemberDAO {
 
     // 이메일 중복 체크
     int emailCheck(String email);
+    
+    // 내 정보 조회
+    EssMemberDTO getMemberInfo(int memberId);
+
+    // 내 정보 수정
+    int updateMemberInfo(EssMemberDTO member);
 }
