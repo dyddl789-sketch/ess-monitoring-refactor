@@ -33,7 +33,8 @@ public interface AlertDAO {
 
     // 알림 자동 생성
     int insertAlert(AlertDTO alert);
-    
+
+    // 일별 에너지 통계 조회
     List<EnergyStatsDTO> getDailyEnergyStats(
             @Param("memberId") int memberId,
             @Param("startDate") String startDate,
@@ -41,6 +42,7 @@ public interface AlertDAO {
             @Param("deviceId") Integer deviceId
     );
 
+    // 기기별 에너지 통계 조회
     List<EnergyStatsDTO> getDeviceEnergyStats(
             @Param("memberId") int memberId,
             @Param("startDate") String startDate,

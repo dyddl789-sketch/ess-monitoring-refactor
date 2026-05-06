@@ -1,5 +1,6 @@
 package com.lgy.ess_monitoring.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.lgy.ess_monitoring.dto.AlertDTO;
@@ -12,5 +13,10 @@ public interface AlertService {
 
     int updateAlertStatus(int alertId, int memberId, String status);
 
-    void createSocAlertIfNeeded(int deviceId, double soc);
+    void createAlertIfNeeded(
+            int deviceId,
+            BigDecimal soc,
+            BigDecimal voltage,
+            BigDecimal solarGenerationKwh
+    );
 }

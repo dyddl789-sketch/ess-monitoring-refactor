@@ -1,6 +1,7 @@
 package com.lgy.ess_monitoring.dao;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -41,4 +42,6 @@ public interface EssDeviceDAO {
     // 선택한 디바이스를 대표 디바이스로 설정
     public void setMainDevice(@Param("memberId") int memberId,
                               @Param("deviceId") int deviceId);
+    
+    List<EssDeviceDTO> getAllActiveDevices();
 }
