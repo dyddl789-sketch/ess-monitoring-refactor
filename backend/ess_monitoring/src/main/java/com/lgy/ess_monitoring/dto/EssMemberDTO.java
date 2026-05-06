@@ -18,4 +18,5 @@ public class EssMemberDTO {
     private String email;
     private String address;
     private String joinDate;
+    private String role;
 }

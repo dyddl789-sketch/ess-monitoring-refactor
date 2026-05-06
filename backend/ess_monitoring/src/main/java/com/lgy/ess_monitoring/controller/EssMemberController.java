@@ -1,6 +1,7 @@
 package com.lgy.ess_monitoring.controller;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.dto.EssMemberDTO;
+import com.lgy.ess_monitoring.dto.WeatherDTO;
 import com.lgy.ess_monitoring.service.EssDeviceService;
 import com.lgy.ess_monitoring.service.EssMemberService;
+import com.lgy.ess_monitoring.service.WeatherService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,9 +30,13 @@ public class EssMemberController {
     @Autowired
     private EssDeviceService deviceService;
 
+    @Autowired
+    private WeatherService weatherService;
+
     // 메인 페이지
     @RequestMapping("/main")
     public String main(HttpSession session, Model model) {
+
         log.info("@# main()");
 
         Integer memberId = (Integer) session.getAttribute("memberId");
@@ -38,31 +45,73 @@ public class EssMemberController {
         log.info("@# memberId => " + memberId);
         log.info("@# memberAddress => " + memberAddress);
 
+        /*
+         * 날씨 조회 기준 주소
+         *
+         * 1순위: 대표 디바이스 위치
+         * 2순위: 회원 주소
+         * 3순위: WeatherServiceImpl 기본값 부산
+         */
         String weatherAddress = memberAddress;
-        String weatherBaseType = "회원 주소";
+        String weatherBaseText = "회원 주소 기준";
 
-        EssDeviceDTO mainDevice = null;
-
+        // 1. 로그인 회원의 ESS 기기 개수 조회
         if (memberId != null) {
             int deviceCount = deviceService.getDeviceCount(memberId);
             model.addAttribute("deviceCount", deviceCount);
 
-            mainDevice = deviceService.getMainDevice(memberId);
+            log.info("@# deviceCount => " + deviceCount);
 
+            // 2. 대표 디바이스 조회
+            EssDeviceDTO mainDevice = deviceService.getMainDevice(memberId);
+
+            log.info("@# mainDevice => " + mainDevice);
+
+            // 3. 대표 디바이스가 있으면 대표 디바이스 위치를 날씨 기준으로 사용
             if (mainDevice != null
                     && mainDevice.getLocation() != null
-                    && !mainDevice.getLocation().trim().isEmpty()) {
+                    && !mainDevice.getLocation().trim().equals("")) {
 
                 weatherAddress = mainDevice.getLocation();
-                weatherBaseType = "대표 디바이스 위치";
+                weatherBaseText = "대표 ESS 위치 기준";
+
+                model.addAttribute("mainDevice", mainDevice);
+
+                log.info("@# 대표 디바이스 위치 사용 => " + weatherAddress);
+
+            } else {
+                log.info("@# 대표 디바이스 없음. 회원 주소 사용 => " + weatherAddress);
             }
+
         } else {
             model.addAttribute("deviceCount", 0);
+            weatherBaseText = "기본 지역 기준";
+
+            log.info("@# 비로그인 상태. 기본 지역 사용");
         }
 
-        model.addAttribute("address", weatherAddress);
-        model.addAttribute("weatherBaseType", weatherBaseType);
-        model.addAttribute("mainDevice", mainDevice);
+        // 4. 날씨 조회
+        try {
+            log.info("@# weatherAddress => " + weatherAddress);
+            log.info("@# weatherBaseText => " + weatherBaseText);
+
+            List<WeatherDTO> weatherList = weatherService.forecastByAddress(weatherAddress);
+
+            log.info("@# weatherList size => " + weatherList.size());
+
+            model.addAttribute("weatherList", weatherList);
+            model.addAttribute("weatherAddress", weatherAddress);
+            model.addAttribute("weatherBaseText", weatherBaseText);
+
+        } catch (Exception e) {
+            log.error("@# weather load error", e);
+
+            // 날씨 API 오류가 나도 메인 화면은 뜨게 처리
+            model.addAttribute("weatherList", null);
+            model.addAttribute("weatherAddress", weatherAddress);
+            model.addAttribute("weatherBaseText", weatherBaseText);
+        }
+
         return "main";
     }
 
@@ -95,7 +144,14 @@ public class EssMemberController {
         session.setAttribute("memberName", memberDto.getMemberName());
         session.setAttribute("memberUserid", memberDto.getMemberUserid());
         session.setAttribute("userType", memberDto.getUserType());
+        session.setAttribute("role", memberDto.getRole());
         session.setAttribute("memberAddress", memberDto.getAddress());
+
+        log.info("@# login memberId => " + memberDto.getMemberId());
+        log.info("@# login memberName => " + memberDto.getMemberName());
+        log.info("@# login userType => " + memberDto.getUserType());
+        log.info("@# login role => " + memberDto.getRole());
+        log.info("@# login memberAddress => " + memberDto.getAddress());
 
         return "redirect:/main";
     }
@@ -151,7 +207,34 @@ public class EssMemberController {
                 return "join_view";
             }
         }
+        
+     // userType 값 확인
+        log.info("@# join userType before => " + params.get("userType"));
 
+        // userType 한글값/화면값을 DB 허용값으로 변환
+        String fixedUserType = params.get("userType");
+
+        if ("개인".equals(fixedUserType) 
+                || "개인용".equals(fixedUserType) 
+                || "개인회원".equals(fixedUserType) 
+                || "일반회원".equals(fixedUserType)) {
+
+            params.put("userType", "PERSONAL");
+
+        } else if ("기업".equals(fixedUserType) 
+                || "기업용".equals(fixedUserType) 
+                || "기업회원".equals(fixedUserType)) {
+
+            params.put("userType", "COMPANY");
+
+        } else if (!"PERSONAL".equals(fixedUserType) && !"COMPANY".equals(fixedUserType)) {
+
+            // 예상 밖 값이면 기본값 PERSONAL로 처리
+            params.put("userType", "PERSONAL");
+        }
+
+        log.info("@# join userType after => " + params.get("userType"));
+        
         memberService.join(params);
 
         return "redirect:/login_view";
@@ -168,46 +251,5 @@ public class EssMemberController {
     @RequestMapping("/signup")
     public String signup() {
         return "signup";
-    }
-    
- // 내 정보 화면
-    @RequestMapping("/member/info")
-    public String memberInfo(HttpSession session, Model model) {
-        log.info("@# memberInfo()");
-
-        Integer memberId = (Integer) session.getAttribute("memberId");
-
-        if (memberId == null) {
-            return "redirect:/login_view";
-        }
-
-        EssMemberDTO member = memberService.getMemberInfo(memberId);
-
-        model.addAttribute("member", member);
-
-        return "member_info";
-    }
-
-    // 내 정보 수정
-    @RequestMapping("/member/update")
-    public String updateMemberInfo(EssMemberDTO memberDto,
-                                   HttpSession session) {
-        log.info("@# updateMemberInfo()");
-        log.info("@# memberDto => {}", memberDto);
-
-        Integer memberId = (Integer) session.getAttribute("memberId");
-
-        if (memberId == null) {
-            return "redirect:/login_view";
-        }
-
-        memberDto.setMemberId(memberId);
-        memberService.updateMemberInfo(memberDto);
-
-        // 세션 이름도 최신화
-        session.setAttribute("memberName", memberDto.getMemberName());
-        session.setAttribute("memberAddress", memberDto.getAddress());
-
-        return "redirect:/member/info";
     }
 }

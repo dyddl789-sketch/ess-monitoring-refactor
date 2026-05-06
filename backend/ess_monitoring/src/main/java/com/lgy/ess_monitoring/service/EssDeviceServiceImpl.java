@@ -1,6 +1,7 @@
 package com.lgy.ess_monitoring.service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,5 +176,11 @@ public class EssDeviceServiceImpl implements EssDeviceService {
 		    getDao().setMainDevice(memberId, deviceId);
 
 		    log.info("@# 대표 디바이스 설정 완료");		
+	}
+
+	@Override
+	public List<EssDeviceDTO> getAllActiveDevices() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
