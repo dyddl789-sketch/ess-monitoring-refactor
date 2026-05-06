@@ -234,5 +234,33 @@
          where member_id = #{memberId}
            and device_id = #{deviceId}
     </update>
-
+	
+	<!-- ============================= -->
+	<!-- 전체 활성 장비 조회 -->
+	<!-- ============================= -->
+	<select id="getAllActiveDevices"
+	        resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+	    select
+	        device_id as deviceId,
+	        member_id as memberId,
+	        group_id as groupId,
+	        device_name as deviceName,
+	        location,
+	        capacity_kw as capacityKw,
+	        device_type as deviceType,
+	        status,
+	        install_date as installDate,
+	        latitude,
+	        longitude,
+	        nx,
+	        ny,
+	        is_main as isMain,
+	        ess_capacity_kwh as essCapacityKwh,
+	        current_charge_kwh as currentChargeKwh,
+	        charge_efficiency as chargeEfficiency,
+	        discharge_efficiency as dischargeEfficiency,
+	        electricity_rate as electricityRate
+	    from ess_device
+	    where status in ('NORMAL', 'ACTIVE')
+	</select>
 </mapper>

@@ -69,6 +69,10 @@ public class EssDeviceController {
 
         deviceDto.setMemberId(memberId);
 
+        if (deviceDto.getGroupId() != null && deviceDto.getGroupId() == 0) {
+            deviceDto.setGroupId(null);
+        }
+
         if (deviceDto.getStatus() == null || deviceDto.getStatus().isEmpty()) {
             deviceDto.setStatus("NORMAL");
         }
