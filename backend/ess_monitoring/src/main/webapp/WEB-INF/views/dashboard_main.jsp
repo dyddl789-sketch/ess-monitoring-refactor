@@ -110,12 +110,13 @@
 		        <th>SOC</th>
 		        <th>상태</th>
 		        <th>상세</th>
+		        <th>대표</th>
 		      </tr>
 		    </thead>
 		
 		    <tbody id="deviceTableBody">
 		      <tr>
-		        <td colspan="5">데이터를 불러오는 중...</td>
+		        <td colspan="6">데이터를 불러오는 중...</td>
 		      </tr>
 		    </tbody>
 		  </table>
@@ -134,73 +135,145 @@
 
     <section class="bottom-grid">
 
-      <div class="card">
-        <div class="section-title">최근 알림</div>
+  <div class="card">
+    <div class="section-title">최근 알림</div>
 
-        <ul class="alert-list">
-          <li><span class="badge">경고</span> 부산센터 ESS 2호기 SOC가 50% 미만입니다. <span style="float:right;">09:15</span></li>
-          <li><span class="badge">정보</span> 서울공장 ESS 1호기 충전이 완료되었습니다. <span style="float:right;">08:45</span></li>
-          <li><span class="badge">정보</span> 대구지점 ESS 1호기 일일 리포트가 생성되었습니다. <span style="float:right;">08:00</span></li>
-          <li><span class="badge">경고</span> 전주사무소 ESS 1호기 통신 상태가 불안정합니다. <span style="float:right;">07:30</span></li>
-        </ul>
-      </div>
+    <ul class="alert-list">
+      <li><span class="badge">경고</span> 부산센터 ESS 2호기 SOC가 50% 미만입니다. <span style="float:right;">09:15</span></li>
+      <li><span class="badge">정보</span> 서울공장 ESS 1호기 충전이 완료되었습니다. <span style="float:right;">08:45</span></li>
+      <li><span class="badge">정보</span> 대구지점 ESS 1호기 일일 리포트가 생성되었습니다. <span style="float:right;">08:00</span></li>
+      <li><span class="badge">경고</span> 전주사무소 ESS 1호기 통신 상태가 불안정합니다. <span style="float:right;">07:30</span></li>
+    </ul>
+  </div>
 
-      <div class="card">
-        <div class="section-title">오늘 날씨 (서울)</div>
+  <!-- ============================= -->
+  <!-- 대표 디바이스 기준 날씨 카드 -->
+  <!-- ============================= -->
+  <div class="card">
+    <div class="dashboard-weather-box">
 
-        <div class="weather-main">
-          <div class="weather-icon">☀️</div>
-
-          <div>
-            <div class="weather-temp">23.6℃</div>
-            <div>맑음</div>
-          </div>
-
-          <div class="weather-detail">
-            <div>강수확률 10%</div>
-            <div>습도 42%</div>
-            <div>풍속 2.1m/s</div>
-            <div>일출 05:25 · 일몰 19:45</div>
-          </div>
+      <div class="dashboard-weather-header">
+        <div>
+          <div class="section-title">대표 지역 날씨</div>
+          <p>${weatherBaseText}</p>
         </div>
 
-        <div class="forecast">
-          <div class="forecast-item">
-            <div>내일</div>
-            <div>☀️</div>
-            <div>24℃ / 15℃</div>
-            <div>맑음</div>
-          </div>
-
-          <div class="forecast-item">
-            <div>모레</div>
-            <div>🌤️</div>
-            <div>22℃ / 14℃</div>
-            <div>구름많음</div>
-          </div>
-
-          <div class="forecast-item">
-            <div>05-23</div>
-            <div>🌧️</div>
-            <div>20℃ / 13℃</div>
-            <div>비</div>
-          </div>
-        </div>
-
+        <c:if test="${not empty weatherList}">
+          <span>${weatherList[0].city}</span>
+        </c:if>
       </div>
 
-    </section>
+      <c:choose>
+        <c:when test="${empty weatherList}">
+          <div class="weather-empty">
+            날씨 정보를 불러오지 못했습니다.
+          </div>
+        </c:when>
+
+        <c:otherwise>
+
+          <!-- 현재 대표 날씨 -->
+          <div class="dashboard-weather-current">
+            <div class="dashboard-weather-icon">
+              ${weatherList[0].weatherIcon}
+            </div>
+
+            <div>
+              <div class="dashboard-weather-temp">
+                ${weatherList[0].temperature}
+              </div>
+              <div class="dashboard-weather-status">
+                ${weatherList[0].skyStatus}
+              </div>
+            </div>
+
+            <div class="dashboard-weather-detail">
+              <div>예보시간 ${weatherList[0].fcstTime}</div>
+              <div>강수확률 ${weatherList[0].rainProb}</div>
+
+              <c:if test="${not empty mainDevice}">
+                <div>대표기기 ${mainDevice.deviceName}</div>
+              </c:if>
+            </div>
+          </div>
+
+          <!-- 시간대별 예보 -->
+          <div class="dashboard-weather-list">
+            <c:forEach var="weather" items="${weatherList}" varStatus="status">
+              <c:if test="${status.index lt 4}">
+                <div class="dashboard-weather-item">
+                  <div class="weather-time">${weather.fcstTime}</div>
+                  <div class="weather-icon">${weather.weatherIcon}</div>
+                  <div class="weather-temp">${weather.temperature}</div>
+                  <div class="weather-status">${weather.skyStatus}</div>
+                </div>
+              </c:if>
+            </c:forEach>
+          </div>
+
+        </c:otherwise>
+      </c:choose>
+
+    </div>
+  </div>
+
+</section>
 
   </main>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+
+
 <script>
   const contextPath = '${pageContext.request.contextPath}';
+
+  function setMainDevice(deviceId) {
+      if (!confirm("이 장비를 대표 디바이스로 설정하시겠습니까?")) {
+          return;
+      }
+
+      $.ajax({
+          type: "post",
+          url: contextPath + "/device/main/set",
+          data: {
+              deviceId: deviceId
+          },
+          success: function(result) {
+              console.log("@# setMainDevice result =>", result);
+
+              if (result === "success") {
+                  alert("대표 디바이스로 설정되었습니다.");
+					
+                  location.reload();
+                  
+                  if (typeof loadDashboardData === "function") {
+                      loadDashboardData();
+                  } else {
+                      location.reload();
+                  }
+
+              } else if (result === "login_required") {
+                  alert("로그인이 필요합니다.");
+                  location.href = contextPath + "/login_view";
+
+              } else {
+                  alert("대표 디바이스 설정에 실패했습니다.");
+              }
+          },
+          error: function(xhr) {
+              console.log("@# xhr.status =>", xhr.status);
+              console.log("@# xhr.responseText =>", xhr.responseText);
+
+              alert("서버 오류가 발생했습니다.");
+          }
+      });
+  }
 </script>
 
 <script src="${pageContext.request.contextPath}/resources/js/dashboard_main.js"></script>
 
 </body>
 </html>
+

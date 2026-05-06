@@ -1,7 +1,6 @@
 package com.lgy.ess_monitoring.service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +25,6 @@ public class EssDeviceServiceImpl implements EssDeviceService {
 
     @Override
     public void insertDevice(EssDeviceDTO deviceDto) {
-        if (deviceDto.getGroupId() != null && deviceDto.getGroupId() == 0) {
-            deviceDto.setGroupId(null);
-        }
-
         if (deviceDto.getLatitude() != null && deviceDto.getLongitude() != null) {
             double latitude = deviceDto.getLatitude().doubleValue();
             double longitude = deviceDto.getLongitude().doubleValue();
@@ -46,6 +41,54 @@ public class EssDeviceServiceImpl implements EssDeviceService {
         } else {
             log.warn("@# 좌표 없음 → nx/ny 계산 안됨");
         }
+
+        // status 한글값을 DB 허용값으로 변환
+        if ("정상".equals(deviceDto.getStatus())) {
+            deviceDto.setStatus("NORMAL");
+        } else if ("주의".equals(deviceDto.getStatus())) {
+            deviceDto.setStatus("WARNING");
+        } else if ("오류".equals(deviceDto.getStatus())) {
+            deviceDto.setStatus("ERROR");
+        } else if ("오프라인".equals(deviceDto.getStatus())) {
+            deviceDto.setStatus("OFFLINE");
+        }
+
+        // status가 비어 있으면 기본값 NORMAL
+        if (deviceDto.getStatus() == null || deviceDto.getStatus().trim().equals("")) {
+            deviceDto.setStatus("NORMAL");
+        }
+
+     // ESS 저장 용량 기본값 보정
+        if (deviceDto.getEssCapacityKwh() <= 0) {
+            deviceDto.setEssCapacityKwh(deviceDto.getCapacityKw());
+        }
+
+        // 현재 충전량 기본값 보정
+        if (deviceDto.getCurrentChargeKwh() == null) {
+            deviceDto.setCurrentChargeKwh(0.00);
+        }
+
+        // 충전 효율 기본값 보정
+        if (deviceDto.getChargeEfficiency() <= 0) {
+            deviceDto.setChargeEfficiency(90.00);
+        }
+
+        // 방전 효율 기본값 보정
+        if (deviceDto.getDischargeEfficiency() <= 0) {
+            deviceDto.setDischargeEfficiency(90.00);
+        }
+
+        // 전기요금 단가 기본값 보정
+        if (deviceDto.getElectricityRate() <= 0) {
+            deviceDto.setElectricityRate(150.00);
+        }
+
+        // 대표 디바이스 기본값 보정
+        if (deviceDto.getIsMain() == null || deviceDto.getIsMain().trim().equals("")) {
+            deviceDto.setIsMain("N");
+        }
+
+        log.info("@# insert 보정 후 deviceDto => " + deviceDto);
 
         getDao().insertDevice(deviceDto);
     }
@@ -85,33 +128,52 @@ public class EssDeviceServiceImpl implements EssDeviceService {
         );
     }
 
-    @Override
-    public List<EssDeviceDTO> getAllActiveDevices() {
-        return getDao().getAllActiveDevices();
-    }
+	@Override
+	public EssDeviceDTO getMainDevice(int memberId) {
+		log.info("@# getMainDevice()");
+	    log.info("@# memberId => " + memberId);
 
-    @Override
-    public void setMainDevice(int memberId, int deviceId) {
-        log.info("@# setMainDevice()");
-        log.info("@# memberId => " + memberId);
-        log.info("@# deviceId => " + deviceId);
+	    EssDeviceDTO dto = getDao().getMainDevice(memberId);
 
-        EssDeviceDAO dao = getDao();
+	    log.info("@# mainDevice dto => " + dto);
 
-        dao.clearMainDevice(memberId);
+	    return dto;
+	}
 
-        EssDeviceDTO dto = new EssDeviceDTO();
-        dto.setMemberId(memberId);
-        dto.setDeviceId(deviceId);
+	@Override
+	public void setMainDevice(int memberId, int deviceId) {
+		 log.info("@# setMainDevice()");
+		    log.info("@# memberId => " + memberId);
+		    log.info("@# deviceId => " + deviceId);
 
-        dao.setMainDevice(dto);
-    }
+		    /*
+		     * 1단계
+		     * 해당 회원의 기존 대표 디바이스를 모두 해제한다.
+		     *
+		     * 예:
+		     * member_id = 5인 기기들
+		     * solar_busan  is_main = 'Y'
+		     * solar_busan2 is_main = 'N'
+		     *
+		     * 아래 쿼리 실행 후:
+		     * solar_busan  is_main = 'N'
+		     * solar_busan2 is_main = 'N'
+		     */
+		    getDao().clearMainDevice(memberId);
 
-    @Override
-    public EssDeviceDTO getMainDevice(int memberId) {
-        log.info("@# getMainDevice()");
-        log.info("@# memberId => " + memberId);
+		    /*
+		     * 2단계
+		     * 사용자가 선택한 기기만 대표 디바이스로 설정한다.
+		     *
+		     * 예:
+		     * 선택한 deviceId = 2
+		     *
+		     * 실행 후:
+		     * solar_busan  is_main = 'N'
+		     * solar_busan2 is_main = 'Y'
+		     */
+		    getDao().setMainDevice(memberId, deviceId);
 
-        return getDao().getMainDevice(memberId);
-    }
-}     
+		    log.info("@# 대표 디바이스 설정 완료");		
+	}
+}

@@ -136,8 +136,9 @@ function loadDeviceTable() {
             const $tbody = $('#deviceTableBody');
             $tbody.empty();
 
+            // 테이블 컬럼 수: 장비명 / 그룹 / SOC / 상태 / 상세 / 대표 = 6칸
             if (!devices || devices.length === 0) {
-                $tbody.append('<tr><td colspan="4">조회된 장비가 없습니다.</td></tr>');
+                $tbody.append('<tr><td colspan="6">조회된 장비가 없습니다.</td></tr>');
                 return;
             }
 
@@ -146,7 +147,6 @@ function loadDeviceTable() {
                 const groupName = device.groupName ? device.groupName : '-';
                 const soc = device.soc == null ? '-' : Number(device.soc).toFixed(1) + '%';
 
-                // 👉 여기 추가
                 const statusMap = {
                     NORMAL: '<span class="status-normal" title="SOC 40% 이상">정상</span>',
                     WARNING: '<span class="status-warning" title="SOC 20% 이상 40% 미만">경고</span>',
@@ -157,18 +157,34 @@ function loadDeviceTable() {
 
                 const status = statusMap[device.status] || '-';
 
+                // 대표 디바이스 표시 영역
+                let mainDeviceHtml = '';
+
+                if (device.isMain === 'Y') {
+                    mainDeviceHtml = '<span class="main-device-badge">대표</span>';
+                } else {
+                    mainDeviceHtml =
+                        '<button type="button" class="main-device-btn" onclick="setMainDevice(' + device.deviceId + ')">' +
+                            '대표 설정' +
+                        '</button>';
+                }
+
                 $tbody.append(
                     '<tr>' +
-					'<td><a href="' + contextPath + '/monitoring/main?deviceId=' + device.deviceId + '">' +
-					device.deviceName + '</a></td>' +
-                    '<td>' + groupName + '</td>' +
-                    '<td>' + soc + '</td>' +
-                    '<td>' + status + '</td>' +
-                    '<td>' +
-           			 	'<a class="btn-link" href="' + contextPath + '/monitoring/main?deviceId=' + device.deviceId + '">' +
-               				 '실시간 보기' +
-           			 	'</a>' +
-      				'</td>' +
+                        '<td>' +
+                            '<a href="' + contextPath + '/monitoring/main?deviceId=' + device.deviceId + '">' +
+                                escapeHtml(device.deviceName) +
+                            '</a>' +
+                        '</td>' +
+                        '<td>' + escapeHtml(groupName) + '</td>' +
+                        '<td>' + soc + '</td>' +
+                        '<td>' + status + '</td>' +
+                        '<td>' +
+                            '<a class="btn-link" href="' + contextPath + '/monitoring/main?deviceId=' + device.deviceId + '">' +
+                                '실시간 보기' +
+                            '</a>' +
+                        '</td>' +
+                        '<td>' + mainDeviceHtml + '</td>' +
                     '</tr>'
                 );
             });

@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.service.EssDeviceService;
-import com.lgy.ess_monitoring.service.SimulationService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,8 +25,6 @@ public class EssDeviceController {
 
     @Autowired
     private EssDeviceService deviceService;
-    @Autowired
-    private SimulationService simulationService;
 
     // 장비 상태 화면
     @RequestMapping(value = "/status", method = RequestMethod.GET)
@@ -56,7 +54,7 @@ public class EssDeviceController {
         return "device/registerForm";
     }
 
- // 장비 등록
+    // 장비 등록
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
     public String deviceRegister(EssDeviceDTO deviceDto, HttpSession session) {
@@ -69,36 +67,13 @@ public class EssDeviceController {
             return "login_required";
         }
 
-        // 로그인 회원 ID 세팅
         deviceDto.setMemberId(memberId);
 
-        // 상태 기본값
         if (deviceDto.getStatus() == null || deviceDto.getStatus().isEmpty()) {
             deviceDto.setStatus("NORMAL");
         }
 
-        // 장비 타입 기본값
-        if (deviceDto.getDeviceType() == null || deviceDto.getDeviceType().isEmpty()) {
-            deviceDto.setDeviceType("HYBRID");
-        }
-
-        // 대표 장비 기본값
-        if (deviceDto.getIsMain() == null || deviceDto.getIsMain().isEmpty()) {
-            deviceDto.setIsMain("N");
-        }
-
-        // 장비 등록
         deviceService.insertDevice(deviceDto);
-
-        // insert 후 생성된 deviceId
-        int deviceId = deviceDto.getDeviceId();
-
-        log.info("@# 등록된 deviceId => {}", deviceId);
-
-        // 장비 등록 직후 날씨 + 모니터링 시뮬레이션 생성
-        if (deviceId > 0) {
-            simulationService.runSimulation(deviceId);
-        }
 
         return "success";
     }
@@ -142,54 +117,7 @@ public class EssDeviceController {
 
         return result == 1 ? "success" : "fail";
     }
-
-    // 장비 상세 Ajax
-    @RequestMapping(
-        value = "/detailAjax",
-        method = RequestMethod.GET,
-        produces = "application/json; charset=UTF-8"
-    )
-    @ResponseBody
-    public String deviceDetailAjax(int deviceId, HttpSession session) {
-        log.info("@# deviceDetailAjax()");
-        log.info("@# deviceId => {}", deviceId);
-
-        Integer memberId = (Integer) session.getAttribute("memberId");
-
-        if (memberId == null) {
-            return "{}";
-        }
-
-        EssDeviceDTO dto = deviceService.deviceDetail(deviceId);
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsString(dto);
-        } catch (Exception e) {
-            log.error("@# device detail json 변환 오류", e);
-            return "{}";
-        }
-    }
-
-    // 대표 장비 설정
-    @RequestMapping(value = "/setMain", method = RequestMethod.POST)
-    @ResponseBody
-    public String setMainDevice(int deviceId, HttpSession session) {
-        log.info("@# setMainDevice()");
-        log.info("@# deviceId => {}", deviceId);
-
-        Integer memberId = (Integer) session.getAttribute("memberId");
-
-        if (memberId == null) {
-            return "login_required";
-        }
-
-        deviceService.setMainDevice(memberId, deviceId);
-
-        return "success";
-    }
-
-    // 장비 관리 화면
+ // 장비 관리 화면
     @RequestMapping(value = "/manage", method = RequestMethod.GET)
     public String deviceManage(HttpSession session) {
         log.info("@# deviceManage()");
@@ -201,6 +129,37 @@ public class EssDeviceController {
         }
 
         return "device_manage";
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/main/set", method = RequestMethod.POST)
+    public String setMainDevice(@RequestParam("deviceId") int deviceId,
+                                HttpSession session) {
 
+        log.info("@# setMainDevice()");
+        log.info("@# deviceId => " + deviceId);
+
+        /*
+         * 1. 로그인 여부 확인
+         * 세션에 memberId가 없으면 로그인하지 않은 상태
+         */
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            log.info("@# 대표 디바이스 설정 실패: 로그인 필요");
+            return "login_required";
+        }
+
+        log.info("@# memberId => " + memberId);
+
+        /*
+         * 2. 대표 디바이스 설정
+         * Service에서 기존 대표 해제 후 선택 기기를 대표로 설정한다.
+         */
+        deviceService.setMainDevice(memberId, deviceId);
+
+        log.info("@# 대표 디바이스 설정 성공");
+
+        return "success";
     }
 }

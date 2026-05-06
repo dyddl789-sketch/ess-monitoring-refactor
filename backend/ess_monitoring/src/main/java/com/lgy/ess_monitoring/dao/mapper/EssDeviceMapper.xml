@@ -6,105 +6,12 @@
 
 <mapper namespace="com.lgy.ess_monitoring.dao.EssDeviceDAO">
 
-	<!-- 장비 등록 -->
-	<insert id="insertDevice"
-        parameterType="com.lgy.ess_monitoring.dto.EssDeviceDTO"
-        useGeneratedKeys="true"
-        keyProperty="deviceId">
-	
-	    insert into ess_device (
-	
-	        member_id,
-	        group_id,
-	        device_name,
-	        location,
-	        capacity_kw,
-	        device_type,
-	        status,
-	        install_date,
-	
-	        latitude,
-	        longitude,
-	        nx,
-	        ny,
-	
-	        is_main,
-	
-	        ess_capacity_kwh,
-	        current_charge_kwh,
-	
-	        charge_efficiency,
-	        discharge_efficiency,
-	
-	        electricity_rate
-	
-	    ) values (
-	
-	        #{memberId},
-	
-	        #{groupId},
-	
-	        #{deviceName},
-	        #{location},
-	
-	        #{capacityKw},
-	
-	        #{deviceType},
-	        #{status},
-	
-	        #{installDate},
-	
-	        #{latitude},
-	        #{longitude},
-	
-	        #{nx},
-	        #{ny},
-	
-	        #{isMain},
-	
-	        #{essCapacityKwh},
-	        #{currentChargeKwh},
-	
-	        #{chargeEfficiency},
-	        #{dischargeEfficiency},
-	
-	        #{electricityRate}
-	    )
-	
-	</insert>
-
-    <!-- 기기 목록 -->
-    <select id="getDeviceList"
-            parameterType="int"
-            resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
-        select *
-        from ess_device
-        where member_id = #{value}
-        order by device_id desc
-    </select>
-
-    <!-- 기기 수 -->
-    <select id="getDeviceCount"
-            parameterType="int"
-            resultType="int">
-        select count(*)
-        from ess_device
-        where member_id = #{value}
-    </select>
-
-    <!-- 삭제 -->
-    <delete id="deleteDevice">
-        delete from ess_device
-        where device_id = #{deviceId}
-          and member_id = #{memberId}
-    </delete>
-
-     <!-- 상세 -->
-    <select id="deviceDetail"
-            parameterType="int"
-            resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
-        select
-            device_id,
+    <!-- ============================= -->
+    <!-- 기기 등록 -->
+    <!-- ============================= -->
+    <insert id="insertDevice"
+            parameterType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+        insert into ess_device (
             member_id,
             group_id,
             device_name,
@@ -123,37 +30,137 @@
             charge_efficiency,
             discharge_efficiency,
             electricity_rate
-        from ess_device
-        where device_id = #{value}
-    </select>
+        ) values (
+            #{memberId},
+            #{groupId},
+            #{deviceName},
+            #{location},
+            #{capacityKw},
+            #{deviceType},
+            #{status},
+            #{installDate},
+            #{latitude},
+            #{longitude},
+            #{nx},
+            #{ny},
+            'N',
+            #{essCapacityKwh},
+            #{currentChargeKwh},
+            #{chargeEfficiency},
+            #{dischargeEfficiency},
+            #{electricityRate}
+        )
+    </insert>
 
-    <!-- 대시보드용 장비 상태 리스트 -->
-    <select id="getDashboardDeviceStatusList"
+    <!-- ============================= -->
+    <!-- 기기 목록 -->
+    <!-- ============================= -->
+    <select id="getDeviceList"
             parameterType="int"
             resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
         select
-            d.device_id,
-            d.member_id,
-            d.group_id,
-            d.device_name,
+            device_id as deviceId,
+            member_id as memberId,
+            group_id as groupId,
+            device_name as deviceName,
+            location,
+            capacity_kw as capacityKw,
+            device_type as deviceType,
+            status,
+            install_date as installDate,
+            latitude,
+            longitude,
+            nx,
+            ny,
+            is_main as isMain,
+            ess_capacity_kwh as essCapacityKwh,
+            current_charge_kwh as currentChargeKwh,
+            charge_efficiency as chargeEfficiency,
+            discharge_efficiency as dischargeEfficiency,
+            electricity_rate as electricityRate
+        from ess_device
+        where member_id = #{_parameter}
+        order by device_id desc
+    </select>
+
+    <!-- ============================= -->
+    <!-- 기기 수 -->
+    <!-- ============================= -->
+    <select id="getDeviceCount"
+            parameterType="int"
+            resultType="int">
+        select count(*)
+        from ess_device
+        where member_id = #{_parameter}
+    </select>
+
+    <!-- ============================= -->
+    <!-- 기기 삭제 -->
+    <!-- ============================= -->
+    <delete id="deleteDevice">
+        delete from ess_device
+        where device_id = #{deviceId}
+          and member_id = #{memberId}
+    </delete>
+
+    <!-- ============================= -->
+    <!-- 기기 상세 -->
+    <!-- ============================= -->
+    <select id="deviceDetail"
+            parameterType="int"
+            resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+        select
+            device_id as deviceId,
+            member_id as memberId,
+            group_id as groupId,
+            device_name as deviceName,
+            location,
+            capacity_kw as capacityKw,
+            device_type as deviceType,
+            status,
+            install_date as installDate,
+            latitude,
+            longitude,
+            nx,
+            ny,
+            is_main as isMain,
+            ess_capacity_kwh as essCapacityKwh,
+            current_charge_kwh as currentChargeKwh,
+            charge_efficiency as chargeEfficiency,
+            discharge_efficiency as dischargeEfficiency,
+            electricity_rate as electricityRate
+        from ess_device
+        where device_id = #{_parameter}
+    </select>
+
+    <!-- ============================= -->
+    <!-- 대시보드용 장비 상태 리스트 -->
+    <!-- ============================= -->
+    <select id="getDashboardDeviceStatusList"
+            resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+        select
+            d.device_id as deviceId,
+            d.member_id as memberId,
+            d.group_id as groupId,
+            d.device_name as deviceName,
             d.location,
-            d.capacity_kw,
-            d.device_type,
+            d.capacity_kw as capacityKw,
+            d.device_type as deviceType,
             d.status,
-            d.install_date,
+            d.install_date as installDate,
             d.latitude,
             d.longitude,
             d.nx,
             d.ny,
-            d.is_main,
-            d.ess_capacity_kwh,
-            d.current_charge_kwh,
-            d.charge_efficiency,
-            d.discharge_efficiency,
-            d.electricity_rate,
-            g.group_name,
+            d.is_main as isMain,
+            d.ess_capacity_kwh as essCapacityKwh,
+            d.current_charge_kwh as currentChargeKwh,
+            d.charge_efficiency as chargeEfficiency,
+            d.discharge_efficiency as dischargeEfficiency,
+            d.electricity_rate as electricityRate,
+            g.group_name as groupName,
             m.soc,
-            m.record_time
+            m.record_time as recordTime
         from ess_device d
         left join ess_device_group g
             on d.group_id = g.group_id
@@ -164,77 +171,68 @@
                 from monitoring m2
                 where m2.device_id = d.device_id
            )
-        where d.member_id = #{value}
-        order by d.device_id desc
+        where d.member_id = #{memberId}
+
+        <if test="groupId != null">
+            and d.group_id = #{groupId}
+        </if>
+
+        <if test="deviceId != null">
+            and d.device_id = #{deviceId}
+        </if>
+
+        order by d.is_main desc ,d.device_id desc
     </select>
-    
-    <!-- 스케줄러용 전체 장비 조회 -->
-    <select id="getAllActiveDevices"
+
+    <!-- ============================= -->
+    <!-- 대표 디바이스 조회 -->
+    <!-- ============================= -->
+    <select id="getMainDevice"
+            parameterType="int"
             resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
-        SELECT
-            device_id,
-            member_id,
-            group_id,
-            device_name,
+        select
+            device_id as deviceId,
+            member_id as memberId,
+            group_id as groupId,
+            device_name as deviceName,
             location,
-            capacity_kw,
-            device_type,
+            capacity_kw as capacityKw,
+            device_type as deviceType,
             status,
-            install_date,
+            install_date as installDate,
             latitude,
             longitude,
             nx,
             ny,
-            is_main,
-            ess_capacity_kwh,
-            current_charge_kwh,
-            charge_efficiency,
-            discharge_efficiency,
-            electricity_rate
-        FROM ess_device
-        WHERE status != 'OFFLINE'
-        ORDER BY device_id ASC
+            is_main as isMain,
+            ess_capacity_kwh as essCapacityKwh,
+            current_charge_kwh as currentChargeKwh,
+            charge_efficiency as chargeEfficiency,
+            discharge_efficiency as dischargeEfficiency,
+            electricity_rate as electricityRate
+        from ess_device
+        where member_id = #{_parameter}
+          and is_main = 'Y'
+        limit 1
     </select>
 
+    <!-- ============================= -->
     <!-- 기존 대표 디바이스 해제 -->
+    <!-- ============================= -->
     <update id="clearMainDevice">
         update ess_device
            set is_main = 'N'
          where member_id = #{memberId}
     </update>
 
-    <!-- 선택한 디바이스를 대표 디바이스로 설정 -->
-    <update id="setMainDevice"
-            parameterType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+    <!-- ============================= -->
+    <!-- 선택한 디바이스를 대표로 설정 -->
+    <!-- ============================= -->
+    <update id="setMainDevice">
         update ess_device
            set is_main = 'Y'
-         where device_id = #{deviceId}
-           and member_id = #{memberId}
+         where member_id = #{memberId}
+           and device_id = #{deviceId}
     </update>
 
-    <!-- 회원의 대표 디바이스 조회 -->
-    <select id="getMainDevice"
-            parameterType="int"
-            resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
-        select
-            device_id,
-            member_id,
-            device_name,
-            location,
-            capacity_kw,
-            device_type,
-            status,
-            install_date,
-            is_main
-        from ess_device
-        where member_id = #{value}
-          and is_main = 'Y'
-        limit 1
-    </select>
-
 </mapper>
-
-
-
-
-

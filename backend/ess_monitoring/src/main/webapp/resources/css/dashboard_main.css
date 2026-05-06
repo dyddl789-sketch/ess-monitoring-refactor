@@ -1,3 +1,7 @@
+/* =========================
+   Dashboard Main CSS
+========================= */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -15,7 +19,10 @@ body {
   min-height: 100vh;
 }
 
-/* Main */
+/* =========================
+   Main
+========================= */
+
 .main {
   flex: 1;
   padding: 26px 32px;
@@ -36,7 +43,10 @@ body {
   font-weight: 600;
 }
 
-/* Filter */
+/* =========================
+   Filter
+========================= */
+
 .filter-box {
   display: flex;
   gap: 14px;
@@ -59,7 +69,10 @@ body {
   cursor: pointer;
 }
 
-/* Cards */
+/* =========================
+   Cards
+========================= */
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -92,7 +105,10 @@ body {
   color: #6b7280;
 }
 
-/* Content grid */
+/* =========================
+   Content Grid
+========================= */
+
 .content-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -106,7 +122,10 @@ body {
   margin-bottom: 16px;
 }
 
-/* Chart */
+/* =========================
+   Chart
+========================= */
+
 .bar-chart {
   display: flex;
   align-items: flex-end;
@@ -132,14 +151,34 @@ body {
   margin-bottom: 6px;
 }
 
-/* Table */
+.bar-label {
+  max-width: 90px;
+  text-align: center;
+  font-size: 13px;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.empty-chart {
+  width: 100%;
+  text-align: center;
+  color: #64748b;
+  padding: 80px 0;
+  font-size: 14px;
+}
+
+/* =========================
+   Table
+========================= */
+
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
 }
 
-th, td {
+th,
+td {
   padding: 12px 8px;
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
@@ -150,17 +189,82 @@ th {
   font-weight: 600;
 }
 
+/* =========================
+   Device Status
+========================= */
+
 .status-normal {
-  color: #059669;
-  font-weight: 700;
+  color: #16a34a;
+  font-weight: bold;
 }
 
 .status-warning {
-  color: #d97706;
+  color: #f59e0b;
+  font-weight: bold;
+}
+
+.status-danger {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+.status-offline {
+  color: #6b7280;
+  font-weight: bold;
+}
+
+.status-nodata {
+  color: #9ca3af;
+  font-weight: bold;
+}
+
+.battery-status-guide {
+  margin-top: 12px;
+  padding: 10px;
+  font-size: 13px;
+  line-height: 1.8;
+  background: #f9fafb;
+  border-radius: 8px;
+  color: #374151;
+}
+
+.battery-status-guide span {
+  margin-right: 6px;
+}
+
+/* =========================
+   Main Device
+========================= */
+
+.main-device-btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
   font-weight: 700;
 }
 
-/* Bottom */
+.main-device-btn:hover {
+  background: #1d4ed8;
+}
+
+.main-device-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* =========================
+   Bottom Grid
+========================= */
+
 .bottom-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -184,36 +288,126 @@ th {
   color: #92400e;
 }
 
-.weather-main {
+.dashboard-note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* =============================
+   Dashboard Weather
+============================= */
+
+.dashboard-weather-box {
+  height: 100%;
+}
+
+.dashboard-weather-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.dashboard-weather-header .section-title {
+  margin-bottom: 4px;
+}
+
+.dashboard-weather-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.dashboard-weather-header span {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dashboard-weather-current {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 22px;
+  margin-bottom: 24px;
 }
 
-.weather-icon {
+.dashboard-weather-icon {
   font-size: 58px;
+  line-height: 1;
 }
 
-.weather-temp {
-  font-size: 34px;
+.dashboard-weather-temp {
+  font-size: 36px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.dashboard-weather-status {
+  margin-top: 4px;
+  color: #475569;
   font-weight: 700;
 }
 
-.weather-detail {
-  line-height: 2;
-  font-size: 14px;
-}
-
-.forecast {
+.dashboard-weather-detail {
   display: flex;
-  gap: 22px;
-  margin-top: 18px;
-  font-size: 14px;
+  flex-direction: column;
+  gap: 6px;
+  color: #64748b;
+  font-size: 13px;
 }
 
-.forecast-item {
-  text-align: center;
+.dashboard-weather-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
 }
+
+.dashboard-weather-item {
+  padding: 12px 8px;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.dashboard-weather-item .weather-time {
+  margin-bottom: 6px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.dashboard-weather-item .weather-icon {
+  margin-bottom: 6px;
+  font-size: 22px;
+}
+
+.dashboard-weather-item .weather-temp {
+  margin-bottom: 4px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.dashboard-weather-item .weather-status {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.weather-empty {
+  padding: 24px;
+  text-align: center;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+/* =========================
+   Responsive
+========================= */
 
 @media (max-width: 1100px) {
   .card-grid,
@@ -225,73 +419,31 @@ th {
   .sidebar {
     display: none;
   }
+
+  .filter-box {
+    flex-wrap: wrap;
+  }
+
+  .dashboard-weather-current {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-weather-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* 베터리상태표시 */
-.status-normal {
-    color: #16a34a;
-    font-weight: bold;
-}
+@media (max-width: 700px) {
+  .main {
+    padding: 20px;
+  }
 
-.status-warning {
-    color: #f59e0b;
-    font-weight: bold;
-}
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
 
-.status-danger {
-    color: #dc2626;
-    font-weight: bold;
-}
-
-.status-offline {
-    color: #6b7280;
-    font-weight: bold;
-}
-
-.status-nodata {
-    color: #9ca3af;
-    font-weight: bold;
-}
-
-.battery-status-guide {
-    margin-top: 12px;
-    padding: 10px;
-    font-size: 13px;
-    line-height: 1.8;
-    background: #f9fafb;
-    border-radius: 8px;
-    color: #374151;
-}
-
-.battery-status-guide span {
-    margin-right: 6px;
-}
-.dashboard-note {
-    margin-top: 10px;
-    font-size: 12px;
-    color: #64748b;
-    line-height: 1.5;
-}
-
-.empty-chart {
-    width: 100%;
-    text-align: center;
-    color: #64748b;
-    padding: 80px 0;
-    font-size: 14px;
-}
-
-.bar-label {
-    max-width: 90px;
-    text-align: center;
-    font-size: 13px;
-    word-break: keep-all;
-    overflow-wrap: break-word;
-}
-
-.dashboard-note {
-    margin-top: 10px;
-    font-size: 12px;
-    color: #64748b;
-    line-height: 1.5;
+  .dashboard-weather-list {
+    grid-template-columns: 1fr;
+  }
 }
