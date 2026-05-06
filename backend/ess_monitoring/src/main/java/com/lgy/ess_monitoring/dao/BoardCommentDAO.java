@@ -27,7 +27,6 @@ public interface BoardCommentDAO {
     
     // 댓글 수정
     public void updateComment(BoardCommentDTO dto);
-
     
 
 }

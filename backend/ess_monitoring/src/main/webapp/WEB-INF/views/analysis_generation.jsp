@@ -59,12 +59,25 @@
         <p>선택 기간의 발전량, 충전량, 사용량, 절감 금액을 분석합니다.</p>
 
         <form method="get" action="${pageContext.request.contextPath}/analysis/generation">
-            <div class="filter-box">
-                <input type="date" name="startDate" value="${startDate}">
-                <input type="date" name="endDate" value="${endDate}">
-                <button type="submit">조회</button>
-            </div>
-        </form>
+		    <div class="filter-box">
+		        <input type="date" name="startDate" value="${startDate}">
+		        <input type="date" name="endDate" value="${endDate}">
+		
+		        <!-- 장비 선택 필터 -->
+		        <select name="deviceId">
+		            <option value="">전체 장비</option>
+		
+		            <c:forEach var="device" items="${deviceSelectList}">
+		                <option value="${device.deviceId}"
+		                    <c:if test="${selectedDeviceId eq device.deviceId}">selected</c:if>>
+		                    ${device.deviceName}
+		                </option>
+		            </c:forEach>
+		        </select>
+		
+		        <button type="submit">조회</button>
+		    </div>
+		</form>
 
         <div class="card">
             <h3>일자별 발전량</h3>

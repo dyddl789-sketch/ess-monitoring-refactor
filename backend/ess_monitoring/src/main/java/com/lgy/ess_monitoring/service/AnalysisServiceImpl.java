@@ -34,9 +34,11 @@ public class AnalysisServiceImpl implements AnalysisService {
     public List<GenerationAnalysisDTO> getDeviceGeneration(
             int memberId,
             String startDate,
-            String endDate
+            String endDate,
+            Integer deviceId
+
     ) {
-        return getDao().getDeviceGeneration(memberId, startDate, endDate);
+        return getDao().getDeviceGeneration(memberId, startDate, endDate, deviceId);
     }
     @Override
     public List<EnergyStatsDTO> getDailyEnergyStats(

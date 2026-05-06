@@ -129,6 +129,9 @@ public class BoardController {
         model.addAttribute("userType", userType);
         model.addAttribute("user_type", userType);
 
+        // 관리자 권한 전달
+        model.addAttribute("role", role);
+
         return "board_content_view";
     }
 

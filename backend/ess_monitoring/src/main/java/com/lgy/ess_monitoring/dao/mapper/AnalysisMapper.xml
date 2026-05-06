@@ -43,6 +43,11 @@
 	         AND m.record_time >= STR_TO_DATE(#{startDate}, '%Y-%m-%d')
 	         AND m.record_time &lt; DATE_ADD(STR_TO_DATE(#{endDate}, '%Y-%m-%d'), INTERVAL 1 DAY)
 	        WHERE d.member_id = #{memberId}
+	        
+	        <if test="deviceId != null">
+       			AND d.device_id = #{deviceId}
+    		</if>
+    		
 	        GROUP BY d.device_id, d.device_name
 	        ORDER BY generationKwh DESC
 	    </select>

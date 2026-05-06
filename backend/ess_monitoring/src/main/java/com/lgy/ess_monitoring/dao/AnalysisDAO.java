@@ -19,7 +19,8 @@ public interface AnalysisDAO {
     List<GenerationAnalysisDTO> getDeviceGeneration(
             @Param("memberId") int memberId,
             @Param("startDate") String startDate,
-            @Param("endDate") String endDate
+            @Param("endDate") String endDate,
+            @Param("deviceId") Integer deviceId
     );
     
     List<EnergyStatsDTO> getDailyEnergyStats(

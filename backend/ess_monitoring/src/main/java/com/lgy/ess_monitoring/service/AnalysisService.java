@@ -17,7 +17,8 @@ public interface AnalysisService {
     List<GenerationAnalysisDTO> getDeviceGeneration(
             int memberId,
             String startDate,
-            String endDate
+            String endDate,
+            Integer deviceId
     );
     
     List<EnergyStatsDTO> getDailyEnergyStats(

@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.lgy.ess_monitoring.service.AnalysisService;
+import com.lgy.ess_monitoring.service.EssDeviceService;
 
 @Controller
 @RequestMapping("/analysis")
@@ -17,6 +18,9 @@ public class AnalysisController {
 
     @Autowired
     private AnalysisService analysisService;
+    
+    @Autowired
+    private EssDeviceService deviceService;
 
     // 발전량 분석 화면
     @RequestMapping("/generation")
@@ -43,7 +47,9 @@ public class AnalysisController {
 
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-
+        model.addAttribute("selectedDeviceId", deviceId);
+        model.addAttribute("deviceSelectList", deviceService.getDeviceList(memberId));
+        
         model.addAttribute(
                 "dailyList",
                 analysisService.getDailyGeneration(memberId, startDate, endDate, deviceId)
@@ -51,7 +57,7 @@ public class AnalysisController {
 
         model.addAttribute(
                 "deviceList",
-                analysisService.getDeviceGeneration(memberId, startDate, endDate)
+                analysisService.getDeviceGeneration(memberId, startDate, endDate, deviceId)
         );
 
         return "analysis_generation";
