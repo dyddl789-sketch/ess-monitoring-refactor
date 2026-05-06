@@ -17,4 +17,7 @@ public interface EssMonitoringService {
 
     // 회원별 모니터링 데이터 수
     int getMemberCount(int memberId);
+    
+ // 최근 모니터링 이력 조회
+    List<EssMonitoringDTO> getMonitoringHistory(int deviceId);
 }

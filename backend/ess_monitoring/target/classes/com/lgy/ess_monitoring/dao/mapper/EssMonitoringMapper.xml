@@ -123,5 +123,28 @@
           ON m.device_id = d.device_id
         WHERE d.member_id = #{memberId}
     </select>
-
+	
+	<!-- 최근 모니터링 이력 조회 -->
+	<select id="getMonitoringHistory"
+	        parameterType="int"
+	        resultType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
+	
+	    SELECT
+	        monitor_id,
+	        device_id,
+	        voltage,
+	        current_a,
+	        soc,
+	        power_output,
+	        solar_generation_kwh,
+	        charged_energy_kwh,
+	        used_energy_kwh,
+	        saved_cost,
+	        record_time
+	    FROM monitoring
+	    WHERE device_id = #{deviceId}
+	    ORDER BY record_time DESC
+	    LIMIT 20
+	
+	</select>
 </mapper>
