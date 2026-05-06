@@ -111,7 +111,6 @@ function loadDeviceList() {
             } else {
                 for (let i = 0; i < list.length; i++) {
                     const device = list[i];
-
                     const statusInfo = getDeviceStatusInfo(device.status);
 
                     html += "<div class='device-card' onclick='goMonitoring(" + device.deviceId + ")'>";
@@ -130,6 +129,12 @@ function loadDeviceList() {
                     html += "<div><span>대표</span><strong>" + (device.isMain === "Y" ? "Y" : "N") + "</strong></div>";
                     html += "</div>";
 
+                    if (device.isMain === "Y") {
+                        html += "<span class='main-device-badge'>대표 디바이스</span>";
+                    } else {
+                        html += "<button type='button' onclick='event.stopPropagation(); setMainDevice(" + device.deviceId + ")'>대표 설정</button>";
+                    }
+
                     html += "<p class='device-message'>클릭하면 실시간 모니터링으로 이동합니다.</p>";
                     html += "</div>";
                 }
@@ -142,6 +147,41 @@ function loadDeviceList() {
         },
         error: function() {
             renderTemp("장비 목록", "<p>장비 목록을 불러오는 중 오류가 발생했습니다.</p>");
+        }
+    });
+}
+
+
+// ===============================
+// 대표 디바이스 설정
+// ===============================
+function setMainDevice(deviceId) {
+    if (!confirm("이 디바이스를 대표 디바이스로 설정하시겠습니까?")) {
+        return;
+    }
+
+    $.ajax({
+        url: ctx + "/device/setMain",
+        type: "post",
+        data: {
+            deviceId: deviceId
+        },
+        success: function(result) {
+            if (result === "success") {
+                alert("대표 디바이스가 설정되었습니다.");
+                loadDeviceList();
+                location.reload();
+
+            } else if (result === "login_required") {
+                alert("로그인이 필요합니다.");
+                location.href = ctx + "/login_view";
+
+            } else {
+                alert("대표 디바이스 설정에 실패했습니다.");
+            }
+        },
+        error: function() {
+            alert("대표 디바이스 설정 중 서버 오류가 발생했습니다.");
         }
     });
 }

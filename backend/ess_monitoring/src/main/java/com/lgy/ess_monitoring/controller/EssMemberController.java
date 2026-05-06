@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.dto.EssMemberDTO;
 import com.lgy.ess_monitoring.service.EssDeviceService;
 import com.lgy.ess_monitoring.service.EssMemberService;
@@ -29,19 +30,39 @@ public class EssMemberController {
     // 메인 페이지
     @RequestMapping("/main")
     public String main(HttpSession session, Model model) {
-
         log.info("@# main()");
 
         Integer memberId = (Integer) session.getAttribute("memberId");
+        String memberAddress = (String) session.getAttribute("memberAddress");
+
         log.info("@# memberId => " + memberId);
+        log.info("@# memberAddress => " + memberAddress);
+
+        String weatherAddress = memberAddress;
+        String weatherBaseType = "회원 주소";
+
+        EssDeviceDTO mainDevice = null;
 
         if (memberId != null) {
             int deviceCount = deviceService.getDeviceCount(memberId);
             model.addAttribute("deviceCount", deviceCount);
+
+            mainDevice = deviceService.getMainDevice(memberId);
+
+            if (mainDevice != null
+                    && mainDevice.getLocation() != null
+                    && !mainDevice.getLocation().trim().isEmpty()) {
+
+                weatherAddress = mainDevice.getLocation();
+                weatherBaseType = "대표 디바이스 위치";
+            }
         } else {
             model.addAttribute("deviceCount", 0);
         }
 
+        model.addAttribute("address", weatherAddress);
+        model.addAttribute("weatherBaseType", weatherBaseType);
+        model.addAttribute("mainDevice", mainDevice);
         return "main";
     }
 

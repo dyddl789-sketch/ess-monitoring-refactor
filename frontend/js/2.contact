@@ -1,0 +1,62 @@
+
+    // 1. 페이지 로드 시 실행 (초기화)
+    window.onload = function() {
+        checkLoginStatus();
+    };
+
+    function checkLoginStatus() {
+        const isLoggedIn = localStorage.getItem('isLoggedIn'); // 로그인 상태 확인
+        const authMenu = document.getElementById('auth-menu');
+
+       // authMenu가 이 페이지에 존재하고, 로그인 상태가 true일 때만 실행
+        if (isLoggedIn === 'true' && authMenu) {
+            const userName = localStorage.getItem('userName') || '사용자';
+            authMenu.innerHTML = `
+                <a href="11.mypage.html" style="margin-right:15px; color:#333; text-decoration:none;">마이페이지</a>
+                <span style="margin-right:15px; color:#333; font-weight:bold;">${userName}님</span>
+                <a href="javascript:void(0)" class="login-btn" onclick="handleLogout()">로그아웃</a>
+            `;
+        }
+    }
+
+    // 3. 로그아웃 처리
+    function handleLogout() {
+        if(confirm("로그아웃 하시겠습니까?")) {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userName');
+            alert("로그아웃 되었습니다.");
+            location.reload(); // 페이지 새로고침하여 메뉴 갱신
+        }
+    }
+
+    // 4. 로그인 창 열기 (화면 중앙 정렬 기능 포함)
+    function openLoginWindow() {
+        const width = 450; 
+        const height = 620;
+        // 모니터 화면의 중앙 좌표 계산
+        const left = (window.screen.width / 2) - (width / 2);
+        const top = (window.screen.height / 2) - (height / 2);
+        
+        window.open('4.login.html', 'ESS_Login', 
+            `width=${width}, height=${height}, left=${left}, top=${top}, resizable=no, scrollbars=no`
+        );
+    }
+
+// 5. 문의 폼 전송 시 알림 및 페이지 초기화
+const contactForm = document.querySelector('.contact-form');
+if(contactForm) {
+    contactForm.onsubmit = function(e) {
+        // 실제 폼 전송(새로고침)을 일단 막고 로직 처리
+        e.preventDefault(); 
+
+        // 1. 사용자에게 알림창 표시
+        alert("문의 내용이 정상적으로 접수되었습니다. 곧 답변 드리겠습니다.");
+
+        // 2. 다시 문의 페이지로 돌아오기 (페이지 새로고침)
+        // 새로고침을 하면 입력했던 내용이 비워지고 깨끗한 상태로 돌아옵니다.
+        location.reload(); 
+        
+        // 만약 특정 페이지로 보내고 싶다면 아래처럼 작성하세요.
+        // location.href = '1.main.html'; 
+    };
+}

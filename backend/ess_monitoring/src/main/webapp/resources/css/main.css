@@ -336,3 +336,31 @@ a {
         padding: 28px 20px;
     }
 }
+
+/* =========================
+   Weather
+========================= */
+
+.weather-item .temp {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.weather-dashboard-prob {
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
+    line-height: 1.3;
+}
+
+.main-device-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 13px;
+    font-weight: 600;
+}

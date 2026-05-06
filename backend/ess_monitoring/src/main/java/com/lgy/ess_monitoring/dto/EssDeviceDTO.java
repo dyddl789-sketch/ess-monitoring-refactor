@@ -25,6 +25,7 @@ public class EssDeviceDTO {
     private Integer nx;
     private Integer ny;
 
+    // 대표 디바이스 여부
     private String isMain;
 
     // ===== ESS 스펙 =====

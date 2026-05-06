@@ -99,7 +99,7 @@
           and member_id = #{memberId}
     </delete>
 
-    <!-- 상세 -->
+     <!-- 상세 -->
     <select id="deviceDetail"
             parameterType="int"
             resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
@@ -168,31 +168,73 @@
         order by d.device_id desc
     </select>
     
-	<!-- 스케줄러용 전체 장비 조회 -->
-	<select id="getAllActiveDevices"
-	        resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
-	    SELECT
-	        device_id,
-	        member_id,
-	        group_id,
-	        device_name,
-	        location,
-	        capacity_kw,
-	        device_type,
-	        status,
-	        install_date,
-	        latitude,
-	        longitude,
-	        nx,
-	        ny,
-	        is_main,
-	        ess_capacity_kwh,
-	        current_charge_kwh,
-	        charge_efficiency,
-	        discharge_efficiency,
-	        electricity_rate
-	    FROM ess_device
-	    WHERE status != 'OFFLINE'
-	    ORDER BY device_id ASC
-	</select>
+    <!-- 스케줄러용 전체 장비 조회 -->
+    <select id="getAllActiveDevices"
+            resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+        SELECT
+            device_id,
+            member_id,
+            group_id,
+            device_name,
+            location,
+            capacity_kw,
+            device_type,
+            status,
+            install_date,
+            latitude,
+            longitude,
+            nx,
+            ny,
+            is_main,
+            ess_capacity_kwh,
+            current_charge_kwh,
+            charge_efficiency,
+            discharge_efficiency,
+            electricity_rate
+        FROM ess_device
+        WHERE status != 'OFFLINE'
+        ORDER BY device_id ASC
+    </select>
+
+    <!-- 기존 대표 디바이스 해제 -->
+    <update id="clearMainDevice">
+        update ess_device
+           set is_main = 'N'
+         where member_id = #{memberId}
+    </update>
+
+    <!-- 선택한 디바이스를 대표 디바이스로 설정 -->
+    <update id="setMainDevice"
+            parameterType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+        update ess_device
+           set is_main = 'Y'
+         where device_id = #{deviceId}
+           and member_id = #{memberId}
+    </update>
+
+    <!-- 회원의 대표 디바이스 조회 -->
+    <select id="getMainDevice"
+            parameterType="int"
+            resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+        select
+            device_id,
+            member_id,
+            device_name,
+            location,
+            capacity_kw,
+            device_type,
+            status,
+            install_date,
+            is_main
+        from ess_device
+        where member_id = #{value}
+          and is_main = 'Y'
+        limit 1
+    </select>
+
 </mapper>
+
+
+
+
+

@@ -5,17 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>문의 게시판 </title>
     <link rel="stylesheet" href="css/1.main.css">
+    <style>
+        /* 1. 레이아웃: 푸터 바닥 고정 */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* 2. 컨텐츠 확장: 문의 폼 전용 컨테이너 */
+        .contact-section {
+            flex: 1; /* 남은 공간을 모두 차지하여 푸터를 아래로 밀어냄 */
+            padding: 80px 0;
+        }
+
+        .contact-form-container {
+            max-width: 900px; /* 기존보다 좌우로 넓게 설정 */
+            width: 90%;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border: 1px solid #eeeeee;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+        }
+
+        /* 3. 폼 내부 요소 최적화 */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            width: 100%; /* 확장된 너비에 꽉 차도록 설정 */
+            padding: 15px;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            box-sizing: border-box; /* 패딩이 너비에 영향을 주지 않도록 함 */
+            font-size: 1rem;
+        }
+
+        .warning-box {
+            max-width: 900px;
+            margin: 20px auto 40px;
+            text-align: center;
+        }
+
+        /* 푸터 고정 보조 */
+        footer {
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <!-- <h1 class="logo">ESS-M.S</h1> -->
-             <h1 class="logo" onclick="location.href='1.main.html'" style="cursor:pointer;">ESS-M.S</h1>
+            <!-- <h1 class="logo">ESS-M.S</h1>ESS Monitoring system -->
+            <h1 class="logo" onclick="location.href='1.main.html'" style="cursor:pointer;">ESS-M.S</h1>
             <nav>
                 <ul>
                 <li><a href="1.main.html">홈</a></li>
                 <li><a href="3.serviceInfo.html">서비스 소개</a></li>
                 <li><a href="2.contact.html">문의게시판</a></li>
+                <li id="mypage-menu" style="display: none;"><a href="11.mypage.html">마이페이지</a></li>
                 <li id="auth-menu">
                     <a href="javascript:void(0)" class="login-btn" onclick="openLoginWindow()">로그인</a>
                 </li>
@@ -34,13 +94,13 @@
 
 
 <!-- 문의 폼 -->
-    <section class="container" style="padding: 100px 0;">
-        <h1 style="text-align: center; margin-bottom: 30px;">문의하기</h1>
+    <section class="contact-section">
+        <h1 style="text-align: center; margin-bottom: 40px;">문의하기</h1>
         <div class="contact-form-container">
             <form action="#" method="post" class="contact-form">
                 <div class="form-group">
                     <label for="name">성함</label>
-                    <input type="text" id="name" name="name" placeholder="문의 하시는 분의 성함을 입력해 주세요" required>
+                    <input type="text" id="name" name="name" placeholder="문의하시는 분의 성함을 입력해 주세요" required>
                 </div>
                 <div class="form-group">
                     <label for="email">이메일</label>
@@ -48,86 +108,24 @@
                 </div>
                 <div class="form-group">
                     <label for="subject">제목</label>
-                    <input type="text" id="subject" name="subject" placeholder="문의 하실  제목을 입력하세요" required>
+                    <input type="text" id="subject" name="subject" placeholder="문의하실 제목을 입력하세요" required>
                 </div>
                 <div class="form-group">
                     <label for="message">문의 내용</label>
-                    <textarea id="message" name="message" rows="10" placeholder="문의 하실 내용을 적어주세요" required></textarea>
+                    <textarea id="message" name="message" rows="10" placeholder="문의하실 내용을 적어주세요" required></textarea>
                 </div>
-                <button type="submit" class="btn" style="width: 100%; font-size: 1.1rem;">문의 보내기</button>
+                <button type="submit" class="btn" style="width: 100%; padding: 15px; font-size: 1.1rem; background: #007bff; color: #fff; border: none; border-radius: 8px; cursor: pointer;">문의 보내기</button>
             </form>
         </div>
     </section>
     
-<div class="warning-box">
+    <div class="warning-box">
         <p><strong>※<span style="color: #ff0000;">주의</span>※ 욕설, 비방 등의 행위는 불이익을 당할 수 있습니다.</strong></p>
     </div>
-</section>
+
 
 <!-- 로그인 창 열기 스크립트 -->
-    <script>
-    // 1. 페이지 로드 시 실행 (초기화)
-    window.onload = function() {
-        checkLoginStatus();
-    };
-
-    // 2. 로그인 상태 체크 및 메뉴 동적 변경
-    function checkLoginStatus() {
-        const isLoggedIn = localStorage.getItem('isLoggedIn'); // 로그인 상태 확인
-        const authMenu = document.getElementById('auth-menu');
-
-        if (isLoggedIn === 'true' && authMenu) {
-            const userName = localStorage.getItem('userName') || '사용자';
-            // 로그인 상태일 때: 사용자 이름 표기 및 로그아웃 버튼 표시
-            authMenu.innerHTML = `
-                <span style="margin-right:15px; color:#333; font-weight:bold;">${userName}님</span>
-                <a href="javascript:void(0)" class="login-btn" style="background:#6c757d;" onclick="handleLogout()">로그아웃</a>
-            `;
-        }
-    }
-
-    // 3. 로그아웃 처리
-    function handleLogout() {
-        if(confirm("로그아웃 하시겠습니까?")) {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userName');
-            alert("로그아웃 되었습니다.");
-            location.reload(); // 페이지 새로고침하여 메뉴 갱신
-        }
-    }
-
-    // 4. 로그인 창 열기 (화면 중앙 정렬 기능 포함)
-    function openLoginWindow() {
-        const width = 450; 
-        const height = 620;
-        // 모니터 화면의 중앙 좌표 계산
-        const left = (window.screen.width / 2) - (width / 2);
-        const top = (window.screen.height / 2) - (height / 2);
-        
-        window.open('4.login.html', 'ESS_Login', 
-            `width=${width}, height=${height}, left=${left}, top=${top}, resizable=no, scrollbars=no`
-        );
-    }
-
-// 5. 문의 폼 전송 시 알림 및 페이지 초기화
-const contactForm = document.querySelector('.contact-form');
-if(contactForm) {
-    contactForm.onsubmit = function(e) {
-        // 실제 폼 전송(새로고침)을 일단 막고 로직 처리
-        e.preventDefault(); 
-
-        // 1. 사용자에게 알림창 표시
-        alert("문의 내용이 정상적으로 접수되었습니다. 곧 답변 드리겠습니다.");
-
-        // 2. 다시 문의 페이지로 돌아오기 (페이지 새로고침)
-        // 새로고침을 하면 입력했던 내용이 비워지고 깨끗한 상태로 돌아옵니다.
-        location.reload(); 
-        
-        // 만약 특정 페이지로 보내고 싶다면 아래처럼 작성하세요.
-        // location.href = '1.main.html'; 
-    };
-}
-</script>
+    <script src="js/2.contact.js"></script>
 
 
 <!-- 페이지 맨 아래 회사 정보, 주소, 연락처 공간 -->

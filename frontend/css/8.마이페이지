@@ -1,0 +1,186 @@
+/* 8.mypage.css - 마이페이지 전용 스타일 */
+
+/* 전체 컨테이너 레이아웃 */
+.mypage-container {
+    max-width: 1100px;
+    margin: 50px auto;
+    display: grid;
+    grid-template-columns: 280px 1fr; /* 좌측 메뉴 280px, 우측 컨텐츠 나머지 */
+    gap: 40px;
+    padding: 0 20px;
+    align-items: start;
+}
+
+/* [1] 좌측 사이드바 스타일 */
+.mypage-sidebar {
+    background: #ffffff;
+    padding: 30px 20px;
+    border-radius: 15px;
+    border: 1px solid #e1e8ed;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    padding-left: 10px;
+    border-left: 4px solid #007bff;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    padding: 15px 20px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #555;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.sidebar-menu li:hover {
+    background-color: #f0f7ff;
+    color: #007bff;
+}
+
+.sidebar-menu li.active {
+    background-color: #007bff;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.sidebar-menu li i {
+    margin-right: 10px;
+}
+
+/* [2] 우측 컨텐츠 영역 스타일 */
+.mypage-content {
+    background: #ffffff;
+    padding: 45px;
+    border-radius: 15px;
+    border: 1px solid #e1e8ed;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.content-header {
+    border-bottom: 2px solid #f0f2f5;
+    margin-bottom: 35px;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content-header h2 {
+    font-size: 1.6rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+/* 정보 그리드 디자인 (2열 레이아웃) */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.info-item {
+    background: #f8fafc;
+    padding: 22px;
+    border-radius: 12px;
+    border: 1px solid #edf2f7;
+    transition: transform 0.2s ease;
+}
+
+.info-item:hover {
+    transform: translateY(-3px);
+    border-color: #cbd5e0;
+}
+
+.info-label {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+/* [3] 버튼 스타일 그룹 */
+.btn-group {
+    margin-top: 40px;
+    display: flex;
+    gap: 15px;
+}
+
+.btn-mypage {
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+}
+
+.btn-secondary {
+    background: #f1f3f5;
+    color: #495057;
+}
+
+.btn-secondary:hover {
+    background: #e9ecef;
+}
+
+/* 모바일 대응 (반응형) */
+@media (max-width: 900px) {
+    .mypage-container {
+        grid-template-columns: 1fr; /* 세로 배치 */
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr; /* 정보창도 1열로 */
+    }
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 화면 전체 높이를 최소 높이로 설정 */
+    margin: 0;
+}
+
+.edit-container {
+    flex: 1; /* 남은 공간을 컨테이너가 다 차지하게 하여 푸터를 아래로 밀어냄 */
+    max-width: 600px;
+    margin: 50px auto;
+    /* 기존 스타일 유지... */
+}
+
+footer {
+    background-color: #2c3e50; /* 이미지에 보이는 짙은 색상 */
+    color: white;
+    padding: 40px 0;
+    width: 100%;
+}

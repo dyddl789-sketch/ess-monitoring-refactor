@@ -102,7 +102,7 @@ public class EssDeviceController {
 
         return "success";
     }
-    
+
     // 장비 목록 Ajax
     @RequestMapping(
         value = "/listAjax",
@@ -142,7 +142,54 @@ public class EssDeviceController {
 
         return result == 1 ? "success" : "fail";
     }
- // 장비 관리 화면
+
+    // 장비 상세 Ajax
+    @RequestMapping(
+        value = "/detailAjax",
+        method = RequestMethod.GET,
+        produces = "application/json; charset=UTF-8"
+    )
+    @ResponseBody
+    public String deviceDetailAjax(int deviceId, HttpSession session) {
+        log.info("@# deviceDetailAjax()");
+        log.info("@# deviceId => {}", deviceId);
+
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "{}";
+        }
+
+        EssDeviceDTO dto = deviceService.deviceDetail(deviceId);
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(dto);
+        } catch (Exception e) {
+            log.error("@# device detail json 변환 오류", e);
+            return "{}";
+        }
+    }
+
+    // 대표 장비 설정
+    @RequestMapping(value = "/setMain", method = RequestMethod.POST)
+    @ResponseBody
+    public String setMainDevice(int deviceId, HttpSession session) {
+        log.info("@# setMainDevice()");
+        log.info("@# deviceId => {}", deviceId);
+
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "login_required";
+        }
+
+        deviceService.setMainDevice(memberId, deviceId);
+
+        return "success";
+    }
+
+    // 장비 관리 화면
     @RequestMapping(value = "/manage", method = RequestMethod.GET)
     public String deviceManage(HttpSession session) {
         log.info("@# deviceManage()");
@@ -154,5 +201,6 @@ public class EssDeviceController {
         }
 
         return "device_manage";
+
     }
 }

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>내 정보 수정 - ESS-M.S</title>
+    <link rel="stylesheet" href="css/1.main.css">
+    <link rel="stylesheet" href="css/6.signup.css"> 
+    <style>
+        .edit-container {
+            max-width: 600px;
+            width: 90%;
+            margin: 50px auto;
+            background: #fff;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .edit-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .save-btn {
+            flex: 2;
+            padding: 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .cancel-btn {
+            flex: 1;
+            padding: 15px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo" onclick="location.href='1.main.html'" style="cursor:pointer;">ESS-M.S</h1>
+        </div>
+    </header>
+
+    <div class="edit-container">
+        <div class="edit-header">
+            <h2>회원 정보 수정</h2>
+            <p>변경하실 정보를 입력해 주세요.</p>
+        </div>
+
+        <form id="editForm">
+            <div class="form-group">
+                <label>이름</label>
+                <input type="text" id="editName" placeholder="이름을 입력하세요" required>
+            </div>
+
+            <div class="form-group">
+                <label>주소</label>
+                <input type="text" id="editAddress" placeholder="주소를 입력하세요" required>
+            </div>
+            
+            <div class="form-group">
+                <label>이메일</label>
+                <input type="email" id="editEmail" placeholder="example@mail.com">
+            </div>
+
+            <div class="form-group">
+                <label>연락처</label>
+                <input type="tel" id="editPhone" placeholder="010-0000-0000">
+            </div>
+
+            <div class="form-group">
+                <label>설치장소</label>
+                <input type="text" id="editLocation" placeholder="설치 장소를 입력하세요">
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="save-btn">변경사항 저장</button>
+                <a href="11.mypage.html" class="cancel-btn">취소</a>
+            </div>
+        </form>
+    </div>
+
+    <footer style="background-color: #2c3e50; color: white; padding: 40px 0; margin-top: 60px;">
+        <div class="container footer-content" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+            <div class="footer-info">
+                <h2 class="footer-logo" style="margin-bottom:10px;">ESS-M.S</h2>
+                <p style="color: #bdc3c7; margin-bottom:15px;">스마트 에너지 모니터링 시스템 전문 기업</p>
+                <address style="font-style: normal; line-height: 1.6;">
+                    부산광역시 범내골 kh 학원 <br>
+                    대표전화: 051-123-4567 | 이메일: info@ess-ms.com
+                </address>
+                <p class="copyright" style="margin-top:15px; font-size:0.85rem; color:#95a5a6;">&copy; 2026 ESS-Monitoring System. All Rights Reserved.</p>
+            </div>
+            
+            <div class="footer-links">
+                <h4 style="margin-bottom:15px;">Quick Links</h4>
+                <ul style="list-style:none; padding:0; line-height:2;">
+                    <li><a href="1.main.html" style="color:#bdc3c7; text-decoration:none;">홈</a></li>
+                    <li><a href="3.serviceInfo.html" style="color:#bdc3c7; text-decoration:none;">서비스 소개</a></li>
+                    <li><a href="2.contact.html" style="color:#bdc3c7; text-decoration:none;">문의게시판</a></li>
+                    <li><a href="7.newsupdate.html" style="color:#bdc3c7; text-decoration:none;">최신 정보</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-sns">
+                <h4 style="margin-bottom:15px;">Follow Us</h4>
+                <div class="sns-icons" style="display:flex; gap:15px; color:#bdc3c7;">
+                    <span>Blog</span>
+                    <span>LinkedIn</span>
+                    <span>Youtube</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="js/12.edit_profile.js"></script>
+</body>
+</html>

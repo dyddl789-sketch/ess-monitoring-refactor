@@ -26,11 +26,10 @@ public class EssDeviceServiceImpl implements EssDeviceService {
 
     @Override
     public void insertDevice(EssDeviceDTO deviceDto) {
-        // 그룹 없음 처리
         if (deviceDto.getGroupId() != null && deviceDto.getGroupId() == 0) {
             deviceDto.setGroupId(null);
         }
-    	
+
         if (deviceDto.getLatitude() != null && deviceDto.getLongitude() != null) {
             double latitude = deviceDto.getLatitude().doubleValue();
             double longitude = deviceDto.getLongitude().doubleValue();
@@ -85,8 +84,34 @@ public class EssDeviceServiceImpl implements EssDeviceService {
                 deviceId
         );
     }
+
     @Override
     public List<EssDeviceDTO> getAllActiveDevices() {
         return getDao().getAllActiveDevices();
     }
-}
+
+    @Override
+    public void setMainDevice(int memberId, int deviceId) {
+        log.info("@# setMainDevice()");
+        log.info("@# memberId => " + memberId);
+        log.info("@# deviceId => " + deviceId);
+
+        EssDeviceDAO dao = getDao();
+
+        dao.clearMainDevice(memberId);
+
+        EssDeviceDTO dto = new EssDeviceDTO();
+        dto.setMemberId(memberId);
+        dto.setDeviceId(deviceId);
+
+        dao.setMainDevice(dto);
+    }
+
+    @Override
+    public EssDeviceDTO getMainDevice(int memberId) {
+        log.info("@# getMainDevice()");
+        log.info("@# memberId => " + memberId);
+
+        return getDao().getMainDevice(memberId);
+    }
+}     

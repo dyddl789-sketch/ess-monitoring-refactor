@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 - ESS-M.S</title>
+    <link rel="stylesheet" href="css/1.main.css">
+    <style>
+        .mypage-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+            padding: 0 20px;
+        }
+
+        /* 왼쪽 사이드바 메뉴 */
+        .mypage-sidebar {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            height: fit-content;
+        }
+        .sidebar-menu { list-style: none; padding: 0; }
+        .sidebar-menu li {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .sidebar-menu li:hover { color: #007bff; font-weight: bold; }
+        .sidebar-menu li.active { color: #007bff; font-weight: bold; border-left: 4px solid #007bff; }
+
+        /* 오른쪽 컨텐츠 영역 */
+        .mypage-content {
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .content-header { border-bottom: 2px solid #2c3e50; margin-bottom: 30px; padding-bottom: 10px; }
+        
+        /* 정보 표시 카드 */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .info-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .info-label { font-size: 0.9rem; color: #666; margin-bottom: 5px; }
+        .info-value { font-size: 1.1rem; font-weight: bold; color: #333; }
+
+        /* 하단 버튼 */
+        .btn-group { margin-top: 30px; display: flex; gap: 10px; }
+        .btn-edit { background: #007bff; color: #fff; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1 class="logo" onclick="location.href='1.main.html'" style="cursor:pointer;">ESS-M.S</h1>
+            <nav>
+                <ul>
+                <li><a href="1.main.html">홈</a></li>
+                <li><a href="3.serviceInfo.html">서비스 소개</a></li>
+                <li><a href="2.contact.html">문의게시판</a></li>
+                <li id="mypage-menu" style="display: none;"><a href="11.mypage.html">마이페이지</a></li>
+                <li id="auth-menu">
+                    <a href="javascript:void(0)" class="login-btn" onclick="openLoginWindow()">로그인</a>
+                </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="mypage-container">
+        <aside class="mypage-sidebar">
+            <ul class="sidebar-menu">
+                <li class="active">내 정보 관리</li>
+                <li onclick="location.href='9.monitoring.html'">기기 관제 현황</li>
+                <li onclick="location.href='2.contact.html'">1:1 문의 내역</li>
+                <li onclick="handleLogout()" style="color: #e74c3c;">로그아웃</li>
+            </ul>
+        </aside>
+
+        <section class="mypage-content">
+            <div class="content-header">
+                <h2>내 정보 관리</h2>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">이름</div>
+                    <div class="info-value" id="user-name-display">홍길동</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">아이디</div>
+                    <div class="info-value">ess_user_01</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">이메일</div>
+                    <div class="info-value">user@ess-ms.com</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">설치 장소</div>
+                    <div class="info-value">부산광역시 범내골 (가정용)</div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-edit" onclick="alert('정보 수정 페이지로 이동합니다.')">회원정보 수정</button>
+                <button class="btn-edit" style="background:#6c757d;" onclick="location.href='1.main.html'">메인으로</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-info">
+                <h2 class="footer-logo">ESS-M.S</h2>
+                <p>스마트 에너지 모니터링 시스템 전문 기업</p>
+                <address>부산광역시 범내골 kh 학원</address>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/1.main.js"></script>
+    <script>
+        // 페이지 로드 시 사용자 이름 동적 반영
+        window.addEventListener('load', function() {
+            const userName = localStorage.getItem('userName');
+            if (userName) {
+                document.getElementById('user-name-display').innerText = userName;
+            } else {
+                alert("로그인이 필요한 페이지입니다.");
+                location.href = '1.main.html';
+            }
+        });
+    </script>
+</body>
+</html>
