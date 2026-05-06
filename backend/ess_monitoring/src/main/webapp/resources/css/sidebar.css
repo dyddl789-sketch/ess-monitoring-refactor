@@ -1,0 +1,117 @@
+/* 전체 레이아웃 */
+.layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f7fb;
+}
+
+/* 사이드바 */
+.sidebar {
+    width: 70px;
+    min-height: 100vh;
+    background-color: #111827;
+    color: #ffffff;
+    flex-shrink: 0;
+    overflow-y: auto;
+    transition: width 0.25s ease;
+}
+
+/* 마우스 올리면 펼침 */
+.sidebar:hover {
+    width: 240px;
+}
+
+/* 헤더 */
+.sidebar-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    border-bottom: 1px solid #1f2937;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: bold;
+    white-space: nowrap;
+    display: none;
+}
+
+.sidebar:hover .logo {
+    display: block;
+}
+
+.sidebar-toggle {
+    display: none;
+}
+
+/* 메뉴 타이틀 */
+.menu-title {
+    padding: 14px 20px 6px;
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: bold;
+    white-space: nowrap;
+    display: none;
+}
+
+.sidebar:hover .menu-title {
+    display: block;
+}
+
+/* 메뉴 */
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #d1d5db;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+}
+
+.menu-item:hover {
+    background-color: #1f2937;
+    color: #ffffff;
+}
+
+.menu-item.active {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+.menu-icon {
+    width: 24px;
+    min-width: 24px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.menu-text {
+    display: none;
+}
+
+.sidebar:hover .menu-text {
+    display: inline;
+}
+
+/* 오른쪽 본문 */
+.main {
+    flex: 1;
+    min-width: 0;
+    padding: 26px 32px;
+    background: #f5f7fb;
+}
+
+/* 스크롤 */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 4px;
+}

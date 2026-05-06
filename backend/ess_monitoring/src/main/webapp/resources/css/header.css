@@ -1,0 +1,144 @@
+/* ========================= */
+/* Header */
+/* ========================= */
+
+.site-header {
+    position: relative;
+    z-index: 100;
+    background: #061526;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.header-wrap {
+    width: 1280px;
+    margin: 0 auto;
+}
+
+.header-top {
+    height: 70px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.header-top .header-wrap {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    margin: 0;
+}
+
+.logo a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 32px;
+    border-radius: 8px;
+    background: #0072ce;
+    color: #fff;
+    font-size: 14px;
+}
+
+.header-util {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 14px;
+}
+
+.header-util a,
+.header-util span {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.header-util a:hover {
+    color: #fff;
+}
+
+.header-nav {
+    height: 56px;
+    background: #061526;
+}
+
+.gnb {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.gnb > li {
+    position: relative;
+}
+
+.gnb > li > a {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 54px;
+    color: #dbeafe;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.gnb > li > a:hover {
+    background: #0066d9;
+    color: #fff;
+}
+
+.sub-menu {
+    display: none;
+    position: absolute;
+    top: 56px;
+    left: 0;
+    min-width: 210px;
+    background: #0f2742;
+    list-style: none;
+    margin: 0;
+    padding: 10px 0;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+}
+
+.has-sub:hover .sub-menu {
+    display: block;
+}
+
+.sub-menu li {
+    margin: 0;
+}
+
+.sub-menu a {
+    display: block;
+    padding: 13px 18px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.sub-menu a:hover {
+    background: #0066d9;
+    color: #fff;
+}

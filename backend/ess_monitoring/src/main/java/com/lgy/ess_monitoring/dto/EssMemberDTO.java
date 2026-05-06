@@ -8,13 +8,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EssMemberDTO {
-	private int member_id;
-    private String member_name;
-    private String member_userid;
-    private String member_pw;
-    private String user_type;
+
+    private int memberId;
+    private String memberName;
+    private String memberUserid;
+    private String memberPw;
+    private String userType;
     private String phone;
     private String email;
     private String address;
-    private String join_date;
+    private String joinDate;
+    private String role;
 }

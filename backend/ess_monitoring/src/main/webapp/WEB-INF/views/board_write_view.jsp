@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<c:if test="${empty sessionScope.member_id}">
+<c:if test="${empty sessionScope.memberId}">
     <script>
         alert("로그인이 필요합니다.");
         location.href = "${pageContext.request.contextPath}/login_view";
@@ -82,6 +82,7 @@
     text-align: center;
 }
 </style>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/header.css">
 </head>
 
 <body>
@@ -90,7 +91,7 @@
 
 <div class="notice-banner">
     <div class="container">
-        <p style="margin:0;">
+        <p>
             <strong>[안내]</strong>
             설치문의, 장비 등록, 모니터링 이상, 알림 오류 등을 상세히 작성해주시면 답변에 도움이 됩니다.
         </p>
@@ -98,19 +99,19 @@
 </div>
 
 <section class="container write-section">
-    <h1 style="text-align:center; margin-bottom:30px;">문의하기</h1>
+    <h1>문의하기</h1>
 
     <div class="contact-form-container">
         <form action="${pageContext.request.contextPath}/board_write" method="post">
 
             <div class="form-group">
                 <label>작성자</label>
-                <input type="text" value="${sessionScope.member_name}" readonly>
+                <input type="text" value="${sessionScope.memberName}" readonly>
             </div>
 
             <div class="form-group">
                 <label>회원 유형</label>
-                <input type="text" value="${sessionScope.user_type}" readonly>
+                <input type="text" value="${sessionScope.userType}" readonly>
             </div>
 
             <div class="form-group">
@@ -128,34 +129,35 @@
             <div class="form-group">
                 <label for="titleInput">제목</label>
                 <input type="text" id="titleInput" placeholder="문의 제목을 입력하세요" required>
-                <input type="hidden" id="boardTitle" name="board_title">
+                <input type="hidden" id="boardTitle" name="boardTitle">
             </div>
 
             <div class="form-group">
-                <label for="board_content">문의 내용</label>
-                <textarea id="board_content"
-                          name="board_content"
+                <label for="boardContent">문의 내용</label>
+                <textarea id="boardContent"
+                          name="boardContent"
                           rows="10"
                           placeholder="문의 내용을 상세히 입력해주세요."
                           required></textarea>
             </div>
 
             <div class="button-area">
-                <button type="submit" class="btn" style="flex:1;">문의 등록</button>
-                <a href="${pageContext.request.contextPath}/board_list" class="btn btn-gray" style="flex:1; text-align:center;">목록</a>
+                <button type="submit" class="btn">문의 등록</button>
+                <a href="${pageContext.request.contextPath}/board_list" class="btn btn-gray">목록</a>
             </div>
+
         </form>
     </div>
 </section>
 
 <div class="warning-box">
-    <p><strong>※ <span style="color:#ff0000;">주의</span> ※ 욕설, 비방, 허위 문의는 제한될 수 있습니다.</strong></p>
+    <p><strong>※ <span>주의</span> ※ 욕설, 비방, 허위 문의는 제한될 수 있습니다.</strong></p>
 </div>
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 
 <script>
-document.querySelector("form").addEventListener("submit", function() {
+document.querySelector("form").addEventListener("submit", function () {
     const category = document.getElementById("category").value;
     const title = document.getElementById("titleInput").value.trim();
 

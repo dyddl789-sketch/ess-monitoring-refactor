@@ -10,14 +10,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardDTO {
-    private int board_no;
-    private int member_id;
-    private String board_title;
-    private int board_hit;
-    private String board_content;
-    private Timestamp created_at;
-    private Timestamp updated_at;
+
+    private int boardNo;
+    private int memberId;
+    private String boardTitle;
+    private int boardHit;
+    private String boardContent;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
     // ess_member 조인용
-    private String member_name;
+    private String memberName;
 }

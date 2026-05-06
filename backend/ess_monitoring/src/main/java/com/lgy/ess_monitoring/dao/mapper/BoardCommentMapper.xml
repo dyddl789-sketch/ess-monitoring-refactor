@@ -4,9 +4,9 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!--     문의게시판 댓글 Mapper -->
-<!--     namespace는 BoardCommentDAO.java의 패키지 경로와 반드시 일치해야 한다. -->
-<!--     DAO 메서드명과 아래 SQL id도 반드시 같아야 한다. -->
+<!-- 문의게시판 댓글 Mapper -->
+<!-- namespace는 BoardCommentDAO.java의 패키지 경로와 반드시 일치해야 한다. -->
+<!-- DAO 메서드명과 아래 SQL id도 반드시 같아야 한다. -->
 
 <mapper namespace="com.lgy.ess_monitoring.dao.BoardCommentDAO">
 
@@ -14,29 +14,30 @@
         댓글 목록 조회
 
         기능:
-        - 특정 게시글(board_no)에 달린 관리자 답변 목록을 조회한다.
+        - 특정 게시글(boardNo)에 달린 관리자 답변 목록을 조회한다.
         - board_comment 테이블에는 member_name이 없으므로 ess_member와 JOIN해서 작성자 이름을 가져온다.
         - 오래된 답변부터 위에 보이도록 comment_id 오름차순으로 정렬한다.
 
-        사용 위치:
-        - 게시글 상세 페이지 진입 시
-        - BoardController의 content_view 메서드
+        주의:
+        - DB 컬럼명은 snake_case
+        - DTO 필드명은 camelCase
+        - 그래서 select 결과에 as 별칭을 반드시 준다.
     -->
     <select id="getCommentList"
             parameterType="int"
             resultType="com.lgy.ess_monitoring.dto.BoardCommentDTO">
         select
-            c.comment_id,
-            c.board_no,
-            c.member_id,
-            m.member_name,
-            c.comment_content,
-            c.created_at,
-            c.updated_at
+            c.comment_id as commentId,
+            c.board_no as boardNo,
+            c.member_id as memberId,
+            m.member_name as memberName,
+            c.comment_content as commentContent,
+            c.created_at as createdAt,
+            c.updated_at as updatedAt
         from board_comment c
         join ess_member m
           on c.member_id = m.member_id
-        where c.board_no = #{board_no}
+        where c.board_no = #{boardNo}
         order by c.comment_id asc
     </select>
 
@@ -45,12 +46,11 @@
 
         기능:
         - 관리자 계정이 작성한 답변을 board_comment 테이블에 저장한다.
-        - created_at, updated_at은 DB 기본값으로 자동 저장된다.
 
         필요한 값:
-        - board_no: 어떤 게시글에 달 댓글인지
-        - member_id: 댓글을 작성한 관리자 회원 번호
-        - comment_content: 댓글 내용
+        - boardNo: 어떤 게시글에 달 댓글인지
+        - memberId: 댓글을 작성한 관리자 회원 번호
+        - commentContent: 댓글 내용
     -->
     <insert id="insertComment"
             parameterType="com.lgy.ess_monitoring.dto.BoardCommentDTO">
@@ -62,9 +62,9 @@
         )
         values
         (
-            #{board_no},
-            #{member_id},
-            #{comment_content}
+            #{boardNo},
+            #{memberId},
+            #{commentContent}
         )
     </insert>
 
@@ -72,36 +72,29 @@
         댓글 삭제
 
         기능:
-        - 댓글 번호(comment_id)를 기준으로 댓글을 삭제한다.
-        - member_id 조건을 같이 둬서 작성자 본인의 댓글만 삭제되도록 한다.
-        - 사이트 관리자만 삭제하게 할 경우 Controller에서 user_type을 한 번 더 검사한다.
-
-        지금 당장 삭제 기능을 안 만들더라도,
-        나중에 관리자 답변 삭제 기능 추가를 위해 미리 만들어둔다.
+        - 댓글 번호(commentId)를 기준으로 댓글을 삭제한다.
+        - 관리자 권한 검사는 Controller에서 처리한다.
     -->
     <delete id="deleteComment"
             parameterType="com.lgy.ess_monitoring.dto.BoardCommentDTO">
         delete from board_comment
-        where comment_id = #{comment_id}
+        where comment_id = #{commentId}
     </delete>
-    
-    <!--
-    관리자 댓글 수정
 
-    기능:
-    - comment_id를 기준으로 댓글 내용을 수정한다.
-    - updated_at은 현재 시간으로 갱신한다.
-    - 관리자 권한 검사는 Controller에서 처리한다.
-	-->
-	<update id="updateComment"
-	        parameterType="com.lgy.ess_monitoring.dto.BoardCommentDTO">
-	    update board_comment
-	       set comment_content = #{comment_content},
-	           updated_at = now()
-	     where comment_id = #{comment_id}
-	</update>
+    <!--
+        관리자 댓글 수정
+
+        기능:
+        - commentId를 기준으로 댓글 내용을 수정한다.
+        - updated_at은 현재 시간으로 갱신한다.
+        - 관리자 권한 검사는 Controller에서 처리한다.
+    -->
+    <update id="updateComment"
+            parameterType="com.lgy.ess_monitoring.dto.BoardCommentDTO">
+        update board_comment
+           set comment_content = #{commentContent},
+               updated_at = now()
+         where comment_id = #{commentId}
+    </update>
 
 </mapper>
-
-
-

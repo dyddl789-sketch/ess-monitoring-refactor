@@ -7,26 +7,37 @@ import org.apache.ibatis.annotations.Param;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 
 public interface EssDeviceService {
-	
-	//기기 등록
-		public void inseretDevice(EssDeviceDTO deviceDTO);
-		
-		// 로그인한 회원의 기기 목록 조회
-	    public ArrayList<EssDeviceDTO> getDeviceList(int member_id);
 
-	    // 로그인한 회원의 기기 수 조회
-	    public int getDeviceCount(int member_id);
-	    
-	    //기기 삭제
-	    public int deleteDevice(@Param("device_id")int device_id, @Param("member_id")int member_id);
-	    
-	    //상세 보기
-	    public EssDeviceDTO deviceDetail(int device_id);
-	    
+    // 기기 등록
+    void insertDevice(EssDeviceDTO deviceDto);
 
-	    // 선택한 디바이스를 대표 디바이스로 설정
-	    public void setMainDevice(int member_id, int device_id);
+    // 로그인한 회원의 기기 목록 조회
+    ArrayList<EssDeviceDTO> getDeviceList(int memberId);
 
-	    // 회원의 대표 디바이스 조회
-	    public EssDeviceDTO getMainDevice(int member_id);
+    // 로그인한 회원의 기기 수 조회
+    int getDeviceCount(int memberId);
+
+    // 기기 삭제
+    int deleteDevice(@Param("deviceId") int deviceId,
+                     @Param("memberId") int memberId);
+
+    // 상세 보기
+    EssDeviceDTO deviceDetail(int deviceId);
+
+    // 대시보드 기기 상태 목록 조회
+    ArrayList<EssDeviceDTO> getDashboardDeviceStatusList(
+            int memberId,
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId
+    );
+    
+    
+    
+    // 대표 디바이스 조회, 메인 화면 날씨 기준
+    EssDeviceDTO getMainDevice(int memberId);
+
+    // 대표 디바이스 설정
+    void setMainDevice(int memberId, int deviceId);
+
 }

@@ -1,0 +1,160 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lgy.ess_monitoring.dao.WeatherDataDAO">
+
+    <select id="getLatestWeather"
+            parameterType="int"
+            resultType="com.lgy.ess_monitoring.dto.WeatherDataDTO">
+        SELECT
+            weather_id,
+            device_id,
+            fcst_date,
+            fcst_time,
+            sky_status,
+            rain_type,
+            rain_prob,
+            temperature,
+            humidity,
+            wind_speed,
+            solar_radiation,
+            ess_status,
+            created_at,
+            sunrise,
+            sunset,
+            base_date,
+            base_time
+        FROM weather_data
+        WHERE device_id = #{deviceId}
+        ORDER BY created_at DESC, fcst_date DESC, fcst_time DESC
+        LIMIT 1
+    </select>
+		
+<!--
+    날씨 데이터 저장
+    - 같은 device_id + base_date + base_time + fcst_date + fcst_time 이 이미 있으면
+      새로 INSERT하지 않고 기존 데이터를 UPDATE한다.
+-->
+    <insert id="insertWeatherData"
+            parameterType="com.lgy.ess_monitoring.dto.WeatherDataDTO">
+        INSERT INTO weather_data (
+            device_id,
+            fcst_date,
+            fcst_time,
+            sky_status,
+            rain_type,
+            rain_prob,
+            temperature,
+            humidity,
+            wind_speed,
+            solar_radiation,
+            ess_status,
+            sunrise,
+            sunset,
+            base_date,
+            base_time,
+            created_at
+        ) VALUES (
+            #{deviceId},
+            #{fcstDate},
+            #{fcstTime},
+            #{skyStatus},
+            #{rainType},
+            #{rainProb},
+            #{temperature},
+            #{humidity},
+            #{windSpeed},
+            #{solarRadiation},
+            #{essStatus},
+            #{sunrise},
+            #{sunset},
+            #{baseDate},
+            #{baseTime},
+            NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+            sky_status = VALUES(sky_status),
+            rain_type = VALUES(rain_type),
+            rain_prob = VALUES(rain_prob),
+            temperature = VALUES(temperature),
+            humidity = VALUES(humidity),
+            wind_speed = VALUES(wind_speed),
+            solar_radiation = VALUES(solar_radiation),
+            ess_status = VALUES(ess_status),
+            sunrise = VALUES(sunrise),
+            sunset = VALUES(sunset),
+            created_at = NOW()
+    </insert>
+		
+		<!-- 
+    특정 기기의 날씨 예보 목록 조회
+    - 현재 시간 이후 데이터만 조회
+    - 가까운 시간 순서대로 8개 정도만 가져옴
+    - 상세화면 또는 메인 날씨 카드에서 사용 가능
+-->
+    <select id="getWeatherList"
+            parameterType="int"
+            resultType="com.lgy.ess_monitoring.dto.WeatherDataDTO">
+        SELECT
+            weather_id,
+            device_id,
+            fcst_date,
+            fcst_time,
+            sky_status,
+            rain_type,
+            rain_prob,
+            temperature,
+            humidity,
+            wind_speed,
+            solar_radiation,
+            ess_status,
+            created_at,
+            sunrise,
+            sunset,
+            base_date,
+            base_time
+        FROM weather_data
+        WHERE device_id = #{deviceId}
+          AND CONCAT(fcst_date, fcst_time) >= DATE_FORMAT(NOW(), '%Y%m%d%H%i')
+        ORDER BY fcst_date ASC, fcst_time ASC
+        LIMIT 8
+    </select>
+
+
+<!--
+    현재 날씨용 대표 데이터 1건 조회
+    - 현재 시간 이후 가장 가까운 예보 1건
+    - 상세화면 상단 카드의 "현재 날씨"에 사용
+-->
+    <select id="getCurrentWeather"
+            parameterType="int"
+            resultType="com.lgy.ess_monitoring.dto.WeatherDataDTO">
+        SELECT
+            weather_id,
+            device_id,
+            fcst_date,
+            fcst_time,
+            sky_status,
+            rain_type,
+            rain_prob,
+            temperature,
+            humidity,
+            wind_speed,
+            solar_radiation,
+            ess_status,
+            created_at,
+            sunrise,
+            sunset,
+            base_date,
+            base_time
+        FROM weather_data
+        WHERE device_id = #{deviceId}
+          AND CONCAT(fcst_date, fcst_time) >= DATE_FORMAT(NOW(), '%Y%m%d%H%i')
+        ORDER BY fcst_date ASC, fcst_time ASC
+        LIMIT 1
+    </select>
+		
+		
+		
+</mapper>

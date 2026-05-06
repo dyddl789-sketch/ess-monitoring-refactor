@@ -37,12 +37,12 @@
             <form action="${pageContext.request.contextPath}/login" method="post">
 			    <div class="form-group">
 			        <label>아이디</label>
-			        <input type="text" name="member_userid" placeholder="아이디를 입력하세요" required>
+			        <input type="text" name="memberUserid" placeholder="아이디를 입력하세요" required>
 			    </div>
 			
 			    <div class="form-group">
 			        <label>비밀번호</label>
-			        <input type="password" name="member_pw" placeholder="비밀번호를 입력하세요" required>
+			        <input type="password" name="memberPw" placeholder="비밀번호를 입력하세요" required>
 			    </div>
                 
                 <div class="login-options">

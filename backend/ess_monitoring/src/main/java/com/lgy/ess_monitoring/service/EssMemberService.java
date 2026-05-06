@@ -5,15 +5,16 @@ import java.util.HashMap;
 import com.lgy.ess_monitoring.dto.EssMemberDTO;
 
 public interface EssMemberService {
+
     // 회원가입
-    public void join(HashMap<String, String> param);
+    void join(HashMap<String, String> params);
 
     // 로그인
-    public EssMemberDTO login(HashMap<String, String> param);
+    EssMemberDTO login(HashMap<String, String> params);
 
     // 아이디 중복 체크
-    public int idCheck(String member_userid);
+    int idCheck(String memberUserid);
 
     // 이메일 중복 체크
-    public int emailCheck(String email);
+    int emailCheck(String email);
 }

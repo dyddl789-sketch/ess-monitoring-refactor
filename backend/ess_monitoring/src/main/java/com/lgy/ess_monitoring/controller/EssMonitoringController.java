@@ -1,47 +1,41 @@
 package com.lgy.ess_monitoring.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.lgy.ess_monitoring.dto.EssMonitoringDTO;
-import com.lgy.ess_monitoring.service.EssMonitoringService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
+@RequestMapping("/monitoring")
 public class EssMonitoringController {
-	
-	@Autowired
-	private EssMonitoringService service;
-	
-	@RequestMapping("/list")
-	public String list(HttpSession session, Model model) {
-	log.info("@# list()");
 
-	//1. 로그인 체크
-	Integer memberId = (Integer)session.getAttribute("member_id");
-	log.info("@#session member_id=>"+memberId);
-	
-	if (memberId == null) {
-        return "redirect:login_view";
+    // 실시간 모니터링 메인 화면
+    @RequestMapping("/main")
+    public String monitoringMain(
+            Integer deviceId,
+            HttpSession session,
+            Model model
+    ) {
+        log.info("@# monitoringMain()");
+
+        Integer memberId = (Integer) session.getAttribute("memberId");
+        log.info("@# session memberId => {}", memberId);
+        log.info("@# deviceId => {}", deviceId);
+
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
+
+        /*
+         * 상세 모니터링 페이지에서는 선택한 장비의 실시간 데이터만 표시한다.
+         * 날씨 정보는 대시보드에서 대표 디바이스 기준으로 표시한다.
+         */
+        model.addAttribute("deviceId", deviceId);
+
+        return "monitoring_main";
     }
-
-    // 2. 로그인한 회원 데이터 조회
-    ArrayList<EssMonitoringDTO> list = service.getData(memberId);
-	log.info("@# list size => " + list.size());
-
-    // 3. JSP로 전달
-    model.addAttribute("list", list);
-
-    return "list";
-	
-}
 }

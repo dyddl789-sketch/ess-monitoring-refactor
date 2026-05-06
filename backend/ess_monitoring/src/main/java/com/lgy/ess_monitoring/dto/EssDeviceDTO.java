@@ -1,25 +1,41 @@
 package com.lgy.ess_monitoring.dto;
 
+import java.math.BigDecimal;
+
 import lombok.Data;
 
 @Data
 public class EssDeviceDTO {
-	private int device_id;          // 장비 고유 ID
-    private int member_id;          // 장비 소유 회원 ID
-    
-//    int는 null을 못 담고 기본값이 0이 되기 때문에,
-//    나중에 없는 그룹인데 group_id = 0으로 들어가서 외래키 오류가 날 수 있다.
-    private Integer group_id;       // 그룹 ID, null 가능
-    
-    private String device_name;     // 장비 이름
-    private String location;        // 설치 위치
-    private double capacity_kw;     // 장비 용량
-    
-    private String device_type;     // 장비 종류
-    private String status;          // 현재 상태
-    private String install_date;    // 설치 날짜
-    
-    
-    private String is_main; // 대표 디바이스 여부
-	
+
+    // ===== ess_device 기본 =====
+    private int deviceId;
+    private int memberId;
+    private Integer groupId;
+
+    private String deviceName;
+    private String location;
+    private double capacityKw;
+
+    private String deviceType;
+    private String status;
+    private String installDate;
+
+    private BigDecimal latitude;
+    private BigDecimal longitude;
+    private Integer nx;
+    private Integer ny;
+
+    private String isMain;
+
+    // ===== ESS 스펙 =====
+    private double essCapacityKwh;
+    private Double currentChargeKwh;
+    private double chargeEfficiency;
+    private double dischargeEfficiency;
+    private double electricityRate;
+
+    // ===== JOIN =====
+    private String groupName;
+    private Double soc;
+    private String recordTime;
 }

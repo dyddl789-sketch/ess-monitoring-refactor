@@ -90,6 +90,7 @@
     color: #777;
 }
 </style>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/header.css">
 </head>
 
 <body>
@@ -141,33 +142,33 @@
             </tr>
         </thead>
 
-        <tbody>
-            <c:choose>
-                <c:when test="${empty list}">
-                    <tr>
-                        <td colspan="5" class="empty-row">등록된 문의가 없습니다.</td>
-                    </tr>
-                </c:when>
-
-                <c:otherwise>
-                    <c:forEach var="board" items="${list}">
-                        <tr>
-                            <td style="text-align:center;">${board.board_no}</td>
-                            <td>
-                                <a href="${pageContext.request.contextPath}/board_content_view?board_no=${board.board_no}&pageNum=${pageMaker.cri.pageNum}&amount=${pageMaker.cri.amount}&type=${pageMaker.cri.type}&keyword=${pageMaker.cri.keyword}">
-                                    ${board.board_title}
-                                </a>
-                            </td>
-                            <td style="text-align:center;">${board.member_name}</td>
-                            <td style="text-align:center;">
-                                <fmt:formatDate value="${board.created_at}" pattern="yyyy-MM-dd"/>
-                            </td>
-                            <td style="text-align:center;">${board.board_hit}</td>
-                        </tr>
-                    </c:forEach>
-                </c:otherwise>
-            </c:choose>
-        </tbody>
+		<tbody>
+		    <c:choose>
+		        <c:when test="${empty list}">
+		            <tr>
+		                <td colspan="5" class="empty-row">등록된 문의가 없습니다.</td>
+		            </tr>
+		        </c:when>
+		
+		        <c:otherwise>
+		            <c:forEach var="board" items="${list}">
+		                <tr>
+		                    <td style="text-align:center;">${board.boardNo}</td>
+		                    <td>
+		                        <a href="${pageContext.request.contextPath}/board_content_view?boardNo=${board.boardNo}&pageNum=${pageMaker.cri.pageNum}&amount=${pageMaker.cri.amount}&type=${pageMaker.cri.type}&keyword=${pageMaker.cri.keyword}">
+		                            ${board.boardTitle}
+		                        </a>
+		                    </td>
+		                    <td style="text-align:center;">${board.memberName}</td>
+		                    <td style="text-align:center;">
+		                        <fmt:formatDate value="${board.createdAt}" pattern="yyyy-MM-dd"/>
+		                    </td>
+		                    <td style="text-align:center;">${board.boardHit}</td>
+		                </tr>
+		            </c:forEach>
+		        </c:otherwise>
+		    </c:choose>
+		</tbody>
     </table>
 
     <div class="pagination">

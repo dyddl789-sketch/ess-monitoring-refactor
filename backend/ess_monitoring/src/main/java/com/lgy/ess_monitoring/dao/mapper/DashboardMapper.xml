@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lgy.ess_monitoring.dao.DashboardDAO">
+
+    <!-- 대시보드 요약 조회 -->
+	<select id="getDashboardSummary"
+	        resultType="com.lgy.ess_monitoring.dto.DashboardSummaryDTO">
+	
+	    SELECT
+	        COUNT(DISTINCT d.device_id) AS totalDeviceCount,
+	
+	        COUNT(DISTINCT CASE
+	            WHEN m.monitor_id IS NOT NULL
+	            THEN d.device_id
+	        END) AS collectedDeviceCount,
+	
+	        COUNT(DISTINCT CASE
+	            WHEN m.monitor_id IS NULL
+	            THEN d.device_id
+	        END) AS uncollectedDeviceCount,
+	
+	        COUNT(DISTINCT CASE
+	            WHEN m.monitor_id IS NOT NULL
+	             AND m.soc = 0
+	            THEN d.device_id
+	        END) AS offlineDeviceCount,
+	
+	        IFNULL(
+	            SUM(
+	                CASE
+	                    WHEN m.solar_generation_kwh BETWEEN 0 AND d.capacity_kw * 24
+	                    THEN m.solar_generation_kwh
+	                END
+	            ), 0
+	        ) AS todayGenerationKwh,
+	
+	        IFNULL(
+	            AVG(
+	                CASE
+	                    WHEN m.soc BETWEEN 0 AND 100
+	                    THEN m.soc
+	                END
+	            ), 0
+	        ) AS averageSoc,
+	
+	        IFNULL(
+	            SUM(
+	                CASE
+	                    WHEN m.saved_cost >= 0
+	                     AND m.solar_generation_kwh BETWEEN 0 AND d.capacity_kw * 24
+	                     AND m.saved_cost &lt;= m.solar_generation_kwh * d.electricity_rate
+	                    THEN m.saved_cost
+	                END
+	            ), 0
+	        ) AS todaySavedCost
+	
+	    FROM ess_device d
+	    LEFT JOIN monitoring m
+	      ON d.device_id = m.device_id
+	     AND m.record_time >= STR_TO_DATE(#{selectedDate}, '%Y-%m-%d')
+	     AND m.record_time &lt; DATE_ADD(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'), INTERVAL 1 DAY)
+	
+	    WHERE d.member_id = #{memberId}
+	
+	    <if test="groupId != null">
+	        AND d.group_id = #{groupId}
+	    </if>
+	
+	    <if test="deviceId != null">
+	        AND d.device_id = #{deviceId}
+	    </if>
+	
+	</select>
+
+<!-- 
+    대시보드 장비 배터리 상태 조회
+    - 날짜 기준 최신 SOC 1건 조회
+    - SOC 기준으로 배터리 상태 계산
+    - 그룹 필터 적용 가능
+    - 특정 장비 필터 적용 가능
+-->
+	<select id="getDashboardDeviceStatusList"
+	        resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+	
+	    SELECT
+	        d.device_id,
+	        d.device_name,
+	        g.group_name,
+	        latest.soc,
+	        CASE
+	    WHEN latest.soc IS NULL THEN 'NO_DATA'
+	    WHEN latest.soc = 0 THEN 'OFFLINE'
+	    WHEN latest.soc &lt; 20 THEN 'ERROR'
+	    WHEN latest.soc &lt; 40 THEN 'WARNING'
+	    ELSE 'NORMAL'
+		END AS status
+	    FROM ess_device d
+	
+	    LEFT JOIN ess_device_group g
+	      ON d.group_id = g.group_id
+	
+	    <!-- 날짜 기준 최신 SOC 조회 -->
+	    LEFT JOIN (
+	        SELECT
+	            device_id,
+	            soc
+	        FROM (
+	            SELECT
+	                device_id,
+	                soc,
+	                ROW_NUMBER() OVER (
+	                    PARTITION BY device_id
+	                    ORDER BY record_time DESC
+	                ) AS rn
+	            FROM monitoring
+	            WHERE record_time &gt;= STR_TO_DATE(#{selectedDate}, '%Y-%m-%d')
+	              AND record_time &lt; DATE_ADD(
+	                    STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'),
+	                    INTERVAL 1 DAY
+	              )
+	        ) ranked
+	        WHERE rn = 1
+	    ) latest
+	      ON d.device_id = latest.device_id
+	
+	    WHERE d.member_id = #{memberId}
+	
+	    <if test="groupId != null">
+	        AND d.group_id = #{groupId}
+	    </if>
+	
+	    <if test="deviceId != null">
+	        AND d.device_id = #{deviceId}
+	    </if>
+	
+	    ORDER BY d.device_id ASC
+	
+	</select>
+
+
+    <!-- 회원 기준 그룹 목록 조회 -->
+    <select id="getGroups"
+            resultType="com.lgy.ess_monitoring.dto.EssDeviceGroupDTO">
+        SELECT
+            group_id,
+            group_name
+        FROM ess_device_group
+        WHERE member_id = #{memberId}
+    </select>
+	
+	<!-- 회원 유형 조회 -->
+	<select id="getUserType" resultType="string">
+	    SELECT user_type
+	    FROM ess_member
+	    WHERE member_id = #{memberId}
+	</select>
+	
+	
+	<!-- 그룹별 선택일 발전량 차트 -->
+	<select id="getGroupGenerationChart"
+	        resultType="com.lgy.ess_monitoring.dto.DashboardChartDTO">
+	    SELECT
+	        IFNULL(g.group_name, '미지정 그룹') AS label,
+	        IFNULL(
+	            SUM(
+	                CASE
+	                    WHEN m.solar_generation_kwh BETWEEN 0 AND d.capacity_kw * 24
+	                    THEN m.solar_generation_kwh
+	                END
+	            ),
+	            0
+	        ) AS generation
+	    FROM ess_device d
+	    LEFT JOIN ess_device_group g
+	      ON d.group_id = g.group_id
+	    LEFT JOIN monitoring m
+	      ON d.device_id = m.device_id
+	     AND m.record_time &gt;= STR_TO_DATE(#{selectedDate}, '%Y-%m-%d')
+	     AND m.record_time &lt; DATE_ADD(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'), INTERVAL 1 DAY)
+	    WHERE d.member_id = #{memberId}
+	
+	    <if test="groupId != null">
+	        AND d.group_id = #{groupId}
+	    </if>
+	
+	    GROUP BY d.group_id, g.group_name
+	    ORDER BY generation DESC
+	    LIMIT #{limit}
+	</select>
+	
+	
+	<!-- 장비별 선택일 발전량 차트 -->
+	<select id="getDeviceGenerationChart"
+	        resultType="com.lgy.ess_monitoring.dto.DashboardChartDTO">
+	    SELECT
+	        d.device_name AS label,
+	        IFNULL(
+	            SUM(
+	                CASE
+	                    WHEN m.solar_generation_kwh BETWEEN 0 AND d.capacity_kw * 24
+	                    THEN m.solar_generation_kwh
+	                END
+	            ),
+	            0
+	        ) AS generation
+	    FROM ess_device d
+	    LEFT JOIN monitoring m
+	      ON d.device_id = m.device_id
+	     AND m.record_time &gt;= STR_TO_DATE(#{selectedDate}, '%Y-%m-%d')
+	     AND m.record_time &lt; DATE_ADD(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'), INTERVAL 1 DAY)
+	    WHERE d.member_id = #{memberId}
+	
+	    <if test="groupId != null">
+	        AND d.group_id = #{groupId}
+	    </if>
+	
+	    <if test="deviceId != null">
+	        AND d.device_id = #{deviceId}
+	    </if>
+	
+	    GROUP BY d.device_id, d.device_name
+	    ORDER BY generation DESC
+	    LIMIT #{limit}
+	</select>
+	
+	
+	<!-- 그룹 차트 전체 개수 -->
+	<select id="getGroupGenerationChartCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM (
+	        SELECT d.group_id
+	        FROM ess_device d
+	        LEFT JOIN monitoring m
+	          ON d.device_id = m.device_id
+	         AND m.record_time >= STR_TO_DATE(#{selectedDate}, '%Y-%m-%d')
+	         AND m.record_time &lt; DATE_ADD(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'), INTERVAL 1 DAY)
+	        WHERE d.member_id = #{memberId}
+	        GROUP BY d.group_id
+	        HAVING SUM(m.solar_generation_kwh) > 0
+	    ) t
+	</select>
+	
+	
+	<!-- 장비 차트 전체 개수 -->
+	<select id="getDeviceGenerationChartCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM (
+	        SELECT d.device_id
+	        FROM ess_device d
+	        LEFT JOIN monitoring m
+	          ON d.device_id = m.device_id
+	         AND m.record_time >= STR_TO_DATE(#{selectedDate}, '%Y-%m-%d')
+	         AND m.record_time &lt; DATE_ADD(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'), INTERVAL 1 DAY)
+	        WHERE d.member_id = #{memberId}
+	        GROUP BY d.device_id
+	        HAVING SUM(m.solar_generation_kwh) > 0
+	    ) t
+	</select>
+</mapper>

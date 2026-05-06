@@ -144,11 +144,18 @@
 			<version>1.2.2</version>
 		</dependency>    
 		     
-		<!-- JSON 파싱용: 기상청 API 응답 처리 -->
+		<!-- 기상청 API 파싱용: Jackson 2 -->
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
 		    <artifactId>jackson-databind</artifactId>
 		    <version>2.15.4</version>
+		</dependency>
+		
+		<!-- Spring 3 @ResponseBody JSON 응답용: Jackson 1 -->
+		<dependency>
+		    <groupId>org.codehaus.jackson</groupId>
+		    <artifactId>jackson-mapper-asl</artifactId>
+		    <version>1.9.13</version>
 		</dependency>
 	</dependencies>
     <build>

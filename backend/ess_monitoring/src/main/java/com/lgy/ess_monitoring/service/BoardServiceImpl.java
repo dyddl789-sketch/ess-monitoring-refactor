@@ -1,6 +1,5 @@
 package com.lgy.ess_monitoring.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,93 +15,71 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class BoardServiceImpl implements BoardService{
-	@Autowired
-	private SqlSession sqlSession;
+public class BoardServiceImpl implements BoardService {
 
-	@Override
-	public List<BoardDTO> list() {
-		BoardDAO dao = sqlSession.getMapper(BoardDAO.class);
-		List<BoardDTO> list = dao.list();
-		
-		return list;
-	}
-	
-	@Override
-	public List<BoardDTO> listWithPaging(Criteria cri) {
-		log.info("@# Criteria cri=>"+cri);
+    @Autowired
+    private SqlSession sqlSession;
 
-		BoardDAO dao = sqlSession.getMapper(BoardDAO.class);
-		
-		return dao.listWithPaging(cri);
-	}
-	
-	@Override
-	public void write(HashMap<String, String> param) {
-		BoardDAO dao = sqlSession.getMapper(BoardDAO.class);
-		dao.write(param);
-	}
+    @Override
+    public List<BoardDTO> list() {
+        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
+        List<BoardDTO> boardList = boardDao.list();
 
-	@Override
-	public BoardDTO contentView(HashMap<String, String> param) {
-		BoardDAO dao = sqlSession.getMapper(BoardDAO.class);
-		BoardDTO dto = dao.contentView(param);
-		
-		return dto;
-	}
+        return boardList;
+    }
 
-	@Override
-	public void modify(HashMap<String, String> param) {
-		BoardDAO dao = sqlSession.getMapper(BoardDAO.class);
-		dao.modify(param);
-	}
+    @Override
+    public List<BoardDTO> listWithPaging(Criteria criteria) {
+        log.info("@# criteria => " + criteria);
 
-	@Override
-	public void delete(HashMap<String, String> param) {
-		BoardDAO dao = sqlSession.getMapper(BoardDAO.class);
-		dao.delete(param);
-	}
+        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
+        return boardDao.listWithPaging(criteria);
+    }
 
-	@Override
-	public int getTotalCount(Criteria cri) {
-		log.info("@# getTotalCount()");
-		BoardDAO dao = sqlSession.getMapper(BoardDAO.class);
-		return dao.getTotalCount(cri);
-	}
+    @Override
+    public void write(HashMap<String, String> params) {
+        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
+        boardDao.write(params);
+    }
 
+    @Override
+    public BoardDTO contentView(HashMap<String, String> params) {
+        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
+        BoardDTO boardDto = boardDao.contentView(params);
 
-	@Override
-	public void increaseHit(int board_no) {
-		BoardDAO dao = sqlSession.getMapper(BoardDAO.class);
-		dao.increaseHit(board_no);
-	}
+        return boardDto;
+    }
 
-	@Override
-	public int getWriterMemberId(int boardNo) {
-		log.info("@# BoardServiceImpl getWriterMemberId()");		
-		
-		BoardDAO dao = sqlSession.getMapper(BoardDAO.class);
-		return dao.getWriterMemberId(boardNo);
-	}
+    @Override
+    public void modify(HashMap<String, String> params) {
+        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
+        boardDao.modify(params);
+    }
 
-	
+    @Override
+    public void delete(HashMap<String, String> params) {
+        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
+        boardDao.delete(params);
+    }
 
+    @Override
+    public int getTotalCount(Criteria criteria) {
+        log.info("@# getTotalCount()");
+        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
+        return boardDao.getTotalCount(criteria);
+    }
+
+    @Override
+    public void increaseHit(int boardNo) {
+        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
+        boardDao.increaseHit(boardNo);
+    }
+
+    @Override
+    public int getWriterMemberId(int boardNo) {
+        log.info("@# getWriterMemberId()");
+
+        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
+        return boardDao.getWriterMemberId(boardNo);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -51,109 +51,123 @@ function ajaxLoad(url, fallbackTitle, fallbackHtml) {
     });
 }
 
-// 기기 등록
 function loadRegister() {
-    renderTemp(
+    ajaxLoad(
+        "/device/registerForm",
         "🔧 ESS 기기 등록",
-        "<form id='deviceForm'>" +
-
-        "<table class='fake-table'>" +
-
-        "<tr>" +
-        "<th>항목</th>" +
-        "<th>입력</th>" +
-        "</tr>" +
-
-        "<tr>" +
-        "<td>기기 이름</td>" +
-        "<td><input type='text' name='device_name' id='device_name' placeholder='예: SOLAR_BUSAN_ESS_01'></td>" +
-        "</tr>" +
-
-        "<tr>" +
-        "<td>설치 위치</td>" +
-        "<td><input type='text' name='location' id='location' placeholder='예: 부산 사상구'></td>" +
-        "</tr>" +
-
-        "<tr>" +
-        "<td>장비 용량</td>" +
-        "<td><input type='text' name='capacity_kw' id='capacity_kw' placeholder='예: 100'> kW</td>" +
-        "</tr>" +
-
-        "<tr>" +
-        "<td>장비 종류</td>" +
-        "<td>" +
-        "<select name='device_type' id='device_type'>" +
-        "<option value=''>선택</option>" +
-        "<option value='태양광ESS'>태양광ESS</option>" +
-        "<option value='배터리'>배터리</option>" +
-        "<option value='인버터'>인버터</option>" +
-        "<option value='PCS'>PCS</option>" +
-        "<option value='BMS'>BMS</option>" +
-        "</select>" +
-        "</td>" +
-        "</tr>" +
-
-        "<tr>" +
-        "<td>현재 상태</td>" +
-        "<td>" +
-        "<select name='status' id='status'>" +
-        "<option value='정상'>정상</option>" +
-        "<option value='점검'>점검</option>" +
-        "<option value='오류'>오류</option>" +
-        "</select>" +
-        "</td>" +
-        "</tr>" +
-
-        "<tr>" +
-        "<td>설치 날짜</td>" +
-        "<td><input type='date' name='install_date' id='install_date'></td>" +
-        "</tr>" +
-
-        "<tr>" +
-        "<td colspan='2'>" +
-        "<button type='button' onclick='fn_device_register()'>등록</button> " +
-        "<button type='button' onclick='$(\"#deviceForm\")[0].reset()'>초기화</button>" +
-        "</td>" +
-        "</tr>" +
-
-        "</table>" +
-        "</form>"
+        "<p>기기 등록 화면을 불러오는 중 오류가 발생했습니다.</p>"
     );
+}
+
+function openDeviceAddressSearch() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            let address = data.roadAddress || data.jibunAddress;
+
+            $("#location").val(address);
+
+            console.log("@# 선택 주소 =>", address);
+            console.log("@# postcode data =>", data);
+
+            searchDeviceAddress();
+        }
+    }).open({
+        popupName: "devicePostcodePopup"
+    });
+}
+
+function searchDeviceAddress() {
+    const address = $("#location").val().trim();
+
+    if (address === "") {
+        alert("설치 위치를 입력하세요.");
+        $("#location").focus();
+        return;
+    }
+
+    if (typeof kakao === "undefined" || !kakao.maps || !kakao.maps.services) {
+        alert("카카오 지도 API가 로드되지 않았습니다.");
+        return;
+    }
+
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    geocoder.addressSearch(address, function(result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            const latitude = result[0].y;
+            const longitude = result[0].x;
+            const roadAddress = result[0].road_address
+                ? result[0].road_address.address_name
+                : "";
+            const jibunAddress = result[0].address
+                ? result[0].address.address_name
+                : address;
+
+            $("#latitude").val(latitude);
+            $("#longitude").val(longitude);
+
+            $("#location").val(roadAddress !== "" ? roadAddress : jibunAddress);
+
+            $("#addressResult").html(
+                "주소 확인 완료<br>" +
+                "위도: " + latitude + "<br>" +
+                "경도: " + longitude
+            );
+        } else {
+            $("#latitude").val("");
+            $("#longitude").val("");
+            $("#addressResult").html(
+                "<span style='color:#dc2626;'>주소를 찾을 수 없습니다. 더 정확한 주소를 입력하세요.</span>"
+            );
+        }
+    });
 }
 
 function fn_device_register() {
     console.log("@# fn_device_register() 실행");
 
-    const deviceName = $("#device_name").val();
-    const location = $("#location").val();
-    const capacityKw = $("#capacity_kw").val();
-    const deviceType = $("#device_type").val();
-    const status = $("#status").val();
-    const installDate = $("#install_date").val();
-
-    console.log("@# device_name =>", deviceName);
-    console.log("@# location =>", location);
-    console.log("@# capacity_kw =>", capacityKw);
-    console.log("@# device_type =>", deviceType);
-    console.log("@# status =>", status);
-    console.log("@# install_date =>", installDate);
+    const deviceName = $("#deviceName").val().trim();
+    const location = $("#location").val().trim();
+    const capacityKw = $("#capacityKw").val().trim();
+    const deviceType = $("#deviceType").val();
+    const latitude = $("#latitude").val();
+    const longitude = $("#longitude").val();
 
     if (deviceName === "") {
         alert("기기 이름을 입력하세요.");
-        $("#device_name").focus();
+        $("#deviceName").focus();
+        return;
+    }
+
+    if (location === "") {
+        alert("설치 위치를 입력하세요.");
+        $("#location").focus();
+        return;
+    }
+
+    if (latitude === "" || longitude === "") {
+        alert("주소 검색 버튼을 눌러 설치 위치를 확인하세요.");
+        $("#location").focus();
         return;
     }
 
     if (capacityKw === "") {
         alert("장비 용량을 입력하세요.");
-        $("#capacity_kw").focus();
+        $("#capacityKw").focus();
         return;
     }
 
     if (deviceType === "") {
         alert("장비 종류를 선택하세요.");
-        $("#device_type").focus();
+        $("#deviceType").focus();
         return;
+    }
+
+    const baseAddress = $("#location").val().trim();
+    const detailAddress = $("#detailAddress").val().trim();
+
+    if (detailAddress !== "") {
+        $("#location").val(baseAddress + " " + detailAddress);
     }
 
     const formData = $("#deviceForm").serialize();
@@ -162,7 +176,7 @@ function fn_device_register() {
 
     $.ajax({
         type: "post",
-        url: ctx + "/device_register_ajax",
+        url: ctx + "/device/register",
         data: formData,
         success: function(result) {
             console.log("@# result =>", result);
@@ -171,6 +185,7 @@ function fn_device_register() {
                 alert("기기 등록이 완료되었습니다.");
 
                 $("#deviceForm")[0].reset();
+                $("#addressResult").html("");
 
                 let countText = $("#deviceCount").text();
                 let count = parseInt(countText.replace("대", "").trim(), 10);
@@ -181,10 +196,9 @@ function fn_device_register() {
 
                 $("#deviceCount").text((count + 1) + "대");
 
-                // 등록 후 바로 기기 목록으로 이동
                 loadDeviceList();
 
-            } else if (result === "login_required") {
+            } else if (result === "login_required" || result === "login_view") {
                 alert("로그인이 필요합니다.");
                 location.href = ctx + "/login_view";
 
@@ -202,147 +216,26 @@ function fn_device_register() {
 }
 
 function loadDeviceList() {
-    console.log("@# loadDeviceList() 실행");
-
-    $.ajax({
-        url: ctx + "/device_list_ajax",
-        type: "get",
-        dataType: "json",
-        success: function(list) {
-            console.log("@# device list =>", list);
-
-            let html = "";
-
-            html += "<p>등록된 ESS 장비를 확인하는 영역입니다.</p>";
-
-            html += "<table class='fake-table'>";
-            html += "<tr>";
-            html += "<th>번호</th>";
-            html += "<th>기기명</th>";
-            html += "<th>위치</th>";
-            html += "<th>대표</th>";
-            html += "<th>관리</th>";
-            html += "</tr>";
-
-            if (list == null || list.length === 0) {
-                html += "<tr>";
-                html += "<td colspan='5'>등록된 기기가 없습니다.</td>";
-                html += "</tr>";
-            } else {
-                for (let i = 0; i < list.length; i++) {
-                    const device = list[i];
-
-                    let badgeClass = "green";
-
-                    if (device.status === "점검") {
-                        badgeClass = "yellow";
-                    } else if (device.status === "오류") {
-                        badgeClass = "red";
-                    }
-
-                    html += "<tr>";
-					html += "<td>" + device.device_id + "</td>";
-					html += "<td>" + device.device_name + "</td>";
-					html += "<td>" + device.location + "</td>";
-					
-					// 대표 디바이스 설정 영역
-					html += "<td>";
-					
-					if (device.is_main === "Y") {
-					    html += "<span class='main-device-badge'>대표 디바이스</span>";
-					} else {
-					    html += "<button type='button' onclick='setMainDevice(" + device.device_id + ")'>대표 설정</button>";
-					}
-					
-					html += "</td>";
-					
-					// 관리 버튼 영역
-					html += "<td>";
-					html += "<button type='button' onclick='deleteDevice(" + device.device_id + ")'>삭제</button> ";
-					html += "<button type='button' onclick='detailDevice(" + device.device_id + ")'>상세보기</button>";
-					html += "</td>";
-					
-					html += "</tr>";
-                }
-            }
-
-            html += "</table>";
-
-            renderTemp("🗂 기기 목록", html);
-        },
-        error: function(xhr, status, error) {
-            console.log("@# xhr =>", xhr);
-            console.log("@# status =>", status);
-            console.log("@# error =>", error);
-
-            renderTemp(
-                "🗂 기기 목록",
-                "<p>기기 목록을 불러오는 중 오류가 발생했습니다.</p>"
-            );
-        }
-    });
+    location.href = ctx + "/dashboard/main";
 }
 
-
-// 대표 디바이스 설정
-function setMainDevice(device_id) {
-    console.log("@# setMainDevice() 실행");
-    console.log("@# device_id =>", device_id);
-
-    if (!confirm("이 디바이스를 대표 디바이스로 설정하시겠습니까?")) {
-        return;
-    }
-
-    $.ajax({
-        url: ctx + "/set_main_device",
-        type: "post",
-        data: {
-            device_id: device_id
-        },
-        success: function(result) {
-            console.log("@# setMainDevice result =>", result);
-
-            if (result === "success") {
-                alert("대표 디바이스가 설정되었습니다.");
-
-                // 목록 다시 조회해서 대표 표시 갱신
-                loadDeviceList();
-
-                // 메인 상단 날씨 기준도 바로 바꾸려면 새로고침
-                location.reload();
-
-            } else if (result === "login_required") {
-                alert("로그인이 필요합니다.");
-                location.href = ctx + "/login_view";
-
-            } else {
-                alert("대표 디바이스 설정에 실패했습니다.");
-            }
-        },
-        error: function(xhr, status, error) {
-            console.log("@# xhr.status =>", xhr.status);
-            console.log("@# xhr.responseText =>", xhr.responseText);
-            console.log("@# status =>", status);
-            console.log("@# error =>", error);
-
-            alert("대표 디바이스 설정 중 서버 오류가 발생했습니다.");
-        }
-    });
+function goDeviceDetail(deviceId) {
+    location.href = ctx + "/device/detail?deviceId=" + deviceId;
 }
-// 기기 삭제
-function deleteDevice(device_id) {
+
+function deleteDevice(deviceId) {
     console.log("@# deleteDevice() 실행");
-    console.log("@# device_id =>", device_id);
+    console.log("@# deviceId =>", deviceId);
 
     if (!confirm("해당 기기를 삭제하시겠습니까?")) {
         return;
     }
 
     $.ajax({
-        url: ctx + "/device_delete_ajax",
+        url: ctx + "/device/delete",
         type: "post",
         data: {
-            device_id: device_id
+            deviceId: deviceId
         },
         success: function(result) {
             console.log("@# delete result =>", result);
@@ -382,110 +275,6 @@ function deleteDevice(device_id) {
             alert("삭제 중 서버 오류가 발생했습니다.");
         }
     });
-}
-
-// 목록에서 상세보기 클릭 시 작동
-function detailDevice(device_id) {
-    console.log("@# detailDevice()");
-    console.log("@# device_id =>", device_id);
-
-    $.ajax({
-        url: ctx + "/device_detail_ajax",
-        type: "get",
-        data: {
-            device_id: device_id
-        },
-        dataType: "json",
-        success: function(device) {
-            console.log("@# device detail =>", device);
-
-            if (device == null) {
-                renderTemp(
-                    "🗂 기기 상세",
-                    "<p>기기 상세 정보를 찾을 수 없습니다.</p>"
-                );
-                return;
-            }
-
-            let html = "";
-
-            html += "<p>선택한 ESS 장비의 상세 정보를 확인합니다.</p>";
-
-            html += "<table class='fake-table'>";
-
-            html += "<tr>";
-            html += "<th>항목</th>";
-            html += "<th>내용</th>";
-            html += "</tr>";
-
-            html += "<tr>";
-            html += "<td>기기 번호</td>";
-            html += "<td>" + device.device_id + "</td>";
-            html += "</tr>";
-
-            html += "<tr>";
-            html += "<td>기기명</td>";
-            html += "<td>" + device.device_name + "</td>";
-            html += "</tr>";
-
-            html += "<tr>";
-            html += "<td>위치</td>";
-            html += "<td>" + device.location + "</td>";
-            html += "</tr>";
-
-            html += "<tr>";
-            html += "<td>용량</td>";
-            html += "<td>" + device.capacity_kw + " kW</td>";
-            html += "</tr>";
-
-            html += "<tr>";
-            html += "<td>종류</td>";
-            html += "<td>" + device.device_type + "</td>";
-            html += "</tr>";
-
-            html += "<tr>";
-            html += "<td>상태</td>";
-            html += "<td>" + device.status + "</td>";
-            html += "</tr>";
-
-            html += "<tr>";
-            html += "<td>설치일</td>";
-            html += "<td>" + device.install_date + "</td>";
-            html += "</tr>";
-
-            html += "</table>";
-
-            html += "<div style='margin-top: 15px;'>";
-            html += "<button type='button' onclick='loadDeviceList()'>목록으로</button> ";
-            html += "<button type='button' onclick='loadMonitoringDetail(" + device.device_id + ")'>실시간 모니터링 보기</button>";
-            html += "</div>";
-
-            renderTemp("🗂 기기 상세", html);
-        },
-        error: function(xhr, status, error) {
-            console.log("@# xhr =>", xhr);
-            console.log("@# status =>", status);
-            console.log("@# error =>", error);
-
-            renderTemp(
-                "🗂 기기 상세",
-                "<p>기기 상세 정보를 불러오는 중 오류가 발생했습니다.</p>"
-            );
-        }
-    });
-}
-
-function loadMonitoringDetail(device_id) {
-    renderTemp(
-        "📊 실시간 모니터링",
-        "<p>선택한 기기 번호: <strong>" + device_id + "</strong></p>" +
-        "<div class='summary-grid'>" +
-        "<div class='summary-card'><h4>SOC</h4><strong>--%</strong></div>" +
-        "<div class='summary-card'><h4>전압</h4><strong>-- V</strong></div>" +
-        "<div class='summary-card'><h4>전류</h4><strong>-- A</strong></div>" +
-        "<div class='summary-card'><h4>온도</h4><strong>-- ℃</strong></div>" +
-        "</div>"
-    );
 }
 
 function loadMonitor() {
@@ -570,24 +359,77 @@ function showServiceIntro() {
     scrollContent();
 }
 
+function moveView(viewName, loader) {
+    history.pushState({ view: viewName }, "", ctx + "/main?view=" + viewName);
+    loader();
+}
+
+function loadViewByName(viewName) {
+    if (viewName === "register") {
+        loadRegister();
+    } else if (viewName === "deviceList") {
+        loadDeviceList();
+    } else if (viewName === "monitor") {
+        loadMonitor();
+    } else if (viewName === "alert") {
+        loadAlert();
+    } else if (viewName === "energy") {
+        loadEnergy();
+    } else if (viewName === "myPage") {
+        loadMyPage();
+    } else {
+        location.href = ctx + "/main";
+    }
+}
+
+window.addEventListener("popstate", function() {
+    const params = new URLSearchParams(location.search);
+    const view = params.get("view");
+
+    if (view) {
+        loadViewByName(view);
+    } else {
+        location.href = ctx + "/main";
+    }
+});
+
+$(function() {
+    const params = new URLSearchParams(location.search);
+    const view = params.get("view");
+
+    if (view) {
+        loadViewByName(view);
+    }
+});
+
 $(document).on("click", "#btnRegister", function() {
-    checkLogin(loadRegister);
+    checkLogin(function() {
+        moveView("register", loadRegister);
+    });
 });
 
 $(document).on("click", "#btnDeviceList", function() {
-    checkLogin(loadDeviceList);
+    checkLogin(function() {
+        moveView("deviceList", loadDeviceList);
+    });
 });
 
 $(document).on("click", "#btnMonitor", function() {
-    checkLogin(loadMonitor);
+    checkLogin(function() {
+        moveView("monitor", loadMonitor);
+    });
 });
 
 $(document).on("click", "#btnAlert", function() {
-    checkLogin(loadAlert);
+    checkLogin(function() {
+        moveView("alert", loadAlert);
+    });
 });
 
 $(document).on("click", "#btnEnergy", function() {
-    checkLogin(loadEnergy);
+    checkLogin(function() {
+        moveView("energy", loadEnergy);
+    });
 });
 
 $(document).on("click", "#btnBoard", function() {
@@ -595,7 +437,9 @@ $(document).on("click", "#btnBoard", function() {
 });
 
 $(document).on("click", "#btnMyPage", function() {
-    checkLogin(loadMyPage);
+    checkLogin(function() {
+        moveView("myPage", loadMyPage);
+    });
 });
 
 $(document).on("click", "#btnGuide", function() {

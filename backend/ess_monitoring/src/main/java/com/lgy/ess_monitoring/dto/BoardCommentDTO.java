@@ -1,5 +1,7 @@
 package com.lgy.ess_monitoring.dto;
 
+import java.sql.Timestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,25 +10,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardCommentDTO {
-	// 댓글 번호
-    private int comment_id;
 
-    // 댓글이 달린 게시글 번호
-    private int board_no;
+    // 댓글 번호
+    private int commentId;
 
-    // 댓글 작성자 회원 번호
-    private int member_id;
+    // 게시글 번호
+    private int boardNo;
 
-    // 댓글 작성자 이름
-    // board_comment 테이블에는 없지만 ess_member와 join해서 조회할 값
-    private String member_name;
+    // 작성자 회원 번호
+    private int memberId;
+
+    // 작성자 이름
+    private String memberName;
 
     // 댓글 내용
-    private String comment_content;
+    private String commentContent;
 
-    // 댓글 작성일
-    private String created_at;
+    // 작성일
+    private Timestamp createdAt;
 
-    // 댓글 수정일
-    private String updated_at;
+    // 수정일
+    private Timestamp updatedAt;
 }

@@ -1,0 +1,92 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lgy.ess_monitoring.dao.AnalysisDAO">
+
+    <!-- 기간별 일자 발전량 -->
+    <select id="getDailyGeneration"
+            resultType="com.lgy.ess_monitoring.dto.GenerationAnalysisDTO">
+        SELECT
+            DATE_FORMAT(m.record_time, '%Y-%m-%d') AS label,
+            IFNULL(SUM(m.solar_generation_kwh), 0) AS generationKwh,
+            IFNULL(SUM(m.charged_energy_kwh), 0) AS chargedKwh,
+            IFNULL(SUM(m.used_energy_kwh), 0) AS usedKwh,
+            IFNULL(SUM(m.saved_cost), 0) AS savedCost
+        FROM monitoring m
+        JOIN ess_device d
+          ON m.device_id = d.device_id
+        WHERE d.member_id = #{memberId}
+          AND m.record_time >= STR_TO_DATE(#{startDate}, '%Y-%m-%d')
+          AND m.record_time &lt; DATE_ADD(STR_TO_DATE(#{endDate}, '%Y-%m-%d'), INTERVAL 1 DAY)
+
+        <if test="deviceId != null">
+            AND m.device_id = #{deviceId}
+        </if>
+
+        GROUP BY DATE_FORMAT(m.record_time, '%Y-%m-%d')
+        ORDER BY label ASC
+    </select>
+
+    <!-- 장비별 기간 발전량 -->
+    <select id="getDeviceGeneration"
+	            resultType="com.lgy.ess_monitoring.dto.GenerationAnalysisDTO">
+	        SELECT
+	            d.device_name AS label,
+	            IFNULL(SUM(m.solar_generation_kwh), 0) AS generationKwh,
+	            IFNULL(SUM(m.charged_energy_kwh), 0) AS chargedKwh,
+	            IFNULL(SUM(m.used_energy_kwh), 0) AS usedKwh,
+	            IFNULL(SUM(m.saved_cost), 0) AS savedCost
+	        FROM ess_device d
+	        LEFT JOIN monitoring m
+	          ON d.device_id = m.device_id
+	         AND m.record_time >= STR_TO_DATE(#{startDate}, '%Y-%m-%d')
+	         AND m.record_time &lt; DATE_ADD(STR_TO_DATE(#{endDate}, '%Y-%m-%d'), INTERVAL 1 DAY)
+	        WHERE d.member_id = #{memberId}
+	        GROUP BY d.device_id, d.device_name
+	        ORDER BY generationKwh DESC
+	    </select>
+		
+		<!-- 일자별 에너지 통계 -->
+	<select id="getDailyEnergyStats"
+	        resultType="com.lgy.ess_monitoring.dto.EnergyStatsDTO">
+	    SELECT
+	        DATE_FORMAT(e.log_date, '%Y-%m-%d') AS label,
+	        IFNULL(SUM(e.daily_kwh), 0) AS dailyKwh,
+	        IFNULL(SUM(e.monthly_kwh), 0) AS monthlyKwh,
+	        IFNULL(SUM(e.cost), 0) AS cost,
+	        IFNULL(AVG(e.efficiency), 0) AS efficiency
+	    FROM energy_log e
+	    JOIN ess_device d
+	      ON e.device_id = d.device_id
+	    WHERE d.member_id = #{memberId}
+	      AND e.log_date >= STR_TO_DATE(#{startDate}, '%Y-%m-%d')
+	      AND e.log_date &lt;= STR_TO_DATE(#{endDate}, '%Y-%m-%d')
+	
+	    <if test="deviceId != null">
+	        AND e.device_id = #{deviceId}
+	    </if>
+	
+	    GROUP BY DATE_FORMAT(e.log_date, '%Y-%m-%d')
+	    ORDER BY label ASC
+	</select>
+
+	<!-- 장비별 에너지 통계 -->
+	<select id="getDeviceEnergyStats"
+	        resultType="com.lgy.ess_monitoring.dto.EnergyStatsDTO">
+	    SELECT
+	        d.device_name AS label,
+	        IFNULL(SUM(e.daily_kwh), 0) AS dailyKwh,
+	        IFNULL(SUM(e.monthly_kwh), 0) AS monthlyKwh,
+	        IFNULL(SUM(e.cost), 0) AS cost,
+	        IFNULL(AVG(e.efficiency), 0) AS efficiency
+	    FROM ess_device d
+	    LEFT JOIN energy_log e
+	      ON d.device_id = e.device_id
+	     AND e.log_date >= STR_TO_DATE(#{startDate}, '%Y-%m-%d')
+	     AND e.log_date &lt;= STR_TO_DATE(#{endDate}, '%Y-%m-%d')
+	    WHERE d.member_id = #{memberId}
+	    GROUP BY d.device_id, d.device_name
+	    ORDER BY dailyKwh DESC
+	</select>
+</mapper>

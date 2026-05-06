@@ -23,54 +23,46 @@
           on b.member_id = m.member_id
     </sql>
 
-	<!-- 공통 검색 조건 -->
-	<sql id="searchCriteria">
-	    <if test="keyword != null and keyword != '' and type != null and type != ''">
-	
-	        <choose>
-	            <!-- 제목 -->
-	            <when test='type == "T"'>
-	                AND b.board_title LIKE CONCAT('%', #{keyword}, '%')
-	            </when>
-	
-	            <!-- 내용 -->
-	            <when test='type == "C"'>
-	                AND b.board_content LIKE CONCAT('%', #{keyword}, '%')
-	            </when>
-	
-	            <!-- 작성자 -->
-	            <when test='type == "W"'>
-	                AND m.member_name LIKE CONCAT('%', #{keyword}, '%')
-	            </when>
-	
-	            <!-- 제목 + 내용 -->
-	            <when test='type == "TC"'>
-	                AND (
-	                    b.board_title LIKE CONCAT('%', #{keyword}, '%')
-	                    OR b.board_content LIKE CONCAT('%', #{keyword}, '%')
-	                )
-	            </when>
-	
-	            <!-- 제목 + 작성자 -->
-	            <when test='type == "TW"'>
-	                AND (
-	                    b.board_title LIKE CONCAT('%', #{keyword}, '%')
-	                    OR m.member_name LIKE CONCAT('%', #{keyword}, '%')
-	                )
-	            </when>
-	
-	            <!-- 전체: 제목 + 내용 + 작성자 -->
-	            <when test='type == "TCW"'>
-	                AND (
-	                    b.board_title LIKE CONCAT('%', #{keyword}, '%')
-	                    OR b.board_content LIKE CONCAT('%', #{keyword}, '%')
-	                    OR m.member_name LIKE CONCAT('%', #{keyword}, '%')
-	                )
-	            </when>
-	        </choose>
-	
-	    </if>
-	</sql>
+    <!-- 공통 검색 조건 -->
+    <sql id="searchCriteria">
+        <if test="keyword != null and keyword != '' and type != null and type != ''">
+            <choose>
+                <when test='type == "T"'>
+                    AND b.board_title LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+
+                <when test='type == "C"'>
+                    AND b.board_content LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+
+                <when test='type == "W"'>
+                    AND m.member_name LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+
+                <when test='type == "TC"'>
+                    AND (
+                        b.board_title LIKE CONCAT('%', #{keyword}, '%')
+                        OR b.board_content LIKE CONCAT('%', #{keyword}, '%')
+                    )
+                </when>
+
+                <when test='type == "TW"'>
+                    AND (
+                        b.board_title LIKE CONCAT('%', #{keyword}, '%')
+                        OR m.member_name LIKE CONCAT('%', #{keyword}, '%')
+                    )
+                </when>
+
+                <when test='type == "TCW"'>
+                    AND (
+                        b.board_title LIKE CONCAT('%', #{keyword}, '%')
+                        OR b.board_content LIKE CONCAT('%', #{keyword}, '%')
+                        OR m.member_name LIKE CONCAT('%', #{keyword}, '%')
+                    )
+                </when>
+            </choose>
+        </if>
+    </sql>
 
     <!-- 전체 목록 -->
     <select id="list" resultType="com.lgy.ess_monitoring.dto.BoardDTO">
@@ -113,9 +105,9 @@
             board_title,
             board_content
         ) values (
-            #{member_id},
-            #{board_title},
-            #{board_content}
+            #{memberId},
+            #{boardTitle},
+            #{boardContent}
         )
     </insert>
 
@@ -126,22 +118,22 @@
         select
             <include refid="boardColumns"/>
         <include refid="boardFrom"/>
-        where b.board_no = #{board_no}
+        where b.board_no = #{boardNo}
     </select>
 
     <!-- 수정 -->
     <update id="modify" parameterType="hashmap">
         update board
-           set board_title = #{board_title},
-               board_content = #{board_content},
+           set board_title = #{boardTitle},
+               board_content = #{boardContent},
                updated_at = now()
-         where board_no = #{board_no}
+         where board_no = #{boardNo}
     </update>
 
     <!-- 삭제 -->
     <delete id="delete" parameterType="hashmap">
         delete from board
-         where board_no = #{board_no}
+         where board_no = #{boardNo}
     </delete>
 
     <!-- 조회수 증가 -->

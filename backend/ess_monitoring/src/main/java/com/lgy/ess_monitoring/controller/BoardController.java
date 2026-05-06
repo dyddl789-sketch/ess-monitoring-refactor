@@ -1,6 +1,5 @@
 package com.lgy.ess_monitoring.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,220 +22,197 @@ import com.lgy.ess_monitoring.service.BoardService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Controller  
+@Controller
 @Slf4j
 public class BoardController {
-	@Autowired
-	private BoardService service;
-	
-	@Autowired
-	private BoardCommentService commentService;
-	@RequestMapping("/board_list")
-	public String list(Criteria cri, Model model) {
-		log.info("@# board_list()");
-		// 현재 페이지 번호, 한 페이지 개수, 검색 조건 확인
-		log.info("@# Criteria cri=>"+cri);
-		
-		List<BoardDTO> list = service.listWithPaging(cri);
-		int total = service.getTotalCount(cri);
-		
-		
-		model.addAttribute("list", list);
-		model.addAttribute("pageMaker", new PageDTO(total, cri));
-		
-		return "board_list";
-	}
-	
-	@RequestMapping("/board_write_view")
-	public String write_view() {
-		log.info("@# board_write_view()");
-		
-		return "board_write_view";
-	}
-	
-	@RequestMapping("/board_write")
-	public String write(@RequestParam HashMap<String, String> param, HttpSession session) {
-	    log.info("@# board_write()");
-	    log.info("@# param before => " + param);
 
-	    Integer memberId = (Integer)session.getAttribute("member_id");
-	    
-	 // 로그인 안 되어 있으면 로그인 화면으로 이동
-	    if (memberId == null) {
-	        log.info("@# memberId is null");
-	        return "redirect:/login_view";
-	    }
-	    
-	    param.put("member_id", String.valueOf(memberId));
-	    
-	    log.info("@# session member_id => " + memberId);
-	    log.info("@# param after => " + param);
-	    service.write(param);
+    @Autowired
+    private BoardService boardService;
 
-	    return "redirect:/board_list";
-	}
+    @Autowired
+    private BoardCommentService boardCommentService;
 
-	@RequestMapping("/board_content_view")
-	public String content_view(@RequestParam HashMap<String, String> param
-								, Model model
-								, HttpSession session) {
-		
-		log.info("@# board_content_view()");
-		log.info("@# param => " + param);
-		
-		// boardNo 파라미터를 꺼내서 int로 변환
-	    // 이 값으로 어떤 게시글을 조회할지 결정함
-		int boardNo = Integer.parseInt(param.get("board_no"));
-		
-		//조회수 증가
-		service.increaseHit(boardNo);
-		
-		//게시글 상세 정보 조회
-		BoardDTO dto = service.contentView(param);
-	    log.info("@# dto => " + dto);
-	    
-	    // 현재 로그인한 회원의 member_id를 세션에서 꺼냄
-	    // 로그인할 때 session.setAttribute("member_id", dto.getMember_id())가 되어 있어야 함
-	    Integer loginMemberId = (Integer) session.getAttribute("member_id");
-	    
-	    //로그인 회원번호 확인
-	    log.info("@# loginMemberId=>"+ loginMemberId);
-	    
-	    // 현재 로그인한 회원 유형을 세션에서 꺼냄
-	    // 관리자 댓글 작성 폼을 JSP에서 보여줄지 판단하기 위해 사용
-	    String user_type = (String) session.getAttribute("user_type");
-	    model.addAttribute("user_type", user_type);
-	    log.info("@# user_type => " + user_type);
-	    
-	    // 현재 게시글 번호를 기준으로 관리자 답변 댓글 목록 조회
-	    // board_comment 테이블에서 board_no가 현재 게시글 번호와 같은 댓글만 가져옴
-	    ArrayList<BoardCommentDTO> commentList = commentService.getCommentList(boardNo);
-	    log.info("@# commentList size => " + commentList.size());
-	    
-	    //jsp에서 ${content_view.필드명}으로 사용할 게시글 상세 정보 전달
-		model.addAttribute("content_view", dto);
-		
-		//content_view.jsp 에서 pageMaker 를 가지고 페이징 처리
-		model.addAttribute("pageMaker", param);
-		
-		// JSP에서 현재 로그인한 회원번호와 작성자 회원번호를 비교하기 위해 전달
-		model.addAttribute("loginMemberId",loginMemberId);
-		
-		// JSP에서 ${commentList}로 관리자 답변 목록을 출력하기 위해 전달
-	    model.addAttribute("commentList", commentList);
+    @RequestMapping("/board_list")
+    public String boardList(Criteria criteria, Model model) {
+        List<BoardDTO> boardList = boardService.listWithPaging(criteria);
+        int totalCount = boardService.getTotalCount(criteria);
 
-	    // JSP에서 ${user_type}으로 관리자 여부를 판단하기 위해 전달
-	    model.addAttribute("user_type", user_type);
-		
-		return "board_content_view";
-	}
-	
-	
-	@RequestMapping("/modify")
-	public String modify(@RequestParam HashMap<String, String> param,
-						 @ModelAttribute("cri") Criteria cri,
-						 RedirectAttributes rttr,
-						 HttpSession session) {
-		
-		 // modify 메서드가 실행되었는지 확인
-		log.info("@# modify()");
-		// JSP form에서 넘어온 값 확인
-		log.info("@# param=>" + param);
-		// 페이징 정보 확인
-		log.info("@# cri=>" + cri);
-		
-		// 1. 현재 로그인한 회원의 member_id를 세션에서 꺼냄
-	    Integer loginMemberId = (Integer) session.getAttribute("member_id");
+        model.addAttribute("list", boardList);
+        model.addAttribute("pageMaker", new PageDTO(totalCount, criteria));
 
-	    // 2. 로그인하지 않은 상태라면 수정 불가
-	    if (loginMemberId == null) {
-	        log.info("@# loginMemberId is null");
+        return "board_list";
+    }
 
-	        // 로그인 화면으로 보냄
-	        return "redirect:/login_view";
-	    }
+    @RequestMapping("/board_write_view")
+    public String boardWriteView() {
+        return "board_write_view";
+    }
 
-	    // 3. 수정하려는 게시글 번호를 가져옴
-	    int boardNo = Integer.parseInt(param.get("board_no"));
+    @RequestMapping("/board_write")
+    public String boardWrite(@RequestParam HashMap<String, String> params,
+                             HttpSession session) {
 
-	    // 4. DB에서 해당 게시글의 작성자 member_id를 조회
-	    int writerMemberId = service.getWriterMemberId(boardNo);
+        // 기존 프로젝트에서 memberId를 쓰는 경우
+        Integer memberId = (Integer) session.getAttribute("memberId");
 
-	    // 5. 확인용 로그
-	    log.info("@# loginMemberId => " + loginMemberId);
-	    log.info("@# writerMemberId => " + writerMemberId);
+        // 다른 화면에서 member_id로 저장된 경우까지 대비
+        if (memberId == null) {
+            memberId = (Integer) session.getAttribute("member_id");
+        }
 
-	    // 6. 현재 로그인한 회원과 게시글 작성자가 다르면 수정 차단
-	    if (!loginMemberId.equals(writerMemberId)) {
-	        log.info("@# 수정 권한 없음");
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
 
-	        // 다시 상세보기 화면으로 돌아가기 위해 boardNo를 넘김
-	        rttr.addAttribute("boardNo", boardNo);
+        params.put("memberId", String.valueOf(memberId));
+        boardService.write(params);
 
-	        // 기존 페이지 정보 유지
-	        rttr.addAttribute("pageNum", cri.getPageNum());
-	        rttr.addAttribute("amount", cri.getAmount());
-	        rttr.addAttribute("type", cri.getType());
-	        rttr.addAttribute("keyword", cri.getKeyword());
- 
-	        // 수정하지 않고 상세보기로 되돌아감
-	        return "redirect:/board_content_view";
-	    }
+        return "redirect:/board_list";
+    }
 
-	    // 7. 작성자 본인이 맞으면 수정 실행
-	    service.modify(param);
+    @RequestMapping("/board_content_view")
+    public String boardContentView(@RequestParam HashMap<String, String> params,
+                                   Model model,
+                                   HttpSession session) {
 
-	    // 8. 수정 후 목록으로 돌아갈 때 기존 페이지 정보 유지
-	    rttr.addAttribute("pageNum", cri.getPageNum());
-	    rttr.addAttribute("amount", cri.getAmount());
-	    rttr.addAttribute("type", cri.getType());
-	    rttr.addAttribute("keyword", cri.getKeyword());
+        int boardNo = Integer.parseInt(params.get("boardNo"));
 
-	    // 9. 수정 완료 후 게시판 목록으로 이동
-	    return "redirect:/board_list";
-	}
-	
-	@RequestMapping("/delete")
-	public String delete(@RequestParam HashMap<String, String> param,
-	                     @ModelAttribute("cri") Criteria cri,
-	                     RedirectAttributes rttr,
-	                     HttpSession session) {
+        log.info("@# board_content_view()");
+        log.info("@# boardNo => " + boardNo);
 
-	    Integer loginMemberId = (Integer) session.getAttribute("member_id");
+        // 1. 조회수 증가
+        boardService.increaseHit(boardNo);
 
-	    if (loginMemberId == null) {
-	        return "redirect:/login_view";
-	    }
+        // 2. 게시글 상세 조회
+        BoardDTO boardDto = boardService.contentView(params);
 
-	    String boardNoStr = param.get("board_no");
+        // 3. 로그인 회원 번호 가져오기
+        Integer loginMemberId = (Integer) session.getAttribute("memberId");
 
-	    if (boardNoStr == null || boardNoStr.equals("")) {
-	        throw new RuntimeException("board_no 없음");
-	    }
+        // 세션 이름이 member_id로 저장된 경우도 대비
+        if (loginMemberId == null) {
+            loginMemberId = (Integer) session.getAttribute("member_id");
+        }
 
-	    int boardNo = Integer.parseInt(boardNoStr);
+        // 4. 회원 유형 가져오기
+        String userType = (String) session.getAttribute("userType");
 
-	    int writerMemberId = service.getWriterMemberId(boardNo);
+        // 5. 권한 역할 가져오기
+        // 관리자 여부는 userType이 아니라 role로 판단한다.
+        String role = (String) session.getAttribute("role");
 
-	    if (!loginMemberId.equals(writerMemberId)) {
-	        rttr.addAttribute("board_no", boardNo);
-	        rttr.addAttribute("pageNum", cri.getPageNum());
-	        rttr.addAttribute("amount", cri.getAmount());
-	        rttr.addAttribute("type", cri.getType());
-	        rttr.addAttribute("keyword", cri.getKeyword());
+        log.info("@# loginMemberId => " + loginMemberId);
+        log.info("@# userType => " + userType);
+        log.info("@# role => " + role);
+        // 세션 이름이 user_type으로 저장된 경우도 대비
+        if (userType == null) {
+            userType = (String) session.getAttribute("user_type");
+        }
 
-	        return "redirect:/board_content_view";
-	    }
+        log.info("@# loginMemberId => " + loginMemberId);
+        log.info("@# userType => " + userType);
 
-	    service.delete(param);
+        // 6. 관리자 답변 목록 조회
+        List<BoardCommentDTO> commentList = boardCommentService.getCommentList(boardNo);
 
-	    rttr.addAttribute("pageNum", cri.getPageNum());
-	    rttr.addAttribute("amount", cri.getAmount());
-	    rttr.addAttribute("type", cri.getType());
-	    rttr.addAttribute("keyword", cri.getKeyword());
+        log.info("@# commentList size => " + commentList.size());
 
-	    return "redirect:/board_list";
-	}
-	
+        // 7. JSP로 데이터 전달
+        model.addAttribute("content_view", boardDto);
+        model.addAttribute("pageMaker", params);
+        model.addAttribute("loginMemberId", loginMemberId);
+
+        // 댓글 목록
+        model.addAttribute("commentList", commentList);
+
+        // JSP에서 둘 다 대응 가능하게 전달
+        model.addAttribute("userType", userType);
+        model.addAttribute("user_type", userType);
+
+        return "board_content_view";
+    }
+
+    @RequestMapping("/modify")
+    public String modify(@RequestParam HashMap<String, String> params,
+                         @ModelAttribute("cri") Criteria criteria,
+                         RedirectAttributes redirectAttributes,
+                         HttpSession session) {
+
+        Integer loginMemberId = (Integer) session.getAttribute("memberId");
+
+        if (loginMemberId == null) {
+            loginMemberId = (Integer) session.getAttribute("member_id");
+        }
+
+        if (loginMemberId == null) {
+            return "redirect:/login_view";
+        }
+
+        int boardNo = Integer.parseInt(params.get("boardNo"));
+        int writerMemberId = boardService.getWriterMemberId(boardNo);
+
+        if (!loginMemberId.equals(writerMemberId)) {
+            redirectAttributes.addAttribute("boardNo", boardNo);
+            redirectAttributes.addAttribute("pageNum", criteria.getPageNum());
+            redirectAttributes.addAttribute("amount", criteria.getAmount());
+            redirectAttributes.addAttribute("type", criteria.getType());
+            redirectAttributes.addAttribute("keyword", criteria.getKeyword());
+
+            return "redirect:/board_content_view";
+        }
+
+        boardService.modify(params);
+
+        redirectAttributes.addAttribute("pageNum", criteria.getPageNum());
+        redirectAttributes.addAttribute("amount", criteria.getAmount());
+        redirectAttributes.addAttribute("type", criteria.getType());
+        redirectAttributes.addAttribute("keyword", criteria.getKeyword());
+
+        return "redirect:/board_list";
+    }
+
+    @RequestMapping("/delete")
+    public String delete(@RequestParam HashMap<String, String> params,
+                         @ModelAttribute("cri") Criteria criteria,
+                         RedirectAttributes redirectAttributes,
+                         HttpSession session) {
+
+        Integer loginMemberId = (Integer) session.getAttribute("memberId");
+
+        if (loginMemberId == null) {
+            loginMemberId = (Integer) session.getAttribute("member_id");
+        }
+
+        if (loginMemberId == null) {
+            return "redirect:/login_view";
+        }
+
+        String boardNoText = params.get("boardNo");
+
+        if (boardNoText == null || boardNoText.trim().isEmpty()) {
+            throw new RuntimeException("boardNo 없음");
+        }
+
+        int boardNo = Integer.parseInt(boardNoText);
+        int writerMemberId = boardService.getWriterMemberId(boardNo);
+
+        if (!loginMemberId.equals(writerMemberId)) {
+            redirectAttributes.addAttribute("boardNo", boardNo);
+            redirectAttributes.addAttribute("pageNum", criteria.getPageNum());
+            redirectAttributes.addAttribute("amount", criteria.getAmount());
+            redirectAttributes.addAttribute("type", criteria.getType());
+            redirectAttributes.addAttribute("keyword", criteria.getKeyword());
+
+            return "redirect:/board_content_view";
+        }
+
+        boardService.delete(params);
+
+        redirectAttributes.addAttribute("pageNum", criteria.getPageNum());
+        redirectAttributes.addAttribute("amount", criteria.getAmount());
+        redirectAttributes.addAttribute("type", criteria.getType());
+        redirectAttributes.addAttribute("keyword", criteria.getKeyword());
+
+        return "redirect:/board_list";
+    }
 }
-

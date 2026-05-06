@@ -101,32 +101,32 @@
                 <button type="button" class="tab-btn" onclick="selectType('기업')">기업용</button>
             </div>
 
-            <input type="hidden" id="user_type" name="user_type" value="개인">
+            <input type="hidden" id="userType" name="userType" value="개인">
 
             <!-- member_name -->
             <div class="form-group">
                 <label>이름</label>
-                <input type="text" id="member_name" name="member_name" placeholder="이름을 입력하세요" required>
+                <input type="text" id="memberName" name="memberName" placeholder="이름을 입력하세요" required>
             </div>
 
             <!-- member_userid -->
             <div class="form-group">
                 <label>아이디</label>
-                <input type="text" id="member_userid" name="member_userid" placeholder="로그인에 사용할 아이디" required>
+                <input type="text" id="memberUserid" name="memberUserid" placeholder="로그인에 사용할 아이디" required>
                 <small>영문, 숫자 조합을 권장합니다.</small>
             </div>
 
             <!-- member_pw -->
             <div class="form-group">
                 <label>비밀번호</label>
-                <input type="password" id="member_pw" name="member_pw" placeholder="비밀번호를 입력하세요" required>
+                <input type="password" id="memberPw" name="memberPw" placeholder="비밀번호를 입력하세요" required>
                 <small>장비 및 에너지 데이터 보호를 위해 8자 이상을 권장합니다.</small>
             </div>
 
             <!-- DB 저장 안 함: 화면 검증용 -->
             <div class="form-group">
                 <label>비밀번호 확인</label>
-                <input type="password" id="member_pw_check" placeholder="비밀번호를 다시 입력하세요" required>
+                <input type="password" id="memberPwCheck" placeholder="비밀번호를 다시 입력하세요" required>
             </div>
 
             <!-- phone -->
@@ -198,13 +198,13 @@
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(tab => tab.classList.remove('active'));
 
-        if (type === '개인') {
+        if (type === 'PERSONAL') {
             tabs[0].classList.add('active');
         } else {
             tabs[1].classList.add('active');
         }
 
-        document.getElementById('user_type').value = type;
+        document.getElementById('userType').value = type;
     }
 
     function execDaumPostcode() {
@@ -247,20 +247,22 @@
     }
 
     function joinCheck() {
-        const pw = document.getElementById('member_pw').value;
-        const pwCheck = document.getElementById('member_pw_check').value;
+        const memberPw = document.getElementById('memberPw').value;
+        const memberPwCheck = document.getElementById('memberPwCheck').value;
+
+        // HTML id와 동일하게 수정
         const agreeRequired = document.getElementById('agree_required').checked;
         const agreeMonitoring = document.getElementById('agree_monitoring').checked;
 
-        if (pw.length < 8) {
+        if (memberPw.length < 8) {
             alert("비밀번호는 8자 이상 입력해주세요.");
-            document.getElementById('member_pw').focus();
+            document.getElementById('memberPw').focus();
             return false;
         }
 
-        if (pw !== pwCheck) {
+        if (memberPw !== memberPwCheck) {
             alert("비밀번호가 일치하지 않습니다.");
-            document.getElementById('member_pw_check').focus();
+            document.getElementById('memberPwCheck').focus();
             return false;
         }
 

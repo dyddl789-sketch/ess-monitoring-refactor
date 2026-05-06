@@ -25,6 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WeatherServiceImpl implements WeatherService {
 	
+	// 날씨 API 호출 결과 캐시
+	private Map<String, List<WeatherDTO>> weatherCache = new HashMap<>();
+
+	// 캐시 저장 시간
+	private Map<String, Long> weatherCacheTime = new HashMap<>();
+
+	// 캐시 유지 시간: 30분
+	private static final long WEATHER_CACHE_MILLIS = 30 * 60 * 1000;
+	
 	
 	/*
 	  SKY 코드 → 한글 변환
@@ -431,19 +440,46 @@ public class WeatherServiceImpl implements WeatherService {
 
 	@Override
 	public List<WeatherDTO> forecastByAddress(String address) {
-		log.info("@# forecastByAddress()");
+	    log.info("@# forecastByAddress()");
 	    log.info("@# address => " + address);
-		
-        // 주소 문자열에서 대표 도시 추출
+
+	    // 주소 문자열에서 대표 도시 추출
 	    String city = getCityFromAddress(address);
-	    log.info("@# city =>"+city);
-	    
-        // 대표 도시를 기상청 격자 좌표로 변환
+	    log.info("@# city => " + city);
+
+	    // 캐시 key: 도시 기준
+	    String cacheKey = city;
+
+	    long now = System.currentTimeMillis();
+
+	    // 캐시에 데이터가 있고, 30분이 지나지 않았으면 API 호출 없이 재사용
+	    if (weatherCache.containsKey(cacheKey) && weatherCacheTime.containsKey(cacheKey)) {
+	        long savedTime = weatherCacheTime.get(cacheKey);
+
+	        if (now - savedTime < WEATHER_CACHE_MILLIS) {
+	            log.info("@# weather cache hit => " + cacheKey);
+	            return weatherCache.get(cacheKey);
+	        }
+	    }
+
+	    log.info("@# weather cache miss => " + cacheKey);
+
+	    // 대표 도시를 기상청 격자 좌표로 변환
 	    String[] xy = getNxNyByCity(city);
-        log.info("@# nx => " + xy[0] + ", ny => " + xy[1]);
-        
-        // 해당 도시의 날씨 조회
-        return getCityWeather(city, xy[0], xy[1]);
+	    log.info("@# nx => " + xy[0] + ", ny => " + xy[1]);
+
+	    // 해당 도시의 날씨 조회
+	    List<WeatherDTO> weatherList = getCityWeather(city, xy[0], xy[1]);
+
+	    // 조회 성공 시 캐시에 저장
+	    if (weatherList != null && !weatherList.isEmpty()) {
+	        weatherCache.put(cacheKey, weatherList);
+	        weatherCacheTime.put(cacheKey, now);
+
+	        log.info("@# weather cache save => " + cacheKey);
+	    }
+
+	    return weatherList;
 	}
 }
 
