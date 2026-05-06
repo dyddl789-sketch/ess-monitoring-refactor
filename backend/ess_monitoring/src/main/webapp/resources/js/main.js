@@ -88,6 +88,155 @@ function loadRegister() {
 
 
 // ===============================
+// 주소 검색
+// ===============================
+function openDeviceAddressSearch() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            let address = data.roadAddress || data.jibunAddress;
+
+            $("#location").val(address);
+
+            console.log("@# 선택 주소 =>", address);
+            console.log("@# postcode data =>", data);
+
+            searchDeviceAddress();
+        }
+    }).open({
+        popupName: "devicePostcodePopup"
+    });
+}
+
+function searchDeviceAddress() {
+    const address = $("#location").val().trim();
+
+    if (address === "") {
+        alert("설치 위치를 입력하세요.");
+        $("#location").focus();
+        return;
+    }
+
+    if (typeof kakao === "undefined" || !kakao.maps || !kakao.maps.services) {
+        alert("카카오 지도 API가 로드되지 않았습니다.");
+        return;
+    }
+
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    geocoder.addressSearch(address, function(result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            const latitude = result[0].y;
+            const longitude = result[0].x;
+            const roadAddress = result[0].road_address
+                ? result[0].road_address.address_name
+                : "";
+            const jibunAddress = result[0].address
+                ? result[0].address.address_name
+                : address;
+
+            $("#latitude").val(latitude);
+            $("#longitude").val(longitude);
+
+            $("#location").val(roadAddress !== "" ? roadAddress : jibunAddress);
+
+            $("#addressResult").html(
+                "주소 확인 완료<br>" +
+                "위도: " + latitude + "<br>" +
+                "경도: " + longitude
+            );
+        } else {
+            $("#latitude").val("");
+            $("#longitude").val("");
+            $("#addressResult").html(
+                "<span style='color:#dc2626;'>주소를 찾을 수 없습니다. 더 정확한 주소를 입력하세요.</span>"
+            );
+        }
+    });
+}
+
+
+// ===============================
+// 장비 등록
+// ===============================
+function fn_device_register() {
+    console.log("@# fn_device_register() 실행");
+
+    const deviceName = $("#deviceName").val().trim();
+    const location = $("#location").val().trim();
+    const capacityKw = $("#capacityKw").val().trim();
+    const deviceType = $("#deviceType").val();
+    const latitude = $("#latitude").val();
+    const longitude = $("#longitude").val();
+
+    if (deviceName === "") {
+        alert("기기 이름을 입력하세요.");
+        $("#deviceName").focus();
+        return;
+    }
+
+    if (location === "") {
+        alert("설치 위치를 입력하세요.");
+        $("#location").focus();
+        return;
+    }
+
+    if (latitude === "" || longitude === "") {
+        alert("주소 검색 버튼을 눌러 설치 위치를 확인하세요.");
+        $("#location").focus();
+        return;
+    }
+
+    if (capacityKw === "") {
+        alert("장비 용량을 입력하세요.");
+        $("#capacityKw").focus();
+        return;
+    }
+
+    if (deviceType === "") {
+        alert("장비 종류를 선택하세요.");
+        $("#deviceType").focus();
+        return;
+    }
+
+    const baseAddress = $("#location").val().trim();
+    const detailAddress = $("#detailAddress").val().trim();
+
+    if (detailAddress !== "") {
+        $("#location").val(baseAddress + " " + detailAddress);
+    }
+
+    const formData = $("#deviceForm").serialize();
+
+    $.ajax({
+        type: "post",
+        url: ctx + "/device/register",
+        data: formData,
+        success: function(result) {
+            if (result === "success") {
+                alert("기기 등록이 완료되었습니다.");
+
+                $("#deviceForm")[0].reset();
+                $("#addressResult").html("");
+
+                updateDeviceCount(1);
+                loadDeviceList();
+
+            } else if (result === "login_required" || result === "login_view") {
+                alert("로그인이 필요합니다.");
+                location.href = ctx + "/login_view";
+
+            } else {
+                alert("기기 등록에 실패했습니다.");
+            }
+        },
+        error: function() {
+            alert("서버 오류가 발생했습니다.");
+        }
+    });
+}
+
+
+// ===============================
 // 장비 목록 조회
 // ===============================
 function loadDeviceList() {

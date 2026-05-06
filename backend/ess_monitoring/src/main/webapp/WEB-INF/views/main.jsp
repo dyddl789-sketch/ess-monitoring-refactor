@@ -52,14 +52,75 @@
     </div>
 </section>
 
+<!-- ============================= -->
+<!-- 날씨 예보 영역 시작 -->
+<!-- ============================= -->
+<section class="weather-section">
+    <div class="weather-header">
+        <div>
+            <h3>대표 지역 날씨 예보</h3>
+            <p>${weatherBaseText}</p>
+        </div>
 
-<div class="container">
+        <c:if test="${not empty weatherList}">
+            <span>${weatherList[0].city}</span>
+        </c:if>
+    </div>
+
+    <c:choose>
+        <c:when test="${empty weatherList}">
+            <div class="weather-empty">
+                날씨 정보를 불러오지 못했습니다.
+            </div>
+        </c:when>
+
+        <c:otherwise>
+            <div class="weather-list">
+                <c:forEach var="weather" items="${weatherList}" varStatus="status">
+                    <c:if test="${status.index lt 5}">
+                        <div class="weather-card">
+
+                            <div class="weather-time">
+                                ${weather.fcstTime}
+                            </div>
+
+                            <div class="weather-icon">
+                                ${weather.weatherIcon}
+                            </div>
+
+                            <div class="weather-status">
+                                ${weather.skyStatus}
+                            </div>
+
+                            <div class="weather-temp">
+                                ${weather.temperature}
+                            </div>
+
+                            <div class="weather-rain">
+                                강수확률 ${weather.rainProb}
+                            </div>
+
+                        </div>
+                    </c:if>
+                </c:forEach>
+            </div>
+        </c:otherwise>
+    </c:choose>
+</section>
+<!-- ============================= -->
+<!-- 날씨 예보 영역 끝 -->
+<!-- ============================= -->
+
+<div class="main-content-wrap">
     <div id="contentArea">
 
         <section class="content-section">
+
             <div class="main-guide-head">
                 <span>ESS-M.S SERVICE</span>
+
                 <h3>ESS 통합 관리 서비스</h3>
+
                 <p>
                     ESS 장비 등록부터 실시간 모니터링, 알림 확인까지
                     필요한 기능을 빠르게 이용할 수 있습니다.
@@ -67,55 +128,96 @@
             </div>
 
             <div class="main-guide-grid">
-                <div class="main-guide-card" onclick="checkLogin(function(){ moveView('register', loadRegister); })">
+
+                <div class="main-guide-card"
+                     onclick="checkLogin(function(){ moveView('register', loadRegister); })">
+
                     <div class="main-guide-icon">＋</div>
+
                     <h4>ESS 등록</h4>
-                    <p>설치 위치와 장비 정보를 입력해 새로운 ESS를 등록합니다.</p>
+
+                    <p>
+                        설치 위치와 장비 정보를 입력해 새로운 ESS를 등록합니다.
+                    </p>
                 </div>
 
-                <div class="main-guide-card" onclick="checkLogin(function(){ moveView('deviceList', loadDeviceList); })">
+                <div class="main-guide-card"
+                     onclick="checkLogin(function(){ moveView('deviceList', loadDeviceList); })">
+
                     <div class="main-guide-icon">▣</div>
+
                     <h4>ESS 관리</h4>
-                    <p>등록된 ESS 목록을 확인하고 상세 모니터링으로 이동합니다.</p>
+
+                    <p>
+                        등록된 ESS 목록을 확인하고 상세 모니터링으로 이동합니다.
+                    </p>
                 </div>
 
                 <div class="main-guide-card"
                      onclick="checkLogin(function(){ location.href='${pageContext.request.contextPath}/dashboard/main'; })">
+
                     <div class="main-guide-icon">●</div>
+
                     <h4>통합 대시보드</h4>
-                    <p>SOC, 전압, 전류, 발전량, 알림 현황을 한눈에 확인합니다.</p>
+
+                    <p>
+                        SOC, 전압, 전류, 발전량, 알림 현황을 한눈에 확인합니다.
+                    </p>
                 </div>
+
             </div>
         </section>
 
         <section class="content-section notice-section">
+
             <div class="section-title">
                 <span>NOTICE</span>
+
                 <h3>공지사항</h3>
-                <p>ESS-M.S의 주요 안내와 업데이트 소식을 확인하세요.</p>
+
+                <p>
+                    ESS-M.S의 주요 안내와 업데이트 소식을 확인하세요.
+                </p>
             </div>
 
             <table class="fake-table">
+
                 <tr>
                     <th>번호</th>
                     <th>제목</th>
                     <th>작성일</th>
                 </tr>
+
                 <tr>
                     <td>1</td>
-                    <td><a href="#" onclick="loadBoard(); return false;">ESS-M.S 시스템 오픈 안내</a></td>
+                    <td>
+                        <a href="#" onclick="loadBoard(); return false;">
+                            ESS-M.S 시스템 오픈 안내
+                        </a>
+                    </td>
                     <td>2025-01-01</td>
                 </tr>
+
                 <tr>
                     <td>2</td>
-                    <td><a href="#" onclick="loadBoard(); return false;">실시간 모니터링 기능 업데이트 안내</a></td>
+                    <td>
+                        <a href="#" onclick="loadBoard(); return false;">
+                            실시간 모니터링 기능 업데이트 안내
+                        </a>
+                    </td>
                     <td>2025-01-10</td>
                 </tr>
+
                 <tr>
                     <td>3</td>
-                    <td><a href="#" onclick="loadBoard(); return false;">정기 점검 안내</a></td>
+                    <td>
+                        <a href="#" onclick="loadBoard(); return false;">
+                            정기 점검 안내
+                        </a>
+                    </td>
                     <td>2025-01-15</td>
                 </tr>
+
             </table>
         </section>
 
@@ -130,5 +232,6 @@
 <script src="${pageContext.request.contextPath}/resources/js/device_register.js"></script>
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>
+
 </body>
 </html>

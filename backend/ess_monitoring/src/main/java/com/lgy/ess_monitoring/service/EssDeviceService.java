@@ -32,11 +32,10 @@ public interface EssDeviceService {
             Integer groupId,
             Integer deviceId
     );
-    
+
     // 스케줄러용 전체 장비 조회
     List<EssDeviceDTO> getAllActiveDevices();
 
-    
     // 대표 디바이스 조회, 메인 화면 날씨 기준
     EssDeviceDTO getMainDevice(int memberId);
 

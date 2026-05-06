@@ -129,58 +129,41 @@ public class EssDeviceServiceImpl implements EssDeviceService {
         );
     }
 
-	@Override
-	public EssDeviceDTO getMainDevice(int memberId) {
-		log.info("@# getMainDevice()");
-	    log.info("@# memberId => " + memberId);
+    @Override
+    public EssDeviceDTO getMainDevice(int memberId) {
+        log.info("@# getMainDevice()");
+        log.info("@# memberId => " + memberId);
 
-	    EssDeviceDTO dto = getDao().getMainDevice(memberId);
+        EssDeviceDTO dto = getDao().getMainDevice(memberId);
 
-	    log.info("@# mainDevice dto => " + dto);
+        log.info("@# mainDevice dto => " + dto);
 
-	    return dto;
-	}
+        return dto;
+    }
 
-	@Override
-	public void setMainDevice(int memberId, int deviceId) {
-		 log.info("@# setMainDevice()");
-		    log.info("@# memberId => " + memberId);
-		    log.info("@# deviceId => " + deviceId);
+    @Override
+    public void setMainDevice(int memberId, int deviceId) {
+        log.info("@# setMainDevice()");
+        log.info("@# memberId => " + memberId);
+        log.info("@# deviceId => " + deviceId);
 
-		    /*
-		     * 1단계
-		     * 해당 회원의 기존 대표 디바이스를 모두 해제한다.
-		     *
-		     * 예:
-		     * member_id = 5인 기기들
-		     * solar_busan  is_main = 'Y'
-		     * solar_busan2 is_main = 'N'
-		     *
-		     * 아래 쿼리 실행 후:
-		     * solar_busan  is_main = 'N'
-		     * solar_busan2 is_main = 'N'
-		     */
-		    getDao().clearMainDevice(memberId);
+        /*
+         * 1단계
+         * 해당 회원의 기존 대표 디바이스를 모두 해제한다.
+         */
+        getDao().clearMainDevice(memberId);
 
-		    /*
-		     * 2단계
-		     * 사용자가 선택한 기기만 대표 디바이스로 설정한다.
-		     *
-		     * 예:
-		     * 선택한 deviceId = 2
-		     *
-		     * 실행 후:
-		     * solar_busan  is_main = 'N'
-		     * solar_busan2 is_main = 'Y'
-		     */
-		    getDao().setMainDevice(memberId, deviceId);
+        /*
+         * 2단계
+         * 사용자가 선택한 기기만 대표 디바이스로 설정한다.
+         */
+        getDao().setMainDevice(memberId, deviceId);
 
-		    log.info("@# 대표 디바이스 설정 완료");		
-	}
+        log.info("@# 대표 디바이스 설정 완료");
+    }
 
-	@Override
-	public List<EssDeviceDTO> getAllActiveDevices() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<EssDeviceDTO> getAllActiveDevices() {
+        return getDao().getAllActiveDevices();
+    }
 }

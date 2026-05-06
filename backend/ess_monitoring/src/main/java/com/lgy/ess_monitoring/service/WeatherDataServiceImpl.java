@@ -184,6 +184,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
                 WeatherDataDTO dto = map.get(key);
 
                 dto.setDeviceId(deviceId);
+
                 dto.setBaseDate(baseDate);
                 dto.setBaseTime(baseTime);
                 dto.setFcstDate(item.path("fcstDate").asText());

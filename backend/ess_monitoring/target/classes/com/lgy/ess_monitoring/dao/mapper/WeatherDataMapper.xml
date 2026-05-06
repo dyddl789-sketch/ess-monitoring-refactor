@@ -127,13 +127,7 @@
 	    ORDER BY fcst_date ASC, fcst_time ASC
 	    LIMIT 8
 	</select>
-
-
-<!--
-    현재 날씨용 대표 데이터 1건 조회
-    - 현재 시간 이후 가장 가까운 예보 1건
-    - 상세화면 상단 카드의 "현재 날씨"에 사용
--->
+	
 	<select id="getCurrentWeather"
 	        parameterType="int"
 	        resultType="com.lgy.ess_monitoring.dto.WeatherDataDTO">

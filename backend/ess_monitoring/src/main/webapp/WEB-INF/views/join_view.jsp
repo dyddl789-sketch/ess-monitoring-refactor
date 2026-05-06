@@ -194,18 +194,18 @@
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <script>
-	function selectType(type) {
-	    const tabs = document.querySelectorAll('.tab-btn');
-	    tabs.forEach(tab => tab.classList.remove('active'));
-	
-	    if (type === '개인') {
-	        tabs[0].classList.add('active');
-	    } else {
-	        tabs[1].classList.add('active');
-	    }
-	
-	    document.getElementById('userType').value = type;
-	}
+    function selectType(type) {
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(tab => tab.classList.remove('active'));
+
+        if (type === 'PERSONAL') {
+            tabs[0].classList.add('active');
+        } else {
+            tabs[1].classList.add('active');
+        }
+
+        document.getElementById('userType').value = type;
+    }
 
     function execDaumPostcode() {
         new daum.Postcode({
@@ -249,8 +249,12 @@
     function joinCheck() {
         const memberPw = document.getElementById('memberPw').value;
         const memberPwCheck = document.getElementById('memberPwCheck').value;
-        const agreeRequired = document.getElementById('agreeRequired').checked;
-        const agreeMonitoring = document.getElementById('agreeMonitoring').checked;
+
+
+        // HTML id와 동일하게 수정
+        const agreeRequired = document.getElementById('agree_required').checked;
+        const agreeMonitoring = document.getElementById('agree_monitoring').checked;
+
 
         if (memberPw.length < 8) {
             alert("비밀번호는 8자 이상 입력해주세요.");

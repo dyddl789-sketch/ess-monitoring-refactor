@@ -31,7 +31,6 @@
     <span class="menu-text">알림</span>
   </a>
 
-
   <!-- 분석 -->
   <div class="menu-title">분석</div>
 
@@ -44,7 +43,6 @@
     <span class="menu-icon">💰</span>
     <span class="menu-text">에너지 통계</span>
   </a>
-
 
   <!-- 관리 -->
   <div class="menu-title">관리</div>

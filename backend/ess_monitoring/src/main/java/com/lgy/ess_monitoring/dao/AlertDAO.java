@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.lgy.ess_monitoring.dto.AlertDTO;
+import com.lgy.ess_monitoring.dto.EnergyStatsDTO;
 
 public interface AlertDAO {
 
@@ -32,4 +33,19 @@ public interface AlertDAO {
 
     // 알림 자동 생성
     int insertAlert(AlertDTO alert);
+
+    // 일별 에너지 통계 조회
+    List<EnergyStatsDTO> getDailyEnergyStats(
+            @Param("memberId") int memberId,
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate,
+            @Param("deviceId") Integer deviceId
+    );
+
+    // 기기별 에너지 통계 조회
+    List<EnergyStatsDTO> getDeviceEnergyStats(
+            @Param("memberId") int memberId,
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate
+    );
 }

@@ -24,11 +24,16 @@ public class EssMonitoringController {
 
         Integer memberId = (Integer) session.getAttribute("memberId");
         log.info("@# session memberId => {}", memberId);
+        log.info("@# deviceId => {}", deviceId);
 
         if (memberId == null) {
-            return "redirect:/login";
+            return "redirect:/login_view";
         }
 
+        /*
+         * 상세 모니터링 페이지에서는 선택한 장비의 실시간 데이터만 표시한다.
+         * 날씨 정보는 대시보드에서 대표 디바이스 기준으로 표시한다.
+         */
         model.addAttribute("deviceId", deviceId);
 
         return "monitoring_main";
