@@ -3,6 +3,7 @@ package com.lgy.ess_monitoring.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lgy.ess_monitoring.dto.CsvUploadResultDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.service.EssDeviceService;
 
@@ -162,4 +165,82 @@ public class EssDeviceController {
 
         return "success";
     }
+    
+    /**
+     * CSV 파일을 업로드해서 여러 기기를 한 번에 등록
+     *
+     * 요청 URL:
+     * POST /device/csv/upload
+     *
+     * formData key:
+     * csvFile
+     */
+    @ResponseBody
+    @RequestMapping(value = "/csv/upload", method = RequestMethod.POST)
+    public CsvUploadResultDTO uploadDeviceCsv(@RequestParam("csvFile") MultipartFile csvFile,
+                                              HttpSession session) {
+
+        log.info("@# uploadDeviceCsv()");
+
+        // 로그인한 회원 번호 확인
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        // 로그인하지 않은 경우 실패 결과 반환
+        if (memberId == null) {
+            CsvUploadResultDTO result = new CsvUploadResultDTO();
+            result.addFail("로그인이 필요합니다.");
+            return result;
+        }
+
+        /*
+         * Service에 CSV 처리 위임
+         * Controller는 파일과 회원 번호만 넘긴다.
+         */
+        return deviceService.uploadDeviceCsv(csvFile, memberId);
+    }
+    
+    /**
+     * CSV 양식 샘플을 문자열로 반환
+     *
+     * 요청 URL:
+     * GET /device/csv/template
+     *
+     * 일단은 브라우저에 CSV 텍스트가 표시되는 간단 버전
+     */
+    @RequestMapping(value = "/csv/template", method = RequestMethod.GET)
+    public void downloadCsvTemplate(HttpServletResponse response) throws Exception {
+
+        log.info("@# downloadCsvTemplate()");
+
+        // CSV 다운로드 응답 설정
+        response.setContentType("application/octet-stream");
+        response.setCharacterEncoding("UTF-8");
+
+        // 다운로드 파일명
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=\"device_template.csv\""
+        );
+
+        // UTF-8 BOM (엑셀 한글 깨짐 방지)
+        String csv =
+                "\uFEFF" +
+                "장비명,설치위치,출력용량KW,장비타입,상태,위도,경도,ESS전체용량KWH,현재충전량KWH,충전효율,방전효율,전기요금\r\n" +
+
+                "부산공장 1호기,부산 동구,50,태양광ESS,NORMAL,35.129,129.045,100,50,95,90,150\r\n" +
+
+                "부산공장 2호기,부산 사하구,80,태양광ESS,NORMAL,35.104,128.974,160,80,95,90,150\r\n";
+
+        byte[] bytes = csv.getBytes("UTF-8");
+
+        response.setContentLength(bytes.length);
+
+        response.getOutputStream().write(bytes);
+        response.getOutputStream().flush();
+    }
 }
+
+
+
+
+
