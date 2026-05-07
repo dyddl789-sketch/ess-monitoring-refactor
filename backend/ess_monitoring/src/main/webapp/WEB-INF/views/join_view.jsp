@@ -250,9 +250,11 @@
         const memberPw = document.getElementById('memberPw').value;
         const memberPwCheck = document.getElementById('memberPwCheck').value;
 
+
         // HTML id와 동일하게 수정
         const agreeRequired = document.getElementById('agree_required').checked;
         const agreeMonitoring = document.getElementById('agree_monitoring').checked;
+
 
         if (memberPw.length < 8) {
             alert("비밀번호는 8자 이상 입력해주세요.");

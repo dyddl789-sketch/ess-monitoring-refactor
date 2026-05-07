@@ -165,6 +165,7 @@ body {
 
 <div class="layout">
 <%@ include file="/WEB-INF/views/sidebar.jsp" %>
+
 <main class="main">
 
     <div class="page-header">
@@ -181,6 +182,7 @@ body {
     <div class="filter-box">
         <select id="deviceSelect">
             <option value="">장비 선택</option>
+
             <c:forEach var="device" items="${deviceList}">
                 <option value="${device.deviceId}">
                     ${device.deviceName}
@@ -221,13 +223,12 @@ body {
 
     </section>
 
-	
-	
     <!-- 그래프 + 상세값 -->
     <section class="content-grid">
 
         <div class="card">
             <div class="section-title">실시간 출력 그래프</div>
+
             <div class="chart-box">
                 <canvas id="powerChart"></canvas>
             </div>
@@ -241,14 +242,17 @@ body {
                     <th>전압</th>
                     <td id="voltage">- V</td>
                 </tr>
+
                 <tr>
                     <th>전류</th>
                     <td id="currentA">- A</td>
                 </tr>
+
                 <tr>
                     <th>출력 전력</th>
                     <td id="powerOutputDetail">- kW</td>
                 </tr>
+
                 <tr>
                     <th>측정 시간</th>
                     <td id="recordTime">-</td>
@@ -262,6 +266,7 @@ body {
 
         <div class="card">
             <div class="section-title">SOC 변화 그래프</div>
+
             <div class="chart-box">
                 <canvas id="socChart"></canvas>
             </div>
@@ -271,39 +276,48 @@ body {
             <div class="section-title">현재 발전 환경</div>
 
             <div class="weather-main">
+
                 <div class="weather-icon" id="weatherIcon">☀️</div>
 
                 <div>
                     <div class="weather-temp" id="temperature">- ℃</div>
                     <div id="skyStatus">-</div>
                 </div>
+
             </div>
 
             <table class="info-table" style="margin-top: 18px;">
+
                 <tr>
                     <th>강수확률</th>
                     <td id="rainProb">- %</td>
                 </tr>
+
                 <tr>
                     <th>습도</th>
                     <td id="humidity">- %</td>
                 </tr>
+
                 <tr>
                     <th>풍속</th>
                     <td id="windSpeed">- m/s</td>
                 </tr>
+
                 <tr>
                     <th>일사량</th>
                     <td id="solarRadiation">-</td>
                 </tr>
+
                 <tr>
                     <th>일출/일몰</th>
                     <td id="sunTime">-</td>
                 </tr>
+
                 <tr>
                     <th>ESS 분석</th>
                     <td id="essStatus">-</td>
                 </tr>
+
             </table>
         </div>
 
@@ -324,18 +338,22 @@ body {
             <div class="section-title">운영 판단 요약</div>
 
             <table class="info-table">
+
                 <tr>
                     <th>발전 조건</th>
                     <td id="operationCondition">-</td>
                 </tr>
+
                 <tr>
                     <th>배터리 상태</th>
                     <td id="batteryCondition">-</td>
                 </tr>
+
                 <tr>
                     <th>권장 조치</th>
                     <td id="recommendAction">-</td>
                 </tr>
+
             </table>
         </div>
 
@@ -343,123 +361,16 @@ body {
 
 </main>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
     const contextPath = '${pageContext.request.contextPath}';
-
-    let powerChart;
-    let socChart;
-    let autoRefreshTimer = null;
-
-    function initCharts() {
-        const powerCtx = document.getElementById('powerChart').getContext('2d');
-        const socCtx = document.getElementById('socChart').getContext('2d');
-
-        powerChart = new Chart(powerCtx, {
-            type: 'line',
-            data: {
-                labels: ['10:00', '10:10', '10:20', '10:30', '10:40'],
-                datasets: [{
-                    label: '출력(kW)',
-                    data: [3.1, 3.5, 3.2, 3.8, 4.1],
-                    tension: 0.35
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-
-        socChart = new Chart(socCtx, {
-            type: 'line',
-            data: {
-                labels: ['10:00', '10:10', '10:20', '10:30', '10:40'],
-                datasets: [{
-                    label: 'SOC(%)',
-                    data: [72, 73, 74, 74, 75],
-                    tension: 0.35
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    }
-
-    function loadRealtimeData() {
-        const deviceId = $('#deviceSelect').val();
-
-        if (!deviceId) {
-            return;
-        }
-
-        /*
-        나중에 실제 API 연결:
-        /monitoring/current?deviceId=1
-        /weather/current?deviceId=1
-        /alert/recent?deviceId=1
-        */
-
-        $('#deviceStatus').text('정상').attr('class', 'card-value status-normal');
-        $('#soc').text('75.0%');
-        $('#powerOutput').text('4.1 kW');
-        $('#todayGeneration').text('28.6 kWh');
-
-        $('#voltage').text('380 V');
-        $('#currentA').text('12.4 A');
-        $('#powerOutputDetail').text('4.1 kW');
-        $('#recordTime').text('2026-05-01 14:30');
-
-        $('#temperature').text('23.6℃');
-        $('#skyStatus').text('맑음');
-        $('#rainProb').text('10%');
-        $('#humidity').text('42%');
-        $('#windSpeed').text('2.1 m/s');
-        $('#solarRadiation').text('620.5');
-        $('#sunTime').text('05:25 / 19:45');
-        $('#essStatus').text('발전 조건 양호');
-
-        $('#operationCondition').text('양호');
-        $('#batteryCondition').text('정상');
-        $('#recommendAction').text('현재 조치 필요 없음');
-
-        $('#lastUpdateTime').text(new Date().toLocaleTimeString());
-    }
-
-    function toggleAutoRefresh() {
-        if (autoRefreshTimer) {
-            clearInterval(autoRefreshTimer);
-            autoRefreshTimer = null;
-            $('#autoRefreshBtn').text('자동갱신 ON');
-        } else {
-            autoRefreshTimer = setInterval(loadRealtimeData, 30000);
-            $('#autoRefreshBtn').text('자동갱신 OFF');
-        }
-    }
-
-    $(document).ready(function () {
-        initCharts();
-
-        $('#refreshBtn').on('click', loadRealtimeData);
-        $('#deviceSelect').on('change', loadRealtimeData);
-        $('#autoRefreshBtn').on('click', toggleAutoRefresh);
-
-        const sidebar = document.getElementById('sidebar');
-        const main = document.querySelector('.main');
-        const toggleBtn = document.getElementById('sidebarToggle');
-
-        if (sidebar && main && toggleBtn) {
-            toggleBtn.addEventListener('click', function () {
-                sidebar.classList.toggle('collapsed');
-                main.classList.toggle('collapsed');
-            });
-        }
-    });
+    const selectedDeviceId = '${deviceId}';
 </script>
+
+<script src="${pageContext.request.contextPath}/resources/js/monitoring_main.js"></script>
+
 
 </body>
 </html>

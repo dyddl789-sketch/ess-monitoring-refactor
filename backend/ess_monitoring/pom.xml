@@ -157,6 +157,27 @@
 		    <artifactId>jackson-mapper-asl</artifactId>
 		    <version>1.9.13</version>
 		</dependency>
+		
+		<!-- CSV 파일 파싱 -->
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-csv</artifactId>
+          <version>1.10.0</version>
+      </dependency>
+      
+      <!-- 파일 업로드 -->
+      <dependency>
+          <groupId>commons-fileupload</groupId>
+          <artifactId>commons-fileupload</artifactId>
+          <version>1.5</version>
+      </dependency>
+      
+      <!-- commons-fileupload가 내부적으로 사용하는 IO 라이브러리 -->
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.11.0</version>
+		</dependency>
 	</dependencies>
     <build>
         <plugins>

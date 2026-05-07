@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>기업 ESS 그룹 관리</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Noto Sans KR", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f9;
+      color: #222;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #1f2937;
+      color: white;
+      padding: 24px;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 32px;
+      font-size: 22px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: #d1d5db;
+      text-decoration: none;
+      padding: 12px 0;
+      font-size: 15px;
+    }
+
+    .sidebar a.active {
+      color: white;
+      font-weight: bold;
+    }
+
+    .main {
+      flex: 1;
+      padding: 32px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .top h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .btn {
+      border: none;
+      background: #2563eb;
+      color: white;
+      padding: 11px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn.gray {
+      background: #6b7280;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .card span {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .card strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 26px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 24px;
+    }
+
+    .section-title {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f9fafb;
+      color: #374151;
+    }
+
+    .status {
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .normal {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .form-box {
+      background: white;
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .form-box label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .form-box input,
+    .form-box textarea {
+      width: 100%;
+      padding: 11px;
+      margin-bottom: 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .form-box textarea {
+      height: 100px;
+      resize: none;
+    }
+
+    .device-list {
+      margin-top: 24px;
+    }
+
+    .device-item {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .device-item strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .device-item p {
+      margin: 4px 0;
+      color: #6b7280;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>ESS 기업관리</h2>
+      <a href="#">대시보드</a>
+      <a href="#" class="active">그룹 관리</a>
+      <a href="#">장비 관리</a>
+      <a href="#">모니터링</a>
+      <a href="#">알림 관리</a>
+      <a href="#">통계</a>
+    </aside>
+
+    <main class="main">
+      <div class="top">
+        <div>
+          <h1>장비 그룹 관리</h1>
+          <p>공장, 지점, 건물 단위로 ESS 장비를 그룹화하여 관리합니다.</p>
+        </div>
+        <button class="btn">+ 그룹 등록</button>
+      </div>
+
+      <section class="summary">
+        <div class="card">
+          <span>전체 그룹</span>
+          <strong>3개</strong>
+        </div>
+        <div class="card">
+          <span>전체 장비</span>
+          <strong>12대</strong>
+        </div>
+        <div class="card">
+          <span>이상 발생 그룹</span>
+          <strong>1개</strong>
+        </div>
+      </section>
+
+      <section class="content">
+        <div>
+          <h2 class="section-title">그룹 목록</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>그룹명</th>
+                <th>설명</th>
+                <th>장비 수</th>
+                <th>상태</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>서울공장</td>
+                <td>A동 생산라인 ESS 그룹</td>
+                <td>5대</td>
+                <td><span class="status normal">정상</span></td>
+                <td>
+                  <button class="btn gray">수정</button>
+                </td>
+              </tr>
+              <tr>
+                <td>부산지사</td>
+                <td>부산 물류센터 ESS 관리</td>
+                <td>4대</td>
+                <td><span class="status warning">경고</span></td>
+                <td>
+                  <button class="btn gray">수정</button>
+                </td>
+              </tr>
+              <tr>
+                <td>대전센터</td>
+                <td>대전 연구동 ESS 그룹</td>
+                <td>3대</td>
+                <td><span class="status error">오류</span></td>
+                <td>
+                  <button class="btn gray">수정</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="device-list">
+            <h2 class="section-title">선택 그룹 장비 목록</h2>
+
+            <div class="device-item">
+              <strong>ESS-서울-01</strong>
+              <p>위치: 서울공장 A동</p>
+              <p>SOC: 82% / 상태: 정상</p>
+            </div>
+
+            <div class="device-item">
+              <strong>ESS-서울-02</strong>
+              <p>위치: 서울공장 B동</p>
+              <p>SOC: 76% / 상태: 정상</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">그룹 등록 / 수정</h2>
+
+          <form class="form-box">
+            <label for="groupName">그룹명</label>
+            <input type="text" id="groupName" placeholder="예: 서울공장" />
+
+            <label for="description">그룹 설명</label>
+            <textarea id="description" placeholder="예: 서울공장 A동 ESS 장비 그룹"></textarea>
+
+            <label for="manager">담당자</label>
+            <input type="text" id="manager" placeholder="예: 김성민" />
+
+            <label for="location">대표 위치</label>
+            <input type="text" id="location" placeholder="예: 서울특별시 강남구" />
+
+            <button type="button" class="btn">저장하기</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+</body>
+</html>

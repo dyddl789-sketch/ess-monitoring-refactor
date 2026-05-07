@@ -65,7 +65,6 @@
             <span class="temp">18°C</span>
         </div>
 </section>
-
     <section class="services container">
         <div class="service-card" onclick="location.href='2.contact.html'" style="cursor:pointer;">
             <h3>문의 게시판</h3>
@@ -80,21 +79,7 @@
             <p>로그인 후 확인 가능합니다.</p>
         </div>
         <!-- 발전량 확인하러 가기 눌렀을때 로그인 상태 확인 -->
-            <script>
-            function goToMonitoring() {
-                // localStorage에서 로그인 상태 확인
-                const isLoggedIn = localStorage.getItem('isLoggedIn');
-
-                if (isLoggedIn === 'true') {
-                    // 로그인 상태면 모니터링 페이지로 이동
-                    location.href = '9.monitoring.html';
-                } else {
-                    // 로그인 상태가 아니면 경고창 띄우고 로그인창 오픈
-                    alert("로그인이 필요한 서비스입니다.");
-                    openLoginWindow(); // 기존에 만들어둔 로그인 창 열기 함수 실행
-                }
-            }
-            </script>
+            <script src="js/1.main.js"></script>
     </section>
 
     <section class="board container">
@@ -138,43 +123,7 @@
     </script>
 
     <!-- 로그인 체크기능 -->
-    <script>
-    // 페이지 로드 시 실행
-    window.onload = function() {
-        checkLoginStatus();
-    };
-
-    function checkLoginStatus() {
-        const isLoggedIn = localStorage.getItem('isLoggedIn'); // 로그인 상태 확인
-        const authMenu = document.getElementById('auth-menu');
-
-        if (isLoggedIn === 'true') {
-            const userName = localStorage.getItem('userName') || '사용자';
-            // 로그인 상태일 때: '님' 표기 및 로그아웃 버튼 표시
-            authMenu.innerHTML = `
-                <span style="margin-right:15px; color:#333; font-weight:bold;">${userName}님</span>
-                <a href="javascript:void(0)" class="login-btn" style="background:#6c757d;" onclick="handleLogout()">로그아웃</a>
-            `;
-        }
-    }
-
-    function handleLogout() {
-        if(confirm("로그아웃 하시겠습니까?")) {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userName');
-            alert("로그아웃 되었습니다.");
-            location.reload(); // 페이지 새로고침하여 메뉴 갱신
-        }
-    }
-
-    // 기존에 만든 로그인 창 열기 함수
-    function openLoginWindow() {
-        const width = 450; const height = 620;
-        const left = (window.screen.width / 2) - (width / 2);
-        const top = (window.screen.height / 2) - (height / 2);
-        window.open('4.login.html', 'ESS_Login', `width=${width}, height=${height}, left=${left}, top=${top}, resizable=no, scrollbars=no`);
-    }
-    </script>
+<script src="js/1.main.js"></script>
 
 
 

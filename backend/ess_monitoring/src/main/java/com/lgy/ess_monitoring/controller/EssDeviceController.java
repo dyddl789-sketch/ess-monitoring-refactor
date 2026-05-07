@@ -58,8 +58,8 @@ public class EssDeviceController {
     }
 
     // 장비 등록
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
     public String deviceRegister(EssDeviceDTO deviceDto, HttpSession session) {
         log.info("@# deviceRegister()");
         log.info("@# deviceDto => {}", deviceDto);
@@ -72,6 +72,10 @@ public class EssDeviceController {
 
         deviceDto.setMemberId(memberId);
 
+        if (deviceDto.getGroupId() != null && deviceDto.getGroupId() == 0) {
+            deviceDto.setGroupId(null);
+        }
+
         if (deviceDto.getStatus() == null || deviceDto.getStatus().isEmpty()) {
             deviceDto.setStatus("NORMAL");
         }
@@ -82,30 +86,31 @@ public class EssDeviceController {
     }
 
     // 장비 목록 Ajax
+    @ResponseBody
     @RequestMapping(
         value = "/listAjax",
         method = RequestMethod.GET,
         produces = "application/json; charset=UTF-8"
     )
-    @ResponseBody
     public String deviceList(HttpSession session) throws Exception {
         log.info("@# deviceList()");
 
         Integer memberId = (Integer) session.getAttribute("memberId");
 
-        List<EssDeviceDTO> deviceList = new ArrayList<>();
+        List<EssDeviceDTO> deviceList = new ArrayList<EssDeviceDTO>();
 
         if (memberId != null) {
             deviceList = deviceService.getDeviceList(memberId);
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
+
         return objectMapper.writeValueAsString(deviceList);
     }
 
     // 장비 삭제
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public String deleteDevice(int deviceId, HttpSession session) {
         log.info("@# deleteDevice()");
         log.info("@# deviceId => {}", deviceId);
@@ -120,7 +125,8 @@ public class EssDeviceController {
 
         return result == 1 ? "success" : "fail";
     }
- // 장비 관리 화면
+
+    // 장비 관리 화면
     @RequestMapping(value = "/manage", method = RequestMethod.GET)
     public String deviceManage(HttpSession session) {
         log.info("@# deviceManage()");
@@ -133,19 +139,17 @@ public class EssDeviceController {
 
         return "device_manage";
     }
-    
+
+    // 대표 장비 설정
     @ResponseBody
     @RequestMapping(value = "/main/set", method = RequestMethod.POST)
-    public String setMainDevice(@RequestParam("deviceId") int deviceId,
-                                HttpSession session) {
-
+    public String setMainDevice(
+            @RequestParam("deviceId") int deviceId,
+            HttpSession session
+    ) {
         log.info("@# setMainDevice()");
-        log.info("@# deviceId => " + deviceId);
+        log.info("@# deviceId => {}", deviceId);
 
-        /*
-         * 1. 로그인 여부 확인
-         * 세션에 memberId가 없으면 로그인하지 않은 상태
-         */
         Integer memberId = (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
@@ -153,12 +157,8 @@ public class EssDeviceController {
             return "login_required";
         }
 
-        log.info("@# memberId => " + memberId);
+        log.info("@# memberId => {}", memberId);
 
-        /*
-         * 2. 대표 디바이스 설정
-         * Service에서 기존 대표 해제 후 선택 기기를 대표로 설정한다.
-         */
         deviceService.setMainDevice(memberId, deviceId);
 
         log.info("@# 대표 디바이스 설정 성공");
@@ -225,11 +225,13 @@ public class EssDeviceController {
         // UTF-8 BOM (엑셀 한글 깨짐 방지)
         String csv =
                 "\uFEFF" +
-                "장비명,설치위치,출력용량KW,장비타입,상태,위도,경도,ESS전체용량KWH,현재충전량KWH,충전효율,방전효율,전기요금\r\n" +
+                "groupName,deviceName,location,capacityKw,deviceType,status,latitude,longitude,essCapacityKwh,currentChargeKwh,chargeEfficiency,dischargeEfficiency,electricityRate\r\n" +
 
-                "부산공장 1호기,부산 동구,50,태양광ESS,NORMAL,35.129,129.045,100,50,95,90,150\r\n" +
+                "부산공장,CSV_부산공장_1호기,부산 동구,50,HYBRID,NORMAL,35.129,129.045,100,50,95,90,150\r\n" +
 
-                "부산공장 2호기,부산 사하구,80,태양광ESS,NORMAL,35.104,128.974,160,80,95,90,150\r\n";
+                "부산공장,CSV_부산공장_2호기,부산 사하구,80,HYBRID,NORMAL,35.104,128.974,160,80,95,90,150\r\n" +
+
+                ",CSV_그룹없음_1호기,부산 해운대구,30,HYBRID,NORMAL,35.163,129.163,60,20,95,90,150\r\n";
 
         byte[] bytes = csv.getBytes("UTF-8");
 

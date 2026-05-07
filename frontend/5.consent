@@ -320,39 +320,6 @@
         </div>
     </footer>
 
-    <script>
-        // 전체 체크박스 제어
-        function toggleAll(allBox) {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            // '전체 동의' 상태를 모든 하위 체크박스에 적용
-            checkboxes.forEach(cb => {
-                if(cb.id !== 'check-all') cb.checked = allBox.checked;
-            });
-            validate();
-        }
-
-        // 필수 항목 체크 시 버튼 활성화 및 전체 체크 상태 업데이트
-        function validate() {
-            const check1 = document.getElementById('check1').checked;
-            const check2 = document.getElementById('check2').checked;
-            const check3 = document.getElementById('check3').checked; // 선택 항목
-            const checkAll = document.getElementById('check-all');
-            const confirmBtn = document.getElementById('confirm-btn');
-            
-            // 모든 개별 체크박스가 체크되었는지 확인하여 '전체 동의' 상태 업데이트
-            checkAll.checked = (check1 && check2 && check3);
-            
-            // 필수 1, 2번 동의 시에만 확인 버튼 활성화
-            confirmBtn.disabled = !(check1 && check2);
-        }
-
-        // 로그인 팝업 함수 유지
-        function openLoginWindow() {
-            const width = 450; const height = 620;
-            const left = (window.screen.width / 2) - (width / 2);
-            const top = (window.screen.height / 2) - (height / 2);
-            window.open('4.login.html', 'ESS_Login', `width=${width}, height=${height}, left=${left}, top=${top}, resizable=no, scrollbars=no`);
-        }
-    </script>
+    <script src="js/5.consent.js"></script>
 </body>
 </html>

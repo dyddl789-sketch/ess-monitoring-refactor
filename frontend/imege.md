@@ -35,7 +35,7 @@
 <img width="1919" height="906" alt="Image" src="https://github.com/user-attachments/assets/fe527169-2ac1-4571-84f6-60ceea3a5519" />
 
 모니터링 분석 리포트(다크)
-<img width="1906" height="895" alt="Image" src="https://github.com/user-attachments/assets/c58e6dbf-49c6-47c0-a6b6-d83bd43ad462" />
+<img width="1099" height="910" alt="Image" src="https://github.com/user-attachments/assets/a05777c9-5926-460a-a012-49923c580364" />
 
 모니터링 분석 리포트(라이트)
-<img width="1919" height="903" alt="Image" src="https://github.com/user-attachments/assets/6e7b9040-7a96-4e24-adef-9c038f4cfefd" />
+<img width="1096" height="904" alt="Image" src="https://github.com/user-attachments/assets/0d8d8562-b2f4-4753-8d1f-0e9401aba759" />

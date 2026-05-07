@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .device-detail {
+    padding: 50px 0;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.detail-header h2 {
+    margin-bottom: 8px;
+}
+
+.detail-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.summary-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+.summary-card h4 {
+    margin: 0 0 10px;
+    color: #555;
+}
+
+.summary-card strong {
+    font-size: 1.5rem;
+}
+
+.status-normal {
+    color: #16a34a;
+}
+
+.detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.detail-panel {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.monitor-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.monitor-table th,
+.monitor-table td {
+    border-bottom: 1px solid #eee;
+    padding: 12px;
+    text-align: left;
+}
+
+.monitor-table th {
+    color: #555;
+    width: 35%;
+}
+
+.chart-panel {
+    margin-bottom: 25px;
+}
+
+.chart-placeholder {
+    height: 260px;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    background: #f8fafc;
+}
+
+    </style>
+</head>
+<body>
+    <section class="container device-detail">
+
+    <div class="detail-header">
+        <div>
+            <h2>ESS-부산-01 상세 모니터링</h2>
+            <p>부산광역시 부산진구</p>
+        </div>
+
+        <a href="${pageContext.request.contextPath}/main" class="btn btn-gray">목록으로</a>
+    </div>
+
+    <div class="detail-summary-grid">
+
+        <div class="summary-card">
+            <h4>장비 상태</h4>
+            <strong class="status-normal">정상</strong>
+            <p>최근 수신 데이터 기준</p>
+        </div>
+
+        <div class="summary-card">
+            <h4>현재 SOC</h4>
+            <strong>82%</strong>
+            <p>배터리 충전 상태</p>
+        </div>
+
+        <div class="summary-card">
+            <h4>현재 날씨</h4>
+            <strong>맑음 / 26℃</strong>
+            <p>기기 설치 위치 기준</p>
+        </div>
+
+        <div class="summary-card">
+            <h4>예상 영향</h4>
+            <strong>정상</strong>
+            <p>발전 효율 양호</p>
+        </div>
+
+    </div>
+
+    <div class="detail-layout">
+
+        <div class="detail-panel">
+            <h3>실시간 모니터링</h3>
+
+            <table class="monitor-table">
+                <tr>
+                    <th>전압</th>
+                    <td>380V</td>
+                </tr>
+                <tr>
+                    <th>전류</th>
+                    <td>24A</td>
+                </tr>
+                <tr>
+                    <th>출력 전력</th>
+                    <td>9.2kW</td>
+                </tr>
+                <tr>
+                    <th>측정 시간</th>
+                    <td>2026-04-28 14:30</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="detail-panel">
+            <h3>날씨 정보</h3>
+
+            <table class="monitor-table">
+                <tr>
+                    <th>하늘 상태</th>
+                    <td>맑음</td>
+                </tr>
+                <tr>
+                    <th>강수 형태</th>
+                    <td>없음</td>
+                </tr>
+                <tr>
+                    <th>강수 확률</th>
+                    <td>10%</td>
+                </tr>
+                <tr>
+                    <th>습도</th>
+                    <td>58%</td>
+                </tr>
+                <tr>
+                    <th>풍속</th>
+                    <td>2.1m/s</td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="detail-panel chart-panel">
+        <h3>에너지 분석</h3>
+        <div class="chart-placeholder">
+            발전량 / 충전량 / 방전량 그래프 영역
+        </div>
+    </div>
+
+    <div class="detail-panel">
+        <h3>최근 알림</h3>
+
+        <table class="monitor-table">
+            <tr>
+                <th>시간</th>
+                <th>알림 내용</th>
+                <th>상태</th>
+            </tr>
+            <tr>
+                <td>2026-04-28 13:20</td>
+                <td>정상 수신</td>
+                <td><span class="status-badge normal">정상</span></td>
+            </tr>
+        </table>
+    </div>
+
+</section>
+</body>
+</html>

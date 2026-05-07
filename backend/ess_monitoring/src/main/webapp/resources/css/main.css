@@ -310,10 +310,6 @@ a {
     color: #991b1b;
 }
 
-/* =========================
-   Responsive
-========================= */
-
 /* ============================= */
 /* 메인 날씨 예보 영역 */
 /* ============================= */
@@ -429,6 +425,13 @@ a {
     border-radius: 14px;
 }
 
+/* 기존 temp 스타일 유지 */
+.weather-item .temp {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
 /* =========================
    Responsive
 ========================= */
@@ -480,44 +483,121 @@ a {
 }
 
 /* ===============================
-   CSV 일괄 등록 영역
+   CSV 등록 영역
    =============================== */
 
 .csv-register-box {
-    margin-top: 28px;
-    padding: 24px;
+    max-width: 980px;
+    margin: 28px auto 80px;
+    padding: 28px;
+    background: #ffffff;
     border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    background: #f9fafb;
-}
-
-.csv-register-box h3 {
-    margin: 0 0 8px;
-    font-size: 18px;
-    font-weight: 700;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
     color: #111827;
 }
 
-.csv-register-box p {
-    margin: 0 0 18px;
+.csv-register-header h3 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.csv-register-header p {
+    margin: 0;
     font-size: 14px;
-    color: #6b7280;
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.csv-guide-box {
+    margin: 22px 0;
+    padding: 16px 18px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.csv-guide-box strong {
+    color: #2563eb;
+    font-weight: 900;
+}
+
+.csv-guide-box span {
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
 }
 
 .csv-upload-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
-.csv-upload-row input[type="file"] {
-    max-width: 360px;
-    padding: 9px 12px;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
+.btn-csv-download,
+.btn-csv-upload {
+    height: 42px;
+    padding: 0 18px;
     border-radius: 10px;
     font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.btn-csv-download {
+    background: #ffffff;
+    color: #2563eb;
+    border: 1px solid #2563eb;
+}
+
+.btn-csv-download:hover {
+    background: #eff6ff;
+}
+
+.btn-csv-upload {
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #2563eb;
+}
+
+.btn-csv-upload:hover {
+    background: #1d4ed8;
+}
+
+.csv-file-label {
+    height: 42px;
+    min-width: 280px;
+    padding: 0 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.csv-file-label input[type="file"] {
+    display: none;
+}
+
+.csv-help-text {
+    margin: 16px 0 0;
+    padding: 14px 16px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    color: #92400e;
+    font-size: 14px;
+    line-height: 1.6;
 }
 
 .csv-result-box {
@@ -527,7 +607,7 @@ a {
 .csv-result {
     padding: 14px 16px;
     border-radius: 12px;
-    background: #ffffff;
+    background: #f8fafc;
     border: 1px solid #dbeafe;
     color: #1f2937;
     font-size: 14px;
@@ -535,7 +615,6 @@ a {
 
 .csv-result p {
     margin: 4px 0;
-    color: #1f2937;
 }
 
 .csv-result ul {
@@ -546,4 +625,83 @@ a {
 .csv-result li {
     margin: 4px 0;
     color: #dc2626;
+}
+
+@media (max-width: 768px) {
+    .csv-register-box {
+        margin: 24px 12px 60px;
+        padding: 22px;
+    }
+
+    .csv-upload-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-csv-download,
+    .btn-csv-upload,
+    .csv-file-label {
+        width: 100%;
+        justify-content: center;
+    }
+}
+/* ===============================
+   등록 방식 선택 버튼
+   =============================== */
+
+.register-mode-tabs {
+    max-width: 980px;
+    margin: 0 auto 22px;
+    display: flex;
+    gap: 12px;
+}
+
+.mode-btn {
+    min-width: 150px;
+    height: 44px;
+    padding: 0 22px;
+    border-radius: 12px;
+    border: 1px solid #2563eb;
+    background: #ffffff;
+    color: #2563eb;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.mode-btn:hover {
+    background: #eff6ff;
+}
+
+.mode-btn.active {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+}
+
+@media (max-width: 768px) {
+    .register-mode-tabs {
+        flex-direction: column;
+        margin: 0 12px 22px;
+    }
+
+    .mode-btn {
+        width: 100%;
+    }
+}
+
+
+/* ===============================
+   대표 디바이스 배지
+   =============================== */
+
+.main-device-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 13px;
+    font-weight: 600;
 }

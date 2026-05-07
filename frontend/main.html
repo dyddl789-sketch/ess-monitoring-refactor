@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .device-main {
+    padding: 50px 0;
+}
+
+.section-title {
+    margin-bottom: 25px;
+}
+
+.section-title h2 {
+    margin-bottom: 8px;
+}
+
+.device-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.device-card {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    padding: 22px;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.device-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.device-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.device-card-header h3 {
+    margin: 0;
+}
+
+.device-location {
+    color: #666;
+    margin: 10px 0 18px;
+}
+
+.device-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.device-info-grid div {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.device-info-grid span {
+    display: block;
+    color: #777;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.device-info-grid strong {
+    font-size: 1.2rem;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.status-badge.normal {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.device-message {
+    margin-top: 16px;
+    color: #444;
+}
+
+
+    </style>
+</head>
+<body>
+    <section class="container device-main">
+
+    <div class="section-title">
+        <h2>나의 ESS 기기</h2>
+        <p>등록된 ESS 장비의 상태를 한눈에 확인할 수 있습니다.</p>
+    </div>
+
+    <div class="device-card-grid">
+
+        <!-- 예시 카드 1 -->
+        <div class="device-card" onclick="location.href='${pageContext.request.contextPath}/device/detail?device_id=1'">
+            <div class="device-card-header">
+                <h3>ESS-부산-01</h3>
+                <span class="status-badge normal">정상</span>
+            </div>
+
+            <p class="device-location">부산광역시 부산진구</p>
+
+            <div class="device-info-grid">
+                <div>
+                    <span>현재 SOC</span>
+                    <strong>82%</strong>
+                </div>
+                <div>
+                    <span>전압</span>
+                    <strong>380V</strong>
+                </div>
+                <div>
+                    <span>날씨</span>
+                    <strong>맑음</strong>
+                </div>
+                <div>
+                    <span>기온</span>
+                    <strong>26℃</strong>
+                </div>
+            </div>
+
+            <p class="device-message">현재 장비 상태가 안정적입니다.</p>
+        </div>
+
+        <!-- 예시 카드 2 -->
+        <div class="device-card" onclick="location.href='${pageContext.request.contextPath}/device/detail?device_id=2'">
+            <div class="device-card-header">
+                <h3>ESS-공장-02</h3>
+                <span class="status-badge warning">주의</span>
+            </div>
+
+            <p class="device-location">경상남도 김해시</p>
+
+            <div class="device-info-grid">
+                <div>
+                    <span>현재 SOC</span>
+                    <strong>34%</strong>
+                </div>
+                <div>
+                    <span>전압</span>
+                    <strong>360V</strong>
+                </div>
+                <div>
+                    <span>날씨</span>
+                    <strong>흐림</strong>
+                </div>
+                <div>
+                    <span>기온</span>
+                    <strong>22℃</strong>
+                </div>
+            </div>
+
+            <p class="device-message">흐린 날씨로 발전량 감소가 예상됩니다.</p>
+        </div>
+
+    </div>
+
+</section>
+</body>
+</html>

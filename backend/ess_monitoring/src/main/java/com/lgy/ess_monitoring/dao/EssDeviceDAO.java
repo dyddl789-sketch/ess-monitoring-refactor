@@ -44,4 +44,25 @@ public interface EssDeviceDAO {
                               @Param("deviceId") int deviceId);
     
     List<EssDeviceDTO> getAllActiveDevices();
+    
+    /*
+     * 그룹명으로 그룹 ID 조회
+     *
+     * 사용 위치:
+     * - CSV 등록 시 groupName 컬럼에 입력된 그룹명을 group_id로 변환할 때 사용
+     *
+     * 조회 조건:
+     * - memberId: 현재 로그인한 회원 ID
+     * - groupName: CSV에 입력된 그룹명
+     *
+     * 반환값:
+     * - 그룹이 존재하면 group_id 반환
+     * - 그룹이 없으면 null 반환
+     */
+     public Integer getGroupIdByName(@Param("memberId") int memberId,
+    		 						 @Param("groupName") String groupName);
+     
 }
+
+
+

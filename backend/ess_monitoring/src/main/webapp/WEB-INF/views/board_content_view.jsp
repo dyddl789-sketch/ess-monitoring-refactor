@@ -7,417 +7,384 @@
 <head>
 <meta charset="UTF-8">
 <title>문의 상세 - ESS-M.S</title>
+
+<%-- 공통 CSS --%>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/main.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/header.css">
+
+<%-- 게시판 전용 CSS --%>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/board.css">
+
+<%--
+    관리자 답변 등록 AJAX에 jQuery가 필요하다.
+
+    만약 header.jsp 또는 footer.jsp에서 이미 jQuery를 불러오고 있다면
+    아래 script는 중복이 될 수 있으므로 제거해도 된다.
+
+    프로젝트에 실제 파일명이 jquery.js라면
+    jquery-3.6.0.min.js 대신 jquery.js로 바꿔야 한다.
+--%>
 <script src="${pageContext.request.contextPath}/resources/js/jquery.js"></script>
-<style>
-.container { width: 80%; margin: 0 auto; }
-
-.sub-hero {
-    background-color: #2c3e50;
-    color: white;
-    padding: 60px 0;
-    text-align: center;
-}
-
-.detail-section { padding: 50px 0; }
-
-.detail-box {
-    border-top: 2px solid #333;
-    background: #fff;
-}
-
-.detail-title {
-    padding: 20px;
-    border-bottom: 1px solid #ddd;
-}
-
-.detail-title h2 { margin: 0 0 10px; }
-
-.detail-meta {
-    color: #666;
-    font-size: 0.95rem;
-}
-
-.detail-content {
-    min-height: 250px;
-    padding: 30px 20px;
-    border-bottom: 1px solid #ddd;
-    line-height: 1.8;
-    white-space: pre-wrap;
-}
-
-.btn-area {
-    margin-top: 25px;
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-}
-
-.btn {
-    padding: 9px 15px;
-    background:#007bff;
-    color:white;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    text-decoration:none;
-}
-
-.btn-gray { background:#6c757d; }
-.btn-red { background:#dc3545; }
-
-.comment-area {
-    margin-top: 45px;
-    border-top: 2px solid #333;
-    padding-top: 25px;
-}
-
-.comment-area h3 {
-    margin-bottom: 20px;
-}
-
-.comment-empty {
-    padding: 20px;
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    color: #666;
-}
-
-.comment-box {
-    padding: 18px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    background: #fafafa;
-    border-radius: 6px;
-}
-
-.comment-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    color: #555;
-}
-
-.comment-content {
-    line-height: 1.7;
-    white-space: pre-wrap;
-}
-
-.comment-btn-area,
-.comment-edit-btn-area {
-    margin-top: 12px;
-    display: flex;
-    gap: 6px;
-    justify-content: flex-end;
-}
-
-.comment-btn-area button,
-.comment-edit-btn-area button,
-.comment-write-box button {
-    padding: 7px 12px;
-    border: none;
-    border-radius: 4px;
-    background: #007bff;
-    color: white;
-    cursor: pointer;
-}
-
-.btn-red-small {
-    background: #dc3545 !important;
-}
-
-.btn-gray-small {
-    background: #6c757d !important;
-}
-
-.comment-edit-box textarea,
-.comment-write-box textarea {
-    width: 100%;
-    box-sizing: border-box;
-    resize: vertical;
-    padding: 10px;
-}
-
-.comment-write-box {
-    margin-top: 25px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    background: #f8f9fa;
-    border-radius: 6px;
-}
-
-.comment-write-box h4 {
-    margin-top: 0;
-}
-</style>
 </head>
 
 <body>
 
+<%-- 공통 헤더 --%>
 <%@ include file="/WEB-INF/views/header.jsp" %>
 
-<section class="sub-hero">
-    <div class="container">
-        <h2>문의 상세</h2>
+<%--
+    게시판 상세 전체 영역
+
+    board-page:
+    - 게시판 목록, 상세, 글쓰기 화면의 배경을 통일하기 위한 wrapper
+--%>
+<div class="board-page">
+
+    <%--
+        상단 소개 영역
+
+        board-hero:
+        - 현재 페이지가 문의 상세 화면임을 보여주는 영역
+    --%>
+    <section class="board-hero">
+        <h1>문의 상세</h1>
         <p>등록된 문의 내용을 확인합니다.</p>
-    </div>
-</section>
+    </section>
 
-<main class="container detail-section">
+    <%--
+        상세 본문 컨테이너
 
-    <div class="detail-box">
-        <div class="detail-title">
-            <h2>${content_view.boardTitle}</h2>
+        board-container:
+        - 상세 화면의 최대 너비와 여백을 잡는 영역
+    --%>
+    <main class="board-container">
 
-            <div class="detail-meta">
-                작성자: ${content_view.memberName}
-                |
-                작성일:
-                <fmt:formatDate value="${content_view.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
-                |
-                조회수: ${content_view.boardHit}
+        <%--
+            문의 본문 카드
+
+            board-card:
+            - 제목, 작성자, 작성일, 조회수, 본문 내용을 하나의 카드로 묶음
+        --%>
+        <div class="board-card">
+
+            <%--
+                상세 상단 영역
+
+                detail-header:
+                - 제목과 메타정보를 구분하기 위한 영역
+            --%>
+            <div class="detail-header">
+
+                <%-- 문의 제목 --%>
+                <h2 class="detail-title">
+                    ${content_view.boardTitle}
+                </h2>
+
+                <%--
+                    문의 메타정보
+
+                    작성자, 작성일, 조회수 표시
+                --%>
+                <div class="detail-meta">
+                    <span>작성자: ${content_view.memberName}</span>
+
+                    <span>
+                        작성일:
+                        <fmt:formatDate value="${content_view.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
+                    </span>
+
+                    <span>조회수: ${content_view.boardHit}</span>
+                </div>
+            </div>
+
+            <%--
+                문의 본문
+
+                CSS의 white-space: pre-line 설정으로
+                사용자가 입력한 줄바꿈을 어느 정도 유지한다.
+            --%>
+            <div class="detail-content">
+                ${content_view.boardContent}
+            </div>
+
+            <%--
+                버튼 영역
+
+                목록:
+                - 항상 표시
+
+                수정/삭제:
+                - 작성자 본인만 표시
+                - sessionScope.member_id 대신 Controller에서 넘긴 loginMemberId 사용
+                - 이유: 프로젝트 내 세션명이 memberId/member_id로 섞여 있어도 Controller에서 보정한 값을 쓰기 위해서
+            --%>
+            <div class="detail-actions">
+
+                <%-- 목록 버튼: cri가 없거나 값이 비어 있어도 500 오류가 나지 않게 방어 --%>
+                <c:choose>
+                    <c:when test="${empty cri}">
+                        <a href="${pageContext.request.contextPath}/board_list" class="btn-secondary">
+                            목록
+                        </a>
+                    </c:when>
+
+                    <c:otherwise>
+                        <a href="${pageContext.request.contextPath}/board_list?pageNum=${empty cri.pageNum ? 1 : cri.pageNum}&amount=${empty cri.amount ? 10 : cri.amount}&type=${cri.type}&keyword=${cri.keyword}"
+                           class="btn-secondary">
+                            목록
+                        </a>
+                    </c:otherwise>
+                </c:choose>
+
+                <%--
+                    작성자 본인만 수정/삭제 가능
+
+                    기존:
+                    sessionScope.member_id == content_view.memberId
+
+                    변경:
+                    loginMemberId == content_view.memberId
+
+                    BoardController에서 loginMemberId를 model로 전달하고 있으므로 이 값을 사용한다.
+                --%>
+                <c:if test="${loginMemberId == content_view.memberId}">
+
+                    <a href="${pageContext.request.contextPath}/board_modify_view?boardNo=${content_view.boardNo}&pageNum=${empty cri.pageNum ? 1 : cri.pageNum}&amount=${empty cri.amount ? 10 : cri.amount}&type=${cri.type}&keyword=${cri.keyword}"
+                       class="btn-primary">
+                        수정
+                    </a>
+
+                    <a href="${pageContext.request.contextPath}/delete?boardNo=${content_view.boardNo}&pageNum=${empty cri.pageNum ? 1 : cri.pageNum}&amount=${empty cri.amount ? 10 : cri.amount}&type=${cri.type}&keyword=${cri.keyword}"
+                       class="btn-danger"
+                       onclick="return confirm('정말 삭제하시겠습니까?');">
+                        삭제
+                    </a>
+
+                </c:if>
             </div>
         </div>
 
-        <div class="detail-content">${content_view.boardContent}</div>
-    </div>
+        <%--
+            관리자 답변 카드
 
-    <div class="btn-area">
-        <a class="btn btn-gray"
-           href="${pageContext.request.contextPath}/board_list?pageNum=${empty pageMaker.pageNum ? 1 : pageMaker.pageNum}&amount=${empty pageMaker.amount ? 10 : pageMaker.amount}&type=${pageMaker.type}&keyword=${pageMaker.keyword}">
-            목록
-        </a>
+            commentList:
+            - Controller에서 관리자 댓글 목록을 model에 담아 전달한 값
+        --%>
+        <div class="board-card">
 
-        <c:if test="${loginMemberId == content_view.memberId}">
-            <button type="button" class="btn" onclick="showModifyForm()">수정</button>
+            <h3 class="reply-title">관리자 답변</h3>
 
-            <form action="${pageContext.request.contextPath}/delete"
-                  method="post"
-                  style="display:inline;"
-                  onsubmit="return confirm('정말 삭제하시겠습니까?');">
+            <c:choose>
 
-                <input type="hidden" name="boardNo" value="${content_view.boardNo}">
-                <input type="hidden" name="pageNum" value="${empty pageMaker.pageNum ? 1 : pageMaker.pageNum}">
-                <input type="hidden" name="amount" value="${empty pageMaker.amount ? 10 : pageMaker.amount}">
-                <input type="hidden" name="type" value="${pageMaker.type}">
-                <input type="hidden" name="keyword" value="${pageMaker.keyword}">
-
-                <button type="submit" class="btn btn-red">삭제</button>
-            </form>
-        </c:if>
-    </div>
-
-    <c:if test="${loginMemberId == content_view.memberId}">
-        <div id="modifyForm" style="display:none; margin-top:30px;">
-            <form action="${pageContext.request.contextPath}/modify" method="post">
-
-                <input type="hidden" name="boardNo" value="${content_view.boardNo}">
-                <input type="hidden" name="pageNum" value="${empty pageMaker.pageNum ? 1 : pageMaker.pageNum}">
-                <input type="hidden" name="amount" value="${empty pageMaker.amount ? 10 : pageMaker.amount}">
-                <input type="hidden" name="type" value="${pageMaker.type}">
-                <input type="hidden" name="keyword" value="${pageMaker.keyword}">
-
-                <div>
-                    <label>제목</label>
-                    <input type="text" name="boardTitle" value="${content_view.boardTitle}">
-                </div>
-
-                <div>
-                    <label>내용</label>
-                    <textarea name="boardContent" rows="10">${content_view.boardContent}</textarea>
-                </div>
-
-                <div>
-                    <button type="submit" class="btn">수정 완료</button>
-                </div>
-
-            </form>
-        </div>
-    </c:if>
-
-    <!-- ============================= -->
-    <!-- 관리자 답변 댓글 영역 시작 -->
-    <!-- ============================= -->
-    <div class="comment-area">
-
-        <h3>관리자 답변</h3>
-
-        <c:choose>
-            <c:when test="${empty commentList}">
-                <div class="comment-empty">
-                    등록된 관리자 답변이 없습니다.
-                </div>
-            </c:when>
-
-            <c:otherwise>
-                <c:forEach var="comment" items="${commentList}">
-                    <div class="comment-box" id="commentBox_${comment.commentId}">
-
-                        <div class="comment-header">
-                            <strong>${comment.memberName}</strong>
-                            <span>
-                                <fmt:formatDate value="${comment.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
-                            </span>
+                <%-- 등록된 답변이 없을 때 --%>
+                <c:when test="${empty commentList}">
+                    <div class="reply-card">
+                        <div class="reply-content">
+                            아직 등록된 관리자 답변이 없습니다.
                         </div>
-
-                        <div class="comment-content" id="commentText_${comment.commentId}">
-                            ${comment.commentContent}
-                        </div>
-
-                        <div class="comment-edit-box" id="commentEditBox_${comment.commentId}" style="display:none;">
-                            <textarea id="commentEditContent_${comment.commentId}" rows="4">${comment.commentContent}</textarea>
-
-                            <div class="comment-edit-btn-area">
-                                <button type="button" onclick="modifyComment(${comment.commentId})">수정 완료</button>
-                                <button type="button" class="btn-gray-small" onclick="cancelModifyComment(${comment.commentId})">취소</button>
-                            </div>
-                        </div>
-
-                        <c:if test="${role eq 'ADMIN' or sessionScope.role eq 'ADMIN'}">
-						    <div class="comment-btn-area">
-						        <button type="button" onclick="showModifyComment(${comment.commentId})">수정</button>
-						        <button type="button" class="btn-red-small" onclick="deleteComment(${comment.commentId})">삭제</button>
-						    </div>
-						</c:if>
-
                     </div>
-                </c:forEach>
-            </c:otherwise>
-        </c:choose>
+                </c:when>
 
-        <c:if test="${role eq 'ADMIN' or sessionScope.role eq 'ADMIN'}">
-		    <div class="comment-write-box">
-		        <h4>관리자 답변 작성</h4>
-		
-		        <textarea id="commentContent"
-		                  placeholder="답변 내용을 입력하세요"></textarea>
-		
-		        <button type="button" onclick="writeComment()">
-		            답변 등록
-		        </button>
-		    </div>
-		</c:if>
+                <%-- 관리자 답변 목록 출력 --%>
+                <c:otherwise>
+                    <c:forEach var="comment" items="${commentList}">
 
-    </div>
-    <!-- ============================= -->
-    <!-- 관리자 답변 댓글 영역 끝 -->
-    <!-- ============================= -->
+                        <div class="reply-card">
 
-</main>
+                            <%--
+                                답변 상단 정보
+
+                                현재는 관리자 답변이므로 작성자를 관리자라고 표시한다.
+                                DTO에 memberName이 있으면 ${comment.memberName}으로 바꿔도 된다.
+                            --%>
+                            <div class="reply-top">
+                                <div class="reply-writer">관리자</div>
+
+                                <div class="reply-date">
+                                    <fmt:formatDate value="${comment.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
+                                </div>
+                            </div>
+
+                            <%-- 답변 내용 --%>
+                            <div class="reply-content" id="comment-content-${comment.commentId}">
+                                ${comment.commentContent}
+                            </div>
+
+                            <%--
+                                관리자만 댓글 수정/삭제 버튼 표시
+
+                                현재 BoardCommentController에는 /comment_modify, /comment_delete가 이미 있다.
+                                여기서는 버튼과 AJAX 함수까지 연결한다.
+                            --%>
+                            <c:if test="${role == 'ADMIN' or sessionScope.role == 'ADMIN'}">
+                                <div class="reply-actions" style="margin-top: 14px; display:flex; gap:8px; justify-content:flex-end;">
+                                    <button type="button"
+                                            class="btn-secondary"
+                                            onclick="showCommentModify(${comment.commentId})">
+                                        수정
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn-danger"
+                                            onclick="commentDelete(${comment.commentId})">
+                                        삭제
+                                    </button>
+                                </div>
+
+                                <%-- 댓글 수정 입력 영역: 기본 숨김 --%>
+                                <div id="comment-modify-box-${comment.commentId}"
+                                     style="display:none; margin-top:14px;">
+                                    <textarea id="comment-modify-content-${comment.commentId}"
+                                              class="board-textarea">${comment.commentContent}</textarea>
+
+                                    <div class="form-actions" style="margin-top:10px;">
+                                        <button type="button"
+                                                class="btn-primary"
+                                                onclick="commentModify(${comment.commentId})">
+                                            수정 완료
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn-secondary"
+                                                onclick="hideCommentModify(${comment.commentId})">
+                                            취소
+                                        </button>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </div>
+
+                    </c:forEach>
+                </c:otherwise>
+            </c:choose>
+
+            <%--
+                관리자 답변 작성 영역
+
+                role이 ADMIN인 경우에만 답변 입력창을 보여준다.
+
+                주의:
+                BoardController의 boardContentView()에서
+                model.addAttribute("role", role); 이 필요하다.
+
+                혹시 model의 role이 없어도 sessionScope.role이 있으면 보이도록 둘 다 체크한다.
+            --%>
+            <c:if test="${role == 'ADMIN' or sessionScope.role == 'ADMIN'}">
+                <div class="reply-card" style="margin-top: 20px;">
+
+                    <div class="form-group">
+                        <label>관리자 답변 작성</label>
+
+                        <textarea id="commentContent"
+                                  class="board-textarea"
+                                  placeholder="관리자 답변을 입력하세요."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button"
+                                class="btn-primary"
+                                onclick="commentWrite(${content_view.boardNo})">
+                            답변 등록
+                        </button>
+                    </div>
+
+                </div>
+            </c:if>
+        </div>
+
+    </main>
+</div>
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 
 <script>
-/**
- * 수정 폼 열기/닫기
- */
-function showModifyForm() {
-    var box = document.getElementById("modifyForm");
-    box.style.display = box.style.display === "none" ? "block" : "none";
+/*
+    관리자 답변 등록 AJAX
+
+    요청 URL:
+    POST /comment_write
+
+    BoardCommentController.commentWrite()로 연결된다.
+*/
+function commentWrite(boardNo) {
+    console.log("@# commentWrite()");
+    console.log("@# boardNo =>", boardNo);
+
+    var commentContent = $("#commentContent").val();
+
+    console.log("@# commentContent =>", commentContent);
+
+    if (commentContent == null || commentContent.trim() == "") {
+        alert("답변 내용을 입력하세요.");
+        $("#commentContent").focus();
+        return;
+    }
+
+    $.ajax({
+        type: "post",
+        url: "${pageContext.request.contextPath}/comment_write",
+        data: {
+            boardNo: boardNo,
+            commentContent: commentContent
+        },
+        success: function(result) {
+            console.log("@# comment write result =>", result);
+
+            if (result == "success") {
+                alert("답변이 등록되었습니다.");
+                location.reload();
+
+            } else if (result == "login_required") {
+                alert("로그인이 필요합니다.");
+                location.href = "${pageContext.request.contextPath}/login_view";
+
+            } else if (result == "forbidden") {
+                alert("관리자만 답변을 등록할 수 있습니다.");
+
+            } else if (result == "empty") {
+                alert("답변 내용을 입력하세요.");
+
+            } else {
+                alert("답변 등록에 실패했습니다.");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.log("@# xhr.status =>", xhr.status);
+            console.log("@# xhr.responseText =>", xhr.responseText);
+            console.log("@# status =>", status);
+            console.log("@# error =>", error);
+
+            alert("답변 등록 중 서버 오류가 발생했습니다.");
+        }
+    });
 }
 
-/**
- * 관리자 답변 등록
- */
- function writeComment() {
-	    console.log("@# writeComment()");
-
-	    var commentInput = $("#commentContent");
-
-	    // textarea가 화면에 없을 때
-	    if (commentInput.length === 0) {
-	        alert("댓글 입력창을 찾을 수 없습니다. 관리자 권한 또는 JSP id를 확인하세요.");
-	        console.log("@# commentContent textarea 없음");
-	        return;
-	    }
-
-	    var commentContent = commentInput.val();
-
-	    // 값이 undefined/null일 때 대비
-	    if (commentContent == null) {
-	        commentContent = "";
-	    }
-
-	    commentContent = commentContent.trim();
-
-	    if (commentContent === "") {
-	        alert("답변 내용을 입력하세요.");
-	        commentInput.focus();
-	        return;
-	    }
-
-	    $.ajax({
-	        type: "post",
-	        url: "${pageContext.request.contextPath}/comment_write",
-	        data: {
-	            boardNo: "${content_view.boardNo}",
-	            commentContent: commentContent
-	        },
-	        success: function(result) {
-	            console.log("@# comment_write result =>", result);
-
-	            if (result === "success") {
-	                alert("답변이 등록되었습니다.");
-	                location.reload();
-
-	            } else if (result === "login_required") {
-	                alert("로그인이 필요합니다.");
-	                location.href = "${pageContext.request.contextPath}/login_view";
-
-	            } else if (result === "forbidden") {
-	                alert("관리자만 답변을 작성할 수 있습니다.");
-
-	            } else if (result === "empty") {
-	                alert("답변 내용을 입력하세요.");
-
-	            } else {
-	                alert("답변 등록에 실패했습니다.");
-	            }
-	        },
-	        error: function(xhr, status, error) {
-	            console.log("@# xhr.status =>", xhr.status);
-	            console.log("@# xhr.responseText =>", xhr.responseText);
-	            console.log("@# status =>", status);
-	            console.log("@# error =>", error);
-
-	            alert("서버 오류가 발생했습니다.");
-	        }
-	    });
-	}
-
-/**
- * 관리자 답변 수정 폼 열기
- */
-function showModifyComment(commentId) {
-    console.log("@# showModifyComment commentId =>", commentId);
-
-    $("#commentText_" + commentId).hide();
-    $("#commentEditBox_" + commentId).show();
+/*
+    댓글 수정 입력창 열기
+*/
+function showCommentModify(commentId) {
+    $("#comment-modify-box-" + commentId).show();
 }
 
-/**
- * 관리자 답변 수정 취소
- */
-function cancelModifyComment(commentId) {
-    console.log("@# cancelModifyComment commentId =>", commentId);
-
-    $("#commentEditBox_" + commentId).hide();
-    $("#commentText_" + commentId).show();
+/*
+    댓글 수정 입력창 닫기
+*/
+function hideCommentModify(commentId) {
+    $("#comment-modify-box-" + commentId).hide();
 }
 
-/**
- * 관리자 답변 수정 처리
- */
-function modifyComment(commentId) {
-    const commentContent = $("#commentEditContent_" + commentId).val();
+/*
+    관리자 답변 수정 AJAX
 
-    console.log("@# modify commentId =>", commentId);
-    console.log("@# modify commentContent =>", commentContent);
+    요청 URL:
+    POST /comment_modify
+*/
+function commentModify(commentId) {
+    var commentContent = $("#comment-modify-content-" + commentId).val();
 
-    if (commentContent.trim() === "") {
-        alert("수정할 답변 내용을 입력하세요.");
-        $("#commentEditContent_" + commentId).focus();
+    if (commentContent == null || commentContent.trim() == "") {
+        alert("답변 내용을 입력하세요.");
+        $("#comment-modify-content-" + commentId).focus();
         return;
     }
 
@@ -431,19 +398,19 @@ function modifyComment(commentId) {
         success: function(result) {
             console.log("@# comment modify result =>", result);
 
-            if (result === "success") {
+            if (result == "success") {
                 alert("답변이 수정되었습니다.");
                 location.reload();
 
-            } else if (result === "login_required") {
+            } else if (result == "login_required") {
                 alert("로그인이 필요합니다.");
                 location.href = "${pageContext.request.contextPath}/login_view";
 
-            } else if (result === "not_admin") {
+            } else if (result == "forbidden") {
                 alert("관리자만 답변을 수정할 수 있습니다.");
 
-            } else if (result === "empty") {
-                alert("수정할 답변 내용을 입력하세요.");
+            } else if (result == "empty") {
+                alert("답변 내용을 입력하세요.");
 
             } else {
                 alert("답변 수정에 실패했습니다.");
@@ -460,13 +427,14 @@ function modifyComment(commentId) {
     });
 }
 
-/**
- * 관리자 답변 삭제 처리
- */
-function deleteComment(commentId) {
-    console.log("@# delete commentId =>", commentId);
+/*
+    관리자 답변 삭제 AJAX
 
-    if (!confirm("관리자 답변을 삭제하시겠습니까?")) {
+    요청 URL:
+    POST /comment_delete
+*/
+function commentDelete(commentId) {
+    if (!confirm("답변을 삭제하시겠습니까?")) {
         return;
     }
 
@@ -479,15 +447,15 @@ function deleteComment(commentId) {
         success: function(result) {
             console.log("@# comment delete result =>", result);
 
-            if (result === "success") {
+            if (result == "success") {
                 alert("답변이 삭제되었습니다.");
                 location.reload();
 
-            } else if (result === "login_required") {
+            } else if (result == "login_required") {
                 alert("로그인이 필요합니다.");
                 location.href = "${pageContext.request.contextPath}/login_view";
 
-            } else if (result === "not_admin") {
+            } else if (result == "forbidden") {
                 alert("관리자만 답변을 삭제할 수 있습니다.");
 
             } else {

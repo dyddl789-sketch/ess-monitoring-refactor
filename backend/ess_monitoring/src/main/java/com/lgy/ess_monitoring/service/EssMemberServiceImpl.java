@@ -15,27 +15,37 @@ public class EssMemberServiceImpl implements EssMemberService {
     @Autowired
     private SqlSession sqlSession;
 
+    private EssMemberDAO getDao() {
+        return sqlSession.getMapper(EssMemberDAO.class);
+    }
+
     @Override
     public void join(HashMap<String, String> params) {
-        EssMemberDAO memberDao = sqlSession.getMapper(EssMemberDAO.class);
-        memberDao.join(params);
+        getDao().join(params);
     }
 
     @Override
     public EssMemberDTO login(HashMap<String, String> params) {
-        EssMemberDAO memberDao = sqlSession.getMapper(EssMemberDAO.class);
-        return memberDao.login(params);
+        return getDao().login(params);
     }
 
     @Override
     public int idCheck(String memberUserid) {
-        EssMemberDAO memberDao = sqlSession.getMapper(EssMemberDAO.class);
-        return memberDao.idCheck(memberUserid);
+        return getDao().idCheck(memberUserid);
     }
 
     @Override
     public int emailCheck(String email) {
-        EssMemberDAO memberDao = sqlSession.getMapper(EssMemberDAO.class);
-        return memberDao.emailCheck(email);
+        return getDao().emailCheck(email);
+    }
+
+    @Override
+    public EssMemberDTO getMemberInfo(int memberId) {
+        return getDao().getMemberInfo(memberId);
+    }
+
+    @Override
+    public int updateMemberInfo(EssMemberDTO member) {
+        return getDao().updateMemberInfo(member);
     }
 }
