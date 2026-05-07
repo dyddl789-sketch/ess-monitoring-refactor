@@ -34,6 +34,38 @@ public class BoardCommentController {
     private BoardCommentService commentService;
 
     /**
+     * 로그인 회원 ID 조회
+     *
+     * 프로젝트 내 세션명이 memberId / member_id로 섞여 있을 수 있으므로
+     * 두 가지 이름을 모두 확인한다.
+     */
+    private Integer getLoginMemberId(HttpSession session) {
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            memberId = (Integer) session.getAttribute("member_id");
+        }
+
+        return memberId;
+    }
+
+    /**
+     * 세션 문자열 값 조회
+     *
+     * 예:
+     * getSessionText(session, "userType", "user_type")
+     */
+    private String getSessionText(HttpSession session, String camelName, String snakeName) {
+        String value = (String) session.getAttribute(camelName);
+
+        if (value == null) {
+            value = (String) session.getAttribute(snakeName);
+        }
+
+        return value;
+    }
+
+    /**
      * 관리자 댓글 등록
      *
      * 요청 URL:
@@ -53,12 +85,13 @@ public class BoardCommentController {
         log.info("@# boardNo => " + boardNo);
         log.info("@# commentContent => " + commentContent);
 
-        /*
-         * 로그인 시 EssMemberController에서 저장한 세션 이름 기준
-         * memberId, userType, role
-         */
-        Integer memberId = (Integer) session.getAttribute("memberId");
-        String userType = (String) session.getAttribute("userType");
+        // 로그인 회원 번호 조회
+        Integer memberId = getLoginMemberId(session);
+
+        // 회원 유형 조회
+        String userType = getSessionText(session, "userType", "user_type");
+
+        // 관리자 권한 조회
         String role = (String) session.getAttribute("role");
 
         log.info("@# memberId => " + memberId);
@@ -120,11 +153,10 @@ public class BoardCommentController {
         log.info("@# commentId => " + commentId);
         log.info("@# commentContent => " + commentContent);
 
-        /*
-         * 로그인 시 EssMemberController에서 저장한 세션 이름 기준
-         * memberId, role
-         */
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        // 로그인 회원 번호 조회
+        Integer memberId = getLoginMemberId(session);
+
+        // 관리자 권한 조회
         String role = (String) session.getAttribute("role");
 
         log.info("@# memberId => " + memberId);
@@ -180,11 +212,10 @@ public class BoardCommentController {
         log.info("@# comment_delete()");
         log.info("@# commentId => " + commentId);
 
-        /*
-         * 로그인 시 EssMemberController에서 저장한 세션 이름 기준
-         * memberId, role
-         */
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        // 로그인 회원 번호 조회
+        Integer memberId = getLoginMemberId(session);
+
+        // 관리자 권한 조회
         String role = (String) session.getAttribute("role");
 
         log.info("@# memberId => " + memberId);
