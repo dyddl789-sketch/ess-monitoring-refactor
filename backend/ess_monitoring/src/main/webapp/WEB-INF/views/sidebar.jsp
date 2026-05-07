@@ -3,13 +3,36 @@
 
 <aside class="sidebar" id="sidebar">
 
-  <div class="sidebar-header">
-    <div class="logo">ESS</div>
-    <button type="button" class="sidebar-toggle" id="sidebarToggle">☰</button>
-  </div>
+    <div class="sidebar-header">
 
-  <nav class="sidebar-menu">
+        <a href="${pageContext.request.contextPath}/dashboard/main"
+           class="logo-link">
 
+            <span class="logo">ESS</span>
+
+        </a>
+
+        <button type="button"
+                class="sidebar-toggle"
+                id="sidebarToggle">
+            ☰
+        </button>
+
+    </div>
+
+    <nav class="sidebar-menu">
+
+        <!-- 메인 홈 -->
+        <div class="menu-section">
+
+            <a href="${pageContext.request.contextPath}/main"
+               class="menu-item home-button">
+
+                <span class="menu-text">메인 홈</span>
+
+            </a>
+
+        </div>
     <div class="menu-section">
       <div class="menu-title">운영</div>
 

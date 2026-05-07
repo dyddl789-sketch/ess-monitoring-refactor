@@ -9,11 +9,12 @@
 .sidebar {
     width: 70px;
     min-height: 100vh;
-    background-color: #111827;
+    background: linear-gradient(180deg, #0b1220 0%, #111827 100%);
     color: #ffffff;
     flex-shrink: 0;
     overflow-y: auto;
     transition: width 0.25s ease;
+    box-shadow: 4px 0 18px rgba(15, 23, 42, 0.18);
 }
 
 /* 마우스 올리면 펼침 */
@@ -23,20 +24,21 @@
 
 /* 헤더 */
 .sidebar-header {
-    height: 60px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 16px;
-    border-bottom: 1px solid #1f2937;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
 }
 
 .logo {
     display: none;
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
     white-space: nowrap;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
 }
 
 .sidebar:hover .logo {
@@ -49,21 +51,21 @@
 
 /* 메뉴 영역 */
 .sidebar-menu {
-    padding: 12px 10px;
+    padding: 18px 10px;
 }
 
 /* 메뉴 섹션 */
 .menu-section {
-    margin-bottom: 22px;
+    margin-bottom: 28px;
 }
 
 /* 메뉴 타이틀 */
 .menu-title {
     display: none;
-    padding: 14px 10px 8px;
-    font-size: 12px;
-    color: #9ca3af;
-    font-weight: 700;
+    padding: 12px 10px 10px;
+    font-size: 13px;
+    color: #93c5fd;
+    font-weight: 800;
     white-space: nowrap;
     letter-spacing: 0.04em;
 }
@@ -74,18 +76,46 @@
 
 /* 메뉴 */
 .menu-item {
+    position: relative;
     display: flex;
     align-items: center;
-    height: 42px;
-    padding: 0 14px;
-    margin-bottom: 4px;
-    border-radius: 10px;
+    height: 48px;
+    padding: 0 14px 0 22px;
+    margin-bottom: 6px;
+    border-radius: 4px;
     text-decoration: none;
-    color: #d1d5db;
-    font-size: 14px;
-    font-weight: 500;
+    color: #e5e7eb;
+    font-size: 15px;
+    font-weight: 700;
     white-space: nowrap;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    background: rgba(30, 41, 59, 0.52);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.8);
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+/* 좌측 구분 바 */
+.menu-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 4px;
+    height: 30px;
+    border-radius: 0 4px 4px 0;
+    background: #60a5fa;
+}
+
+/* 섹션별 컬러 */
+.menu-section:nth-child(1) .menu-item::before {
+    background: #60a5fa;
+}
+
+.menu-section:nth-child(2) .menu-item::before {
+    background: #2dd4bf;
+}
+
+.menu-section:nth-child(3) .menu-item::before {
+    background: #a78bfa;
 }
 
 /* 접힌 상태에서는 텍스트 숨김 */
@@ -100,15 +130,40 @@
     display: inline;
 }
 
-.menu-item:hover {
-    background-color: #1f2937;
-    color: #ffffff;
+/* 접힌 상태 메뉴 정리 */
+.sidebar:not(:hover) .menu-item {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    margin: 0 auto 8px;
+    background: rgba(30, 41, 59, 0.75);
 }
 
-.menu-item.active {
-    background-color: #2563eb;
+.sidebar:not(:hover) .menu-item::before {
+    left: 50%;
+    top: 9px;
+    width: 5px;
+    height: 24px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+}
+
+/* hover */
+.menu-item:hover {
+    background: rgba(51, 65, 85, 0.95);
     color: #ffffff;
-    font-weight: 700;
+    transform: translateX(2px);
+}
+
+/* 활성 메뉴 */
+.menu-item.active {
+    background: rgba(37, 99, 235, 0.95);
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.menu-item.active::before {
+    background: #ffffff;
 }
 
 /* 오른쪽 본문 */
@@ -127,4 +182,20 @@
 .sidebar::-webkit-scrollbar-thumb {
     background: #374151;
     border-radius: 4px;
+}
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.home-button {
+    background: rgba(37, 99, 235, 0.16);
+}
+
+.home-button::before {
+    background: #ffffff;
+}
+
+.home-button:hover {
+    background: rgba(37, 99, 235, 0.95);
 }
