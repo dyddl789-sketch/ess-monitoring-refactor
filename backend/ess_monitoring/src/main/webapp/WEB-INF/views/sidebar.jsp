@@ -25,7 +25,7 @@
         <!-- 메인 홈 -->
         <div class="menu-section">
 
-            <a href="${pageContext.request.contextPath}/main"
+            <a href="${pageContext.request.contextPath}//goMain"
                class="menu-item home-button">
 
                 <span class="menu-text">메인 홈</span>
