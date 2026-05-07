@@ -4,4 +4,5 @@ backend/ess_monitoring/target/
 
 # STS/Eclipse local settings
 backend/ess_monitoring/.classpath
-backend/ess_monitoring/.settings/
+backend/ess_monitoring/.settings/backend/ess_monitoring/target/
+*.class
