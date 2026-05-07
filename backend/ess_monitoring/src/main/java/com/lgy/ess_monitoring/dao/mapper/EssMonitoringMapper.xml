@@ -4,43 +4,44 @@
 
 <mapper namespace="com.lgy.ess_monitoring.dao.EssMonitoringDAO">
 
-    <!-- 특정 디바이스 최신 모니터링 1건 조회 -->
-    <select id="getLatestMonitoring"
-            parameterType="int"
-            resultType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
-        SELECT
-            m.monitor_id,
-            m.device_id,
-            m.voltage,
-            m.current_a,
-            m.soc,
-            m.power_output,
-            m.solar_generation_kwh,
-            m.charged_energy_kwh,
-            m.used_energy_kwh,
-            m.saved_cost,
-            m.record_time,
-            d.device_name,
-            d.location,
-            d.status AS device_status,
-            g.group_name,
-            w.sky_status,
-            w.rain_type,
-            w.temperature
-        FROM monitoring m
-        JOIN ess_device d
-          ON m.device_id = d.device_id
-        LEFT JOIN ess_device_group g
-          ON d.group_id = g.group_id
-        LEFT JOIN weather_data w
-          ON w.device_id = d.device_id
-         AND CONCAT(w.fcst_date, w.fcst_time) >= DATE_FORMAT(m.record_time, '%Y%m%d%H00')
-        WHERE m.device_id = #{deviceId}
-        ORDER BY m.record_time DESC,
-                 w.fcst_date ASC,
-                 w.fcst_time ASC
-        LIMIT 1
-    </select>
+	<!-- 특정 디바이스 최신 모니터링 1건 조회 -->
+	<select id="getLatestMonitoring"
+	        parameterType="int"
+	        resultType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
+	    SELECT
+	        m.monitor_id,
+	        m.device_id,
+	        m.voltage,
+	        m.current_a,
+	        m.soc,
+	        m.power_output,
+	        m.solar_generation_kwh,
+	        m.charged_energy_kwh,
+	        m.used_energy_kwh,
+	        m.saved_cost,
+	        m.record_time,
+	        d.device_name,
+	        d.location,
+	        d.status AS device_status,
+	        g.group_name,
+	        w.sky_status,
+	        w.rain_type,
+	        w.temperature
+	    FROM monitoring m
+	    JOIN ess_device d
+	      ON m.device_id = d.device_id
+	    LEFT JOIN ess_device_group g
+	      ON d.group_id = g.group_id
+	    LEFT JOIN weather_data w
+	      ON w.device_id = d.device_id
+	     AND CONCAT(w.fcst_date, w.fcst_time) >= DATE_FORMAT(m.record_time, '%Y%m%d%H00')
+	    WHERE m.device_id = #{deviceId}
+	      AND m.record_time <![CDATA[ <= ]]> NOW()
+	    ORDER BY m.record_time DESC,
+	             w.fcst_date ASC,
+	             w.fcst_time ASC
+	    LIMIT 1
+	</select>
 
     <!-- 회원 기준 모니터링 목록 조회 -->
     <select id="getMonitoringListByMemberId"
@@ -124,6 +125,7 @@
         WHERE d.member_id = #{memberId}
     </select>
 	
+	
 	<!-- 최근 모니터링 이력 조회 -->
 	<select id="getMonitoringHistory"
 	        parameterType="int"
@@ -143,8 +145,20 @@
 	        record_time
 	    FROM monitoring
 	    WHERE device_id = #{deviceId}
+	      AND record_time <![CDATA[ <= ]]> NOW()
+	      AND MINUTE(record_time) != 0
 	    ORDER BY record_time DESC
-	    LIMIT 20
+	    LIMIT 10
 	
+	</select>
+	
+	<!-- 오늘 누적 발전량 조회 -->
+	<select id="getTodayGeneration"
+	        parameterType="int"
+	        resultType="double">
+	    SELECT IFNULL(SUM(solar_generation_kwh), 0)
+	    FROM monitoring
+	    WHERE device_id = #{deviceId}
+	      AND DATE(record_time) = CURDATE()
 	</select>
 </mapper>

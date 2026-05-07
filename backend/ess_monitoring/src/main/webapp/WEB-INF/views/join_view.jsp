@@ -97,11 +97,11 @@
 
             <!-- user_type -->
             <div class="login-type-tabs">
-                <button type="button" class="tab-btn active" onclick="selectType('개인')">개인용</button>
-                <button type="button" class="tab-btn" onclick="selectType('기업')">기업용</button>
+                <button type="button" class="tab-btn active" onclick="selectType('PERSONAL')">개인용</button>
+                <button type="button" class="tab-btn" onclick="selectType('COMPANY')">기업용</button>
             </div>
 
-            <input type="hidden" id="userType" name="userType" value="개인">
+            <input type="hidden" id="userType" name="userType" value="PERSONAL">
 
             <!-- member_name -->
             <div class="form-group">

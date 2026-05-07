@@ -48,4 +48,15 @@ public interface AlertDAO {
             @Param("startDate") String startDate,
             @Param("endDate") String endDate
     );
+    
+ // 특정 장비 최근 알림 조회
+    List<AlertDTO> getRecentAlertsByDeviceId(@Param("deviceId") int deviceId);
+    
+ // 대시보드 필터 기준 최근 알림 조회
+    List<AlertDTO> getDashboardAlerts(
+            @Param("memberId") int memberId,
+            @Param("selectedDate") String selectedDate,
+            @Param("groupId") Integer groupId,
+            @Param("deviceId") Integer deviceId
+    );
 }

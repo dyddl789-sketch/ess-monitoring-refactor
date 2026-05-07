@@ -20,6 +20,9 @@ import com.lgy.ess_monitoring.dto.WeatherDTO;
 import com.lgy.ess_monitoring.service.DashboardService;
 import com.lgy.ess_monitoring.service.EssDeviceService;
 import com.lgy.ess_monitoring.service.WeatherService;
+import com.lgy.ess_monitoring.dto.DashboardChartDTO;
+import com.lgy.ess_monitoring.dto.AlertDTO;
+import com.lgy.ess_monitoring.service.AlertService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,6 +39,9 @@ public class DashboardController {
 
     @Autowired
     private WeatherService weatherService;
+    
+    @Autowired
+    private AlertService alertService;
 
     // 요약 출력
     @ResponseBody
@@ -221,6 +227,99 @@ public class DashboardController {
                 memberId, selectedDate);
 
         return dashboardService.getGenerationChart(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );      
+    }
+ // 시간별 발전량 / SOC 비교 차트
+    @ResponseBody
+    @RequestMapping(
+        value = "/chart/hourly",
+        method = RequestMethod.GET,
+        produces = "application/json; charset=UTF-8"
+    )
+    public List<DashboardChartDTO> hourlyChart(
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId,
+            HttpSession session
+    ) {
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            selectedDate = java.time.LocalDate.now().toString();
+        }
+
+        return dashboardService.getHourlyCompareChart(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
+    }
+ // 장비별 발전량 비교 차트
+    @ResponseBody
+    @RequestMapping(
+        value = "/chart/device",
+        method = RequestMethod.GET,
+        produces = "application/json; charset=UTF-8"
+    )
+    public List<DashboardChartDTO> deviceChart(
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId,
+            HttpSession session
+    ) {
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            selectedDate = java.time.LocalDate.now().toString();
+        }
+
+        return dashboardService.getDeviceCompareChart(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
+    }   
+    
+ // 대시보드 필터 기준 최근 알림 조회
+    @ResponseBody
+    @RequestMapping(
+        value = "/alerts",
+        method = RequestMethod.GET,
+        produces = "application/json; charset=UTF-8"
+    )
+    public List<AlertDTO> dashboardAlerts(
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId,
+            HttpSession session
+    ) {
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            selectedDate =
+                    java.time.LocalDate.now().toString();
+        }
+
+        return alertService.getDashboardAlerts(
                 memberId,
                 selectedDate,
                 groupId,

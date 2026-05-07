@@ -26,7 +26,7 @@ function renderDeviceManageTable(list) {
         return;
     }
 
-    let filteredList = list.filter(function (device) {
+    const filteredList = list.filter(function (device) {
         let matchKeyword = true;
         let matchStatus = true;
 
@@ -36,7 +36,8 @@ function renderDeviceManageTable(list) {
                 (device.location || '') + ' ' +
                 (device.groupName || '');
 
-            matchKeyword = target.indexOf(keyword) > -1;
+            matchKeyword =
+                target.toLowerCase().indexOf(keyword.toLowerCase()) > -1;
         }
 
         if (statusFilter) {
@@ -54,20 +55,55 @@ function renderDeviceManageTable(list) {
     filteredList.forEach(function (device) {
         const statusInfo = getDeviceStatusInfo(device.status);
 
+        const mainBadge =
+            device.isMain === 'Y'
+                ? '<span class="main-device-badge">대표 ESS</span>'
+                : '-';
+
         const row =
             '<tr>' +
-                '<td>' + escapeHtml(device.deviceName) + '</td>' +
-                '<td>' + escapeHtml(device.groupName || '-') + '</td>' +
-                '<td>' + escapeHtml(device.location || '-') + '</td>' +
-                '<td>' + formatNumber(device.capacityKw) + '</td>' +
-                '<td>' + formatNumber(device.essCapacityKwh) + '</td>' +
-                '<td><span class="' + statusInfo.className + '">' + statusInfo.text + '</span></td>' +
-                '<td>' + (device.isMain === 'Y' ? '대표' : '-') + '</td>' +
-                '<td>' + escapeHtml(device.installDate || '-') + '</td>' +
+
                 '<td>' +
-                    '<a class="btn-link" href="' + contextPath + '/monitoring/main?deviceId=' + device.deviceId + '">실시간 보기</a> ' +
-                    '<button type="button" class="btn-danger-small" onclick="deleteDevice(' + device.deviceId + ')">삭제</button>' +
+                    '<a href="' + contextPath + '/monitoring/main?deviceId=' + device.deviceId + '">' +
+                        escapeHtml(device.deviceName) +
+                    '</a>' +
                 '</td>' +
+
+                '<td>' + escapeHtml(device.groupName || '-') + '</td>' +
+
+                '<td>' + escapeHtml(device.location || '-') + '</td>' +
+
+                '<td>' + formatNumber(device.capacityKw) + ' kW</td>' +
+
+                '<td>' + formatNumber(device.essCapacityKwh) + ' kWh</td>' +
+
+                '<td>' +
+                    '<span class="' + statusInfo.className + '">' +
+                        statusInfo.text +
+                    '</span>' +
+                '</td>' +
+
+                '<td>' + mainBadge + '</td>' +
+
+                '<td>' + formatDate(device.installDate) + '</td>' +
+
+                '<td>' +
+                    '<div class="device-action-group">' +
+
+                        '<a class="table-btn-primary" ' +
+                           'href="' + contextPath + '/monitoring/main?deviceId=' + device.deviceId + '">' +
+                            '실시간' +
+                        '</a>' +
+
+                        '<button type="button" ' +
+                                'class="table-btn-danger" ' +
+                                'onclick="deleteDevice(' + device.deviceId + ')">' +
+                            '삭제' +
+                        '</button>' +
+
+                    '</div>' +
+                '</td>' +
+
             '</tr>';
 
         $tbody.append(row);
@@ -106,22 +142,37 @@ function deleteDevice(deviceId) {
 
 function getDeviceStatusInfo(status) {
     if (status === 'NORMAL') {
-        return { text: '정상', className: 'status-normal' };
+        return {
+            text: '정상',
+            className: 'status-normal'
+        };
     }
 
     if (status === 'WARNING') {
-        return { text: '경고', className: 'status-warning' };
+        return {
+            text: '경고',
+            className: 'status-warning'
+        };
     }
 
     if (status === 'ERROR') {
-        return { text: '오류', className: 'status-danger' };
+        return {
+            text: '오류',
+            className: 'status-danger'
+        };
     }
 
     if (status === 'OFFLINE') {
-        return { text: '오프라인', className: 'status-offline' };
+        return {
+            text: '오프라인',
+            className: 'status-offline'
+        };
     }
 
-    return { text: '-', className: 'status-nodata' };
+    return {
+        text: '데이터 없음',
+        className: 'status-nodata'
+    };
 }
 
 function formatNumber(value) {
@@ -129,7 +180,21 @@ function formatNumber(value) {
         return '-';
     }
 
-    return Number(value).toLocaleString();
+    const num = Number(value);
+
+    if (isNaN(num)) {
+        return '-';
+    }
+
+    return num.toLocaleString();
+}
+
+function formatDate(value) {
+    if (!value) {
+        return '-';
+    }
+
+    return String(value).substring(0, 10);
 }
 
 function escapeHtml(value) {

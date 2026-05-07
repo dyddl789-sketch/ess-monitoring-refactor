@@ -44,8 +44,9 @@
             join_date,
             role
         FROM ess_member
-        WHERE member_userid = #{memberUserid}
-          AND member_pw = #{memberPw}
+		WHERE member_userid = #{memberUserid}
+		  AND member_pw = #{memberPw}
+		  AND user_type = #{userType}
     </select>
 
     <!-- ===================== 아이디 중복 체크 ===================== -->
@@ -67,5 +68,50 @@
         FROM ess_member
         WHERE email = #{email}
     </select>
-
+    <!-- ===================== 내 정보 조회 ===================== -->
+		<select id="getMemberInfo"
+		        parameterType="int"
+		        resultType="com.lgy.ess_monitoring.dto.EssMemberDTO">
+		
+		    SELECT
+		        member_id,
+		        member_name,
+		        member_userid,
+		        member_pw,
+		        user_type,
+		        phone,
+		        email,
+		        address,
+		        join_date,
+		        role
+		    FROM ess_member
+		    WHERE member_id = #{memberId}
+		
+		</select>
+		
+		
+		<!-- ===================== 내 정보 수정 ===================== -->
+		<update id="updateMemberInfo"
+		        parameterType="com.lgy.ess_monitoring.dto.EssMemberDTO">
+		
+		    UPDATE ess_member
+		    SET
+		        member_name = #{memberName},
+		        phone = #{phone},
+		        email = #{email},
+		        address = #{address}
+		    WHERE member_id = #{memberId}
+		
+		</update>
+    
+	<!-- 비밀번호 변경 -->
+	<update id="updatePassword"
+	        parameterType="hashmap">
+	
+	    UPDATE ess_member
+	    SET member_pw = #{newPw}
+	    WHERE member_id = #{memberId}
+	      AND member_pw = #{currentPw}
+	
+	</update>
 </mapper>

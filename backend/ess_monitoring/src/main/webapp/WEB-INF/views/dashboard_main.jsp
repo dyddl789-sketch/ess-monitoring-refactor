@@ -82,22 +82,54 @@
 
     <section class="content-grid">
 
-		<div class="card">
-		  <!-- 기업: 그룹별 / 개인: 장비별 / 필터 선택 시 제목은 JS에서 변경 -->
-		  <div class="section-title" id="generationChartTitle">
-		    선택일 발전량
-		  </div>
-		
-		  <!-- 발전량 그래프 영역: JS에서 DB 조회 결과로 bar-item 생성 -->
-		  <div class="bar-chart" id="generationChart">
-		    <div class="empty-chart">데이터를 불러오는 중...</div>
-		  </div>
-		
-		  <!-- 표시 기준 안내 -->
-		  <div class="dashboard-note" id="generationChartNote">
-		    선택한 날짜와 필터 기준으로 발전량을 표시합니다.
-		  </div>
-		</div>
+	<!-- 발전량 비교 차트 -->
+	<div class="card chart-card wide-chart">
+	
+	    <div class="chart-header">
+	
+	        <div>
+	
+	            <div class="section-title">
+	                발전량 비교 분석
+	            </div>
+	
+	            <div class="section-subtitle">
+	                선택일과 이전일 발전량 비교
+	            </div>
+	
+	        </div>
+	
+	        <div class="chart-tabs">
+	
+	            <button
+	                type="button"
+	                class="chart-tab active"
+	                data-type="hourly">
+	
+	                시간별
+	
+	            </button>
+	
+	            <button
+	                type="button"
+	                class="chart-tab"
+	                data-type="daily">
+	
+	                일별
+	
+	            </button>
+	
+	        </div>
+	
+	    </div>
+	
+	    <div class="chart-box-large">
+	
+	        <canvas id="generationCompareChart"></canvas>
+	
+	    </div>
+	
+	</div>
 
 		<div class="card">
 		  <div class="section-title">장비 리스트</div>
@@ -130,21 +162,62 @@
 		    <span class="status-nodata">데이터 없음</span> : 데이터 없음
 		  </div>
 		</div>
-
+	
     </section>
+<!-- 추가 분석 차트 -->
+<section class="dashboard-chart-grid">
 
+    <!-- SOC 비교 -->
+    <div class="card chart-card">
+
+        <div class="section-title">
+            SOC 비교 (%)
+        </div>
+
+        <div class="section-subtitle">
+            선택일과 이전일 SOC 흐름 비교
+        </div>
+
+        <div class="chart-box">
+
+            <canvas id="socCompareChart"></canvas>
+
+        </div>
+
+    </div>
+
+    <!-- 장비별 발전량 비교 -->
+    <div class="card chart-card">
+
+        <div class="section-title">
+            장비별 발전량 비교
+        </div>
+
+        <div class="section-subtitle">
+            장비별 선택일/이전일 비교
+        </div>
+
+        <div class="chart-box">
+
+            <canvas id="deviceGenerationChart"></canvas>
+
+        </div>
+
+    </div>
+
+</section>
     <section class="bottom-grid">
 
-  <div class="card">
-    <div class="section-title">최근 알림</div>
-
-    <ul class="alert-list">
-      <li><span class="badge">경고</span> 부산센터 ESS 2호기 SOC가 50% 미만입니다. <span style="float:right;">09:15</span></li>
-      <li><span class="badge">정보</span> 서울공장 ESS 1호기 충전이 완료되었습니다. <span style="float:right;">08:45</span></li>
-      <li><span class="badge">정보</span> 대구지점 ESS 1호기 일일 리포트가 생성되었습니다. <span style="float:right;">08:00</span></li>
-      <li><span class="badge">경고</span> 전주사무소 ESS 1호기 통신 상태가 불안정합니다. <span style="float:right;">07:30</span></li>
-    </ul>
-  </div>
+	<div class="card">
+	    <div class="section-title">최근 알림</div>
+	
+	    <div id="dashboardAlertList">
+	        <div class="dashboard-alert-item">
+	            <span class="dashboard-alert-badge info">정보</span>
+	            <span class="dashboard-alert-message">최근 알림이 없습니다.</span>
+	        </div>
+	    </div>
+	</div>
 
   <!-- ============================= -->
   <!-- 대표 디바이스 기준 날씨 카드 -->
@@ -273,6 +346,9 @@
 </script>
 
 <script src="${pageContext.request.contextPath}/resources/js/dashboard_main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="${pageContext.request.contextPath}/resources/js/dashboard_chart.js"></script>
 
 </body>
 </html>

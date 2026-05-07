@@ -27,20 +27,36 @@
             </div>
         </div>
 
+        <!-- 그룹 등록 -->
         <div class="card">
             <h3>그룹 등록</h3>
 
-            <form action="${pageContext.request.contextPath}/group/insert" method="post">
+            <form action="${pageContext.request.contextPath}/group/insert"
+                  method="post">
+
                 <div class="filter-box">
-                    <input type="text" name="groupName" placeholder="그룹명" required>
-                    <input type="text" name="description" placeholder="그룹 설명">
-                    <button type="submit">등록</button>
+
+                    <input type="text"
+                           name="groupName"
+                           placeholder="그룹명"
+                           required>
+
+                    <input type="text"
+                           name="description"
+                           placeholder="그룹 설명">
+
+                    <button type="submit">
+                        등록
+                    </button>
+
                 </div>
+
             </form>
         </div>
 
         <br>
 
+        <!-- 그룹 목록 -->
         <div class="card">
             <h3>그룹 목록</h3>
 
@@ -57,47 +73,77 @@
 
                 <tbody>
                     <c:choose>
+
                         <c:when test="${empty groupList}">
                             <tr>
-                                <td colspan="5">등록된 그룹이 없습니다.</td>
+                                <td colspan="5">
+                                    등록된 그룹이 없습니다.
+                                </td>
                             </tr>
                         </c:when>
 
                         <c:otherwise>
                             <c:forEach var="group" items="${groupList}">
+
                                 <tr>
-                                    <form action="${pageContext.request.contextPath}/group/update" method="post">
-                                        <input type="hidden" name="groupId" value="${group.groupId}">
+                                    <td>
+                                        <input type="text"
+                                               form="updateForm${group.groupId}"
+                                               name="groupName"
+                                               value="${group.groupName}"
+                                               required>
+                                    </td>
 
-                                        <td>
-                                            <input type="text" name="groupName" value="${group.groupName}" required>
-                                        </td>
+                                    <td>
+                                        <input type="text"
+                                               form="updateForm${group.groupId}"
+                                               name="description"
+                                               value="${group.description}">
+                                    </td>
 
-                                        <td>
-                                            <input type="text" name="description" value="${group.description}">
-                                        </td>
-
-                                        <td>
+                                    <td>
+                                        <span class="main-device-badge">
                                             ${group.deviceCount}대
-                                        </td>
+                                        </span>
+                                    </td>
 
-                                        <td>
-                                            <fmt:formatDate value="${group.createdAt}" pattern="yyyy-MM-dd"/>
-                                        </td>
+                                    <td>
+                                        <fmt:formatDate value="${group.createdAt}"
+                                                        pattern="yyyy-MM-dd"/>
+                                    </td>
 
-                                        <td>
-                                            <button type="submit">수정</button>
+                                    <td>
+                                        <div class="device-action-group">
 
-                                            <a class="btn-danger-small"
+                                            <!-- 수정 form -->
+                                            <form id="updateForm${group.groupId}"
+                                                  action="${pageContext.request.contextPath}/group/update"
+                                                  method="post">
+
+                                                <input type="hidden"
+                                                       name="groupId"
+                                                       value="${group.groupId}">
+
+                                                <button type="submit"
+                                                        class="table-btn-primary">
+                                                    수정
+                                                </button>
+                                            </form>
+
+                                            <!-- 삭제 -->
+                                            <a class="table-btn-danger"
                                                href="${pageContext.request.contextPath}/group/delete?groupId=${group.groupId}"
                                                onclick="return confirm('이 그룹을 삭제하시겠습니까? 그룹에 속한 장비는 그룹 없음 상태가 됩니다.');">
                                                 삭제
                                             </a>
-                                        </td>
-                                    </form>
+
+                                        </div>
+                                    </td>
                                 </tr>
+
                             </c:forEach>
                         </c:otherwise>
+
                     </c:choose>
                 </tbody>
             </table>

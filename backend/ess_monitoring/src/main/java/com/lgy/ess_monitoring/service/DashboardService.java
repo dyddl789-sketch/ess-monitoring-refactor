@@ -6,6 +6,7 @@ import com.lgy.ess_monitoring.dto.DashboardSummaryDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceGroupDTO;
 import com.lgy.ess_monitoring.dto.DashboardChartResponseDTO;
+import com.lgy.ess_monitoring.dto.DashboardChartDTO;
 
 public interface DashboardService {
 
@@ -36,6 +37,20 @@ public interface DashboardService {
     
  // 발전량 차트 조회
     DashboardChartResponseDTO getGenerationChart(
+            int memberId,
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId
+    );
+ // 시간별 발전량 / SOC 비교 차트
+    List<DashboardChartDTO> getHourlyCompareChart(
+            int memberId,
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId
+    );
+ // 장비별 발전량 비교 차트
+    List<DashboardChartDTO> getDeviceCompareChart(
             int memberId,
             String selectedDate,
             Integer groupId,

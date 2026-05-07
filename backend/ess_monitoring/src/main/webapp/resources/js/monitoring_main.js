@@ -162,10 +162,19 @@ function initCharts() {
                 pointRadius: 4
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
+		options: {
+		    responsive: true,
+		    maintainAspectRatio: false,
+		    scales: {
+		        x: {
+		            ticks: {
+		                maxRotation: 0,
+		                autoSkip: true,
+		                maxTicksLimit: 10
+		            }
+		        }
+		    }
+		}
     });
 
     socChart = new Chart(socCtx, {
@@ -180,10 +189,19 @@ function initCharts() {
                 pointRadius: 4
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
+		options: {
+		    responsive: true,
+		    maintainAspectRatio: false,
+		    scales: {
+		        x: {
+		            ticks: {
+		                maxRotation: 0,
+		                autoSkip: true,
+		                maxTicksLimit: 10
+		            }
+		        }
+		    }
+		}
     });
 }
 
@@ -251,7 +269,19 @@ function updateMonitoring(data) {
     if (!data) {
         return;
     }
-
+    
+	if (Number(data.powerOutput || 0) < 1.0) {
+    	$('#deviceStatus')
+        	.removeClass()
+        	.addClass('card-value status-error')
+        	.text('장비 이상');
+	} else {
+    	$('#deviceStatus')
+        .removeClass()
+        .addClass('card-value status-normal')
+        .text('정상');
+	}
+	
     $('#soc').text(formatNumber(data.soc, 1) + '%');
 
     $('#powerOutput').text(formatNumber(data.powerOutput, 1) + ' kW');
@@ -269,7 +299,7 @@ function updateMonitoring(data) {
     );
 
     $('#recordTime').text(formatTimestamp(data.recordTime));
-
+	
     addLatestChartData(data);
 }
 
@@ -298,12 +328,12 @@ function addLatestChartData(data) {
         socData.push(Number(data.soc || 0));
     }
 
-    while (powerLabels.length > 20) {
+    while (powerLabels.length > 10) {
         powerLabels.shift();
         powerData.shift();
     }
 
-    while (socLabels.length > 20) {
+    while (socLabels.length > 10) {
         socLabels.shift();
         socData.shift();
     }
@@ -409,50 +439,223 @@ function loadWeather() {
  */
 function updateOperationSummary(weather) {
 
-    const operationCondition =
-        weather && weather.essStatus
-            ? weather.essStatus
-            : '-';
-
+    let operationCondition = '-';
     let batteryCondition = '-';
     let recommendAction = '-';
 
-    const socText = $('#soc').text().replace('%', '');
+    /*
+     * 현재 SOC 읽기
+     */
+    const socText =
+        $('#soc')
+            .text()
+            .replace('%', '');
+
     const soc = Number(socText);
 
+    /*
+     * 발전 조건 판단
+     */
+    if (weather.rainType &&
+        weather.rainType !== '없음') {
+
+        operationCondition = '발전량 낮음';
+
+    } else if (weather.skyStatus === '맑음') {
+
+        operationCondition = '발전 양호';
+
+    } else if (weather.skyStatus === '흐림') {
+
+        operationCondition = '발전 보통';
+
+    } else {
+
+        operationCondition = '상태 확인 필요';
+    }
+
+    /*
+     * 배터리 상태
+     */
     if (!isNaN(soc)) {
 
         if (soc >= 80) {
-            batteryCondition = '충전 상태 양호';
+
+            batteryCondition =
+                '충전 상태 양호';
+
         } else if (soc >= 40) {
-            batteryCondition = '보통';
+
+            batteryCondition =
+                '배터리 상태 보통';
+
+        } else if (soc >= 20) {
+
+            batteryCondition =
+                '충전 필요';
+
         } else {
-            batteryCondition = '충전 필요';
+
+            batteryCondition =
+                '저전력 경고';
         }
     }
 
-    if (operationCondition === '발전 조건 양호') {
-        recommendAction = '현재 조치 필요 없음';
-    } else if (operationCondition === '야간 발전 없음') {
-        recommendAction = 'ESS 방전/대기 모드 권장';
-    } else if (operationCondition === '발전량 저하 예상') {
-        recommendAction = '배터리 잔량 확인 권장';
+    /*
+     * 권장 조치
+     */
+    if (soc < 20) {
+
+        recommendAction =
+            '절전 모드 권장';
+
+    } else if (
+        operationCondition === '발전량 낮음'
+    ) {
+
+        recommendAction =
+            'ESS 충전 상태 확인 권장';
+
+    } else if (
+        operationCondition === '발전 양호'
+    ) {
+
+        recommendAction =
+            '현재 상태 유지';
+
     } else {
-        recommendAction = '상태 모니터링 필요';
+
+        recommendAction =
+            '상태 모니터링 필요';
     }
 
-    $('#operationCondition').text(operationCondition);
-    $('#batteryCondition').text(batteryCondition);
-    $('#recommendAction').text(recommendAction);
-}
+    /*
+     * 화면 반영
+     */
+    $('#operationCondition')
+        .text(operationCondition);
 
+    $('#batteryCondition')
+        .text(batteryCondition);
+
+    $('#recommendAction')
+        .text(recommendAction);
+}
+/*
+ * 최근 알림 조회
+ */
+function loadAlerts() {
+
+    const deviceId =
+        $('#deviceSelect').val();
+
+    if (!deviceId) {
+        return;
+    }
+
+    $.ajax({
+
+        url:
+            contextPath +
+            '/monitoring/alerts',
+
+        type: 'GET',
+
+        data: {
+            deviceId: deviceId
+        },
+
+        dataType: 'json',
+
+        success: function(list) {
+
+            let html = '';
+
+            /*
+             * 알림 없을 경우
+             */
+            if (!list || list.length === 0) {
+
+                html +=
+                    '<div class="alert-item">' +
+
+                        '<span class="alert-badge info">' +
+                            '정보' +
+                        '</span>' +
+
+                        '<span class="alert-message">' +
+                            '최근 알림이 없습니다.' +
+                        '</span>' +
+
+                    '</div>';
+
+                $('#alertList').html(html);
+
+                return;
+            }
+
+            /*
+             * 알림 목록 출력
+             */
+		list.forEach(function(alert) {
+		
+		    let levelClass = 'info';
+		    let levelText = '정보';
+		
+		    if (alert.alertLevel === 'WARNING') {
+		        levelClass = 'warning';
+		        levelText = '경고';
+		    }
+		
+		    if (alert.alertLevel === 'CRITICAL') {
+		        levelClass = 'danger';
+		        levelText = '위험';
+		    }
+		
+		    const createdAt =
+		        formatTimestamp(alert.createdAt);
+		
+		    html +=
+		        '<div class="alert-item alert-click" ' +
+		             'onclick="location.href=\'' + contextPath +
+		             '/alert/detail?alertId=' + alert.alertId + '\'">' +
+		
+		            '<span class="alert-badge ' + levelClass + '">' +
+		                levelText +
+		            '</span>' +
+		
+		            '<div class="alert-content">' +
+		                '<div class="alert-message">' +
+		                    alert.message +
+		                '</div>' +
+		
+		                '<div class="alert-time">' +
+		                    createdAt +
+		                '</div>' +
+		            '</div>' +
+		
+		        '</div>';
+		});
+
+            $('#alertList').html(html);
+        },
+
+        error: function() {
+
+            console.log('알림 조회 실패');
+        }
+    });
+}
 /*
  * 전체 실시간 데이터 조회
  */
 function loadRealtimeData() {
 
     loadLatestMonitoring();
+
     loadWeather();
+
+    loadAlerts();
 }
 
 /*

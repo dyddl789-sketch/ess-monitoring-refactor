@@ -74,4 +74,21 @@ public interface DashboardDAO {
             @Param("groupId") Integer groupId,
             @Param("deviceId") Integer deviceId
     );
+    
+ // 시간별 발전량/SOC 비교
+    List<DashboardChartDTO> getHourlyCompareChart(
+            @Param("memberId") int memberId,
+            @Param("selectedDate") String selectedDate,
+            @Param("groupId") Integer groupId,
+            @Param("deviceId") Integer deviceId
+    );
+
+    // 장비별 발전량 비교
+    List<DashboardChartDTO> getDeviceCompareChart(
+            @Param("memberId") int memberId,
+            @Param("selectedDate") String selectedDate,
+            @Param("groupId") Integer groupId,
+            @Param("deviceId") Integer deviceId
+    );
+       
 }

@@ -135,3 +135,73 @@
 .btn-danger-small:hover {
     background: #b91c1c;
 }
+
+/* =========================
+   장비 관리
+========================= */
+
+.main-device-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.device-action-group {
+    display: flex;
+    gap: 8px;
+}
+
+.table-btn-primary {
+    display: inline-block;
+    padding: 7px 14px;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.table-btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.table-btn-danger {
+    border: none;
+    padding: 7px 14px;
+    border-radius: 8px;
+    background: #ef4444;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.table-btn-danger:hover {
+    background: #dc2626;
+}
+
+.status-normal {
+    color: #16a34a;
+    font-weight: 700;
+}
+
+.status-warning {
+    color: #f59e0b;
+    font-weight: 700;
+}
+
+.status-danger {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.status-offline,
+.status-nodata {
+    color: #64748b;
+    font-weight: 700;
+}

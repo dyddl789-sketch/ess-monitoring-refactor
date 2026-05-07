@@ -125,19 +125,37 @@ public class EssMemberController {
     @RequestMapping("/login")
     public String login(@RequestParam("memberUserid") String memberUserid,
                         @RequestParam("memberPw") String memberPw,
+                        @RequestParam("userType") String userType,
                         HttpSession session,
                         Model model) {
 
+        log.info("@# login()");
+        log.info("@# memberUserid => " + memberUserid);
+        log.info("@# userType => " + userType);
+
         HashMap<String, String> params = new HashMap<>();
+
         params.put("memberUserid", memberUserid);
         params.put("memberPw", memberPw);
+        params.put("userType", userType);
+
+        log.info("@# login params => " + params);
 
         EssMemberDTO memberDto = memberService.login(params);
 
+        log.info("@# memberDto => " + memberDto);
+
         if (memberDto == null) {
-            model.addAttribute("msg", "아이디 또는 비밀번호가 틀렸습니다.");
+
+            log.info("@# login fail");
+
+            model.addAttribute("msg",
+                    "아이디, 비밀번호 또는 회원유형이 일치하지 않습니다.");
+
             return "login_view";
         }
+
+        log.info("@# login success");
 
         session.setAttribute("loginMember", memberDto);
         session.setAttribute("memberId", memberDto.getMemberId());
@@ -147,11 +165,11 @@ public class EssMemberController {
         session.setAttribute("role", memberDto.getRole());
         session.setAttribute("memberAddress", memberDto.getAddress());
 
-        log.info("@# login memberId => " + memberDto.getMemberId());
-        log.info("@# login memberName => " + memberDto.getMemberName());
-        log.info("@# login userType => " + memberDto.getUserType());
-        log.info("@# login role => " + memberDto.getRole());
-        log.info("@# login memberAddress => " + memberDto.getAddress());
+        log.info("@# session memberId => " + memberDto.getMemberId());
+        log.info("@# session memberName => " + memberDto.getMemberName());
+        log.info("@# session userType => " + memberDto.getUserType());
+        log.info("@# session role => " + memberDto.getRole());
+        log.info("@# session memberAddress => " + memberDto.getAddress());
 
         return "redirect:/main";
     }
@@ -239,7 +257,129 @@ public class EssMemberController {
 
         return "redirect:/login_view";
     }
+ // 회원정보수정 화면
+    @RequestMapping("/member/info")
+    public String memberInfo(HttpSession session, Model model) {
 
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
+
+        EssMemberDTO memberDto = memberService.getMemberInfo(memberId);
+        model.addAttribute("member", memberDto);
+
+        return "member/member_info";
+    }
+
+
+    // 회원정보수정 처리
+    @RequestMapping("/member/update")
+    public String updateMember(@RequestParam HashMap<String, String> params,
+                               HttpSession session,
+                               Model model) {
+
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
+
+        EssMemberDTO member = new EssMemberDTO();
+
+        member.setMemberId(memberId);
+        member.setMemberName(params.get("memberName"));
+        member.setPhone(params.get("phone"));
+        member.setEmail(params.get("email"));
+        member.setAddress(params.get("address"));
+
+        memberService.updateMemberInfo(member);
+
+        EssMemberDTO updatedMember = memberService.getMemberInfo(memberId);
+
+        session.setAttribute("loginMember", updatedMember);
+        session.setAttribute("memberName", updatedMember.getMemberName());
+        session.setAttribute("memberAddress", updatedMember.getAddress());
+
+        model.addAttribute("msg", "회원정보가 수정되었습니다.");
+        model.addAttribute("member", updatedMember);
+
+        return "member/member_info";
+    }
+
+
+    // 비밀번호 변경 화면
+    @RequestMapping("/member/password")
+    public String passwordView(HttpSession session) {
+
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
+
+        return "member/password_change";
+    }
+
+
+    // 비밀번호 변경 처리
+    @RequestMapping("/member/password/update")
+    public String passwordUpdate(@RequestParam HashMap<String, String> params,
+                                 HttpSession session,
+                                 Model model) {
+
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
+
+        String currentPw = params.get("currentPw");
+        String newPw = params.get("newPw");
+        String newPwCheck = params.get("newPwCheck");
+
+        if (currentPw == null || currentPw.trim().isEmpty()) {
+            model.addAttribute("msg", "현재 비밀번호를 입력해주세요.");
+            return "member/password_change";
+        }
+
+        if (newPw == null || newPw.trim().isEmpty()) {
+            model.addAttribute("msg", "새 비밀번호를 입력해주세요.");
+            return "member/password_change";
+        }
+
+        if (newPw.length() < 8) {
+            model.addAttribute("msg", "새 비밀번호는 8자 이상 입력해주세요.");
+            return "member/password_change";
+        }
+
+        if (!newPw.equals(newPwCheck)) {
+            model.addAttribute("msg", "새 비밀번호가 일치하지 않습니다.");
+            return "member/password_change";
+        }
+
+        if (currentPw.equals(newPw)) {
+            model.addAttribute("msg", "현재 비밀번호와 새 비밀번호가 같습니다.");
+            return "member/password_change";
+        }
+
+        params.put("memberId", String.valueOf(memberId));
+
+        int result = memberService.updatePassword(params);
+
+        if (result == 0) {
+            model.addAttribute("msg", "현재 비밀번호가 일치하지 않습니다.");
+            return "member/password_change";
+        }
+
+        model.addAttribute("msg", "비밀번호가 변경되었습니다.");
+        return "member/password_change";
+    }
+    
+    
+    
+    
     // 로그아웃
     @RequestMapping("/logout")
     public String logout(HttpSession session) {

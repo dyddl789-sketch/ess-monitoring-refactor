@@ -37,13 +37,23 @@ public class AlertServiceImpl implements AlertService {
     public int updateAlertStatus(int alertId, int memberId, String status) {
         return getDao().updateAlertStatus(alertId, memberId, status);
     }
+    
+ // 특정 장비 최근 알림 조회
+    @Override
+    public List<AlertDTO> getRecentAlertsByDeviceId(int deviceId) {
+        log.info("@# getRecentAlertsByDeviceId()");
+        log.info("@# deviceId => {}", deviceId);
+
+        return getDao().getRecentAlertsByDeviceId(deviceId);
+    }
 
     @Override
     public void createAlertIfNeeded(
             int deviceId,
             BigDecimal soc,
             BigDecimal voltage,
-            BigDecimal solarGenerationKwh
+            BigDecimal solarGenerationKwh,
+            BigDecimal powerOutput
     ) {
 
         if (soc == null) {
@@ -52,9 +62,7 @@ public class AlertServiceImpl implements AlertService {
 
         double socValue = soc.doubleValue();
 
-        // ===============================
-        // SOC CRITICAL
-        // ===============================
+        // SOC 위험
         if (socValue <= 10) {
 
             createAlertIfNotExists(
@@ -68,9 +76,7 @@ public class AlertServiceImpl implements AlertService {
             return;
         }
 
-        // ===============================
-        // SOC WARNING
-        // ===============================
+        // SOC 경고
         if (socValue <= 20) {
 
             createAlertIfNotExists(
@@ -82,9 +88,7 @@ public class AlertServiceImpl implements AlertService {
             );
         }
 
-        // ===============================
         // 전압 경고
-        // ===============================
         if (voltage != null) {
 
             double voltageValue = voltage.doubleValue();
@@ -101,9 +105,7 @@ public class AlertServiceImpl implements AlertService {
             }
         }
 
-        // ===============================
         // 발전량 거의 없음
-        // ===============================
         if (solarGenerationKwh != null) {
 
             double generation =
@@ -117,6 +119,24 @@ public class AlertServiceImpl implements AlertService {
                         "INFO",
                         "현재 발전량이 매우 낮습니다.",
                         "WEATHER_CHECK"
+                );
+            }
+        }
+
+        // 출력 급감 위험
+        if (powerOutput != null) {
+
+            double output =
+                    powerOutput.doubleValue();
+
+            if (output < 1.0) {
+
+                createAlertIfNotExists(
+                        deviceId,
+                        "OUTPUT_DROP",
+                        "CRITICAL",
+                        "출력 전력이 급격히 감소했습니다.",
+                        "PCS 및 인버터 상태 점검 필요"
                 );
             }
         }
@@ -165,6 +185,25 @@ public class AlertServiceImpl implements AlertService {
             + deviceId
             + ", type="
             + alertType
+        );
+    }
+ // 대시보드 필터 기준 최근 알림 조회
+    @Override
+    public List<AlertDTO> getDashboardAlerts(
+            int memberId,
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId
+    ) {
+        log.info("@# getDashboardAlerts()");
+        log.info("@# memberId => {}", memberId);
+        log.info("@# selectedDate => {}", selectedDate);
+
+        return getDao().getDashboardAlerts(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
         );
     }
 }

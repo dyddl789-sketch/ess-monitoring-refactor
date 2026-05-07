@@ -34,7 +34,6 @@
                     <a href="#">서비스</a>
                     <ul class="sub-menu">
                         <li><a href="${pageContext.request.contextPath}/board_list">공지사항</a></li>
-                        <li><a href="#">자료실</a></li>
                         <li>
                         	<a href="${pageContext.request.contextPath}/board_list">
                         		문의게시판
@@ -57,9 +56,12 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" onclick="checkLogin(function(){ moveView('deviceList', loadDeviceList); }); return false;">
-                                ESS 관리
-                            </a>
+					<a href="#"
+					   onclick="checkLogin(function(){ 
+					       location.href='${pageContext.request.contextPath}/device/manage';
+					   }); return false;">
+					    ESS 관리
+					</a>
                         </li>
                     </ul>
                 </li>
@@ -72,9 +74,6 @@
                                 알람
                             </a>
                         </li>
-                        <li>
-                            <a href="#">메시지함</a>
-                        </li>
                     </ul>
                 </li>
 
@@ -82,12 +81,14 @@
                     <a href="#">회원정보</a>
                     <ul class="sub-menu">
                         <li>
-                            <a href="#" onclick="checkLogin(function(){ moveView('myPage', loadMyPage); }); return false;">
+                            <a href="${pageContext.request.contextPath}/member/info">
                                 회원정보수정
                             </a>
                         </li>
                         <li>
-                            <a href="#">비밀번호 변경</a>
+                            <a href="${pageContext.request.contextPath}/member/password">
+                            	비밀번호 변경
+                            </a>
                         </li>
                     </ul>
                 </li>

@@ -23,4 +23,7 @@ public interface EssMonitoringDAO {
     
     // 최근 모니터링 이력 조회
     List<EssMonitoringDTO> getMonitoringHistory(int deviceId);
+    
+ // 오늘 누적 발전량 조회
+    Double getTodayGeneration(int deviceId);
 }

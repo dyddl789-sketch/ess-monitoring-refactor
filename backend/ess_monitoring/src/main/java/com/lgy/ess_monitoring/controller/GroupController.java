@@ -27,6 +27,8 @@ public class GroupController {
         }
 
         model.addAttribute("groupList", groupService.getGroupList(memberId));
+        System.out.println("memberId = " + memberId);
+        System.out.println("groupList = " + groupService.getGroupList(memberId));
 
         return "group_manage";
     }

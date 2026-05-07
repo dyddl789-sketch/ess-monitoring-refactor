@@ -158,6 +158,72 @@ body {
     font-size: 12px;
     margin-right: 8px;
 }
+/* =========================
+   최근 알림
+========================= */
+
+.alert-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 14px 10px;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.alert-click {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.alert-click:hover {
+    background: #f8fafc;
+}
+
+.alert-badge {
+    min-width: 58px;
+
+    text-align: center;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: white;
+}
+
+.alert-badge.info {
+    background: #64748b;
+}
+
+.alert-badge.warning {
+    background: #f59e0b;
+}
+
+.alert-badge.danger {
+    background: #ef4444;
+}
+
+.alert-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.alert-message {
+    font-size: 15px;
+    color: #334155;
+}
+
+.alert-time {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
 </style>
 </head>
 
@@ -323,41 +389,65 @@ body {
 
     </section>
 
-    <!-- 최근 알림 -->
-    <section class="bottom-grid">
-
-        <div class="card">
-            <div class="section-title">최근 알림</div>
-
-            <ul class="alert-list" id="alertList">
-                <li><span class="badge">정보</span> 최근 알림이 없습니다.</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <div class="section-title">운영 판단 요약</div>
-
-            <table class="info-table">
-
-                <tr>
-                    <th>발전 조건</th>
-                    <td id="operationCondition">-</td>
-                </tr>
-
-                <tr>
-                    <th>배터리 상태</th>
-                    <td id="batteryCondition">-</td>
-                </tr>
-
-                <tr>
-                    <th>권장 조치</th>
-                    <td id="recommendAction">-</td>
-                </tr>
-
-            </table>
-        </div>
-
-    </section>
+	<!-- 최근 알림 -->
+	<section class="bottom-grid">
+	
+	    <!-- 최근 알림 카드 -->
+	    <div class="card">
+	
+	        <div class="section-title">
+	            최근 알림
+	        </div>
+	
+	        <!-- 알림 목록 -->
+	        <div id="alertList">
+	
+	            <!-- 기본 표시 -->
+	            <div class="alert-item">
+	
+	                <span class="alert-badge info">
+	                    정보
+	                </span>
+	
+	                <span class="alert-message">
+	                    최근 알림이 없습니다.
+	                </span>
+	
+	            </div>
+	
+	        </div>
+	
+	    </div>
+	
+	    <!-- 운영 판단 요약 -->
+	    <div class="card">
+	
+	        <div class="section-title">
+	            운영 판단 요약
+	        </div>
+	
+	        <table class="info-table">
+	
+	            <tr>
+	                <th>발전 조건</th>
+	                <td id="operationCondition">-</td>
+	            </tr>
+	
+	            <tr>
+	                <th>배터리 상태</th>
+	                <td id="batteryCondition">-</td>
+	            </tr>
+	
+	            <tr>
+	                <th>권장 조치</th>
+	                <td id="recommendAction">-</td>
+	            </tr>
+	
+	        </table>
+	
+	    </div>
+	
+	</section>
 
 </main>
 </div>

@@ -32,10 +32,11 @@
 }
 
 .logo {
-    font-size: 18px;
-    font-weight: bold;
-    white-space: nowrap;
     display: none;
+    font-size: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
 }
 
 .sidebar:hover .logo {
@@ -46,14 +47,25 @@
     display: none;
 }
 
+/* 메뉴 영역 */
+.sidebar-menu {
+    padding: 12px 10px;
+}
+
+/* 메뉴 섹션 */
+.menu-section {
+    margin-bottom: 22px;
+}
+
 /* 메뉴 타이틀 */
 .menu-title {
-    padding: 14px 20px 6px;
+    display: none;
+    padding: 14px 10px 8px;
     font-size: 12px;
     color: #9ca3af;
-    font-weight: bold;
+    font-weight: 700;
     white-space: nowrap;
-    display: none;
+    letter-spacing: 0.04em;
 }
 
 .sidebar:hover .menu-title {
@@ -64,13 +76,28 @@
 .menu-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
+    height: 42px;
+    padding: 0 14px;
+    margin-bottom: 4px;
+    border-radius: 10px;
     text-decoration: none;
     color: #d1d5db;
     font-size: 14px;
+    font-weight: 500;
     white-space: nowrap;
-    transition: background 0.2s, color 0.2s;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* 접힌 상태에서는 텍스트 숨김 */
+.menu-text {
+    display: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 펼쳐졌을 때 메뉴 텍스트 표시 */
+.sidebar:hover .menu-text {
+    display: inline;
 }
 
 .menu-item:hover {
@@ -81,21 +108,7 @@
 .menu-item.active {
     background-color: #2563eb;
     color: #ffffff;
-}
-
-.menu-icon {
-    width: 24px;
-    min-width: 24px;
-    text-align: center;
-    font-size: 17px;
-}
-
-.menu-text {
-    display: none;
-}
-
-.sidebar:hover .menu-text {
-    display: inline;
+    font-weight: 700;
 }
 
 /* 오른쪽 본문 */

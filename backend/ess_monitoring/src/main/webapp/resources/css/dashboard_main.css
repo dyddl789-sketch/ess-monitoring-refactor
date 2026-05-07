@@ -447,3 +447,119 @@ th {
     grid-template-columns: 1fr;
   }
 }
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.section-subtitle {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.chart-tabs {
+    display: flex;
+    gap: 6px;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.chart-tab {
+    border: none;
+    background: transparent;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.chart-tab.active {
+    background: #ffffff;
+    color: #2563eb;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+}
+
+/* 발전량 비교 차트 크게 보이게 */
+.wide-chart {
+    min-height: 460px;
+}
+
+.chart-box-large {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    margin-top: 10px;
+}
+
+/* canvas가 부모 높이를 꽉 채우게 */
+.chart-box-large canvas,
+.chart-box canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.chart-box {
+    position: relative;
+    width: 100%;
+    height: 300px;
+}
+
+/* =========================
+   대시보드 최근 알림
+========================= */
+
+.dashboard-alert-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid #e5e7eb;
+    cursor: pointer;
+}
+
+.dashboard-alert-item:hover {
+    background: #f8fafc;
+}
+
+.dashboard-alert-badge {
+    min-width: 48px;
+    text-align: center;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+}
+
+.dashboard-alert-badge.info {
+    background: #64748b;
+}
+
+.dashboard-alert-badge.warning {
+    background: #f59e0b;
+}
+
+.dashboard-alert-badge.danger {
+    background: #ef4444;
+}
+
+.dashboard-alert-content {
+    flex: 1;
+}
+
+.dashboard-alert-message {
+    font-size: 14px;
+    color: #334155;
+}
+
+.dashboard-alert-time {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #94a3b8;
+}
