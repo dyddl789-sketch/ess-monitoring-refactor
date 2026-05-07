@@ -25,33 +25,38 @@
             <h1 class="logo" style="text-align:center; margin-bottom:20px; font-size:1.8rem;">ESS-M.S</h1>
             <h2 style="text-align:center; margin-bottom:25px;">로그인</h2>
             
-            <div class="login-type-tabs">
-                <button type="button" class="tab-btn active" onclick="selectType('user')">개인용</button>
-                <button type="button" class="tab-btn" onclick="selectType('business')">기업용</button>
-            </div>
-			<c:if test="${not empty msg}">
-   				 <p style="color:red; text-align:center; margin-bottom:10px;">
-       				 ${msg}
-    			</p>
-			</c:if>
-            <form action="${pageContext.request.contextPath}/login" method="post">
-			    <div class="form-group">
-			        <label>아이디</label>
-			        <input type="text" name="memberUserid" placeholder="아이디를 입력하세요" required>
-			    </div>
-			
-			    <div class="form-group">
-			        <label>비밀번호</label>
-			        <input type="password" name="memberPw" placeholder="비밀번호를 입력하세요" required>
-			    </div>
-                
-                <div class="login-options">
-                    <label><input type="checkbox"> 아이디 저장</label>
-                    <a href="#" class="find-pw">비밀번호 찾기</a>
-                </div>
-
-                <button type="submit" class="btn login-submit">로그인</button>
-            </form>
+           <div class="login-type-tabs">
+		    <button type="button" class="tab-btn active" onclick="selectType('PERSONAL')">개인용</button>
+		    <button type="button" class="tab-btn" onclick="selectType('COMPANY')">기업용</button>
+		</div>
+		
+		<c:if test="${not empty msg}">
+		    <p style="color:red; text-align:center; margin-bottom:10px;">
+		        ${msg}
+		    </p>
+		</c:if>
+		
+		<form action="${pageContext.request.contextPath}/login" method="post">
+		
+		    <input type="hidden" id="userType" name="userType" value="PERSONAL">
+		
+		    <div class="form-group">
+		        <label>아이디</label>
+		        <input type="text" name="memberUserid" placeholder="아이디를 입력하세요" required>
+		    </div>
+		
+		    <div class="form-group">
+		        <label>비밀번호</label>
+		        <input type="password" name="memberPw" placeholder="비밀번호를 입력하세요" required>
+		    </div>
+		
+		    <div class="login-options">
+		        <label><input type="checkbox"> 아이디 저장</label>
+		        <a href="#" class="find-pw">비밀번호 찾기</a>
+		    </div>
+		
+		    <button type="submit" class="btn login-submit">로그인</button>
+		</form>
 
             <div class="login-footer">
                 <p>아직 계정이 없으신가요? <a href="${pageContext.request.contextPath}/join_view">회원가입</a></p>
@@ -59,20 +64,22 @@
         </div>
     </div>
 
-    <script>
-        // 탭 전환 기능
-        function selectType(type) {
-            const tabs = document.querySelectorAll('.tab-btn');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            if(type === 'user') {
-                tabs[0].classList.add('active');
-                console.log("개인용 로그인 모드");
-            } else {
-                tabs[1].classList.add('active');
-                console.log("기업용 로그인 모드");
-            }
-        }
-    </script>
+	<script>
+	    function selectType(type) {
+	        const tabs = document.querySelectorAll('.tab-btn');
+	
+	        tabs.forEach(tab => tab.classList.remove('active'));
+	
+	        document.getElementById('userType').value = type;
+	
+	        if (type === 'PERSONAL') {
+	            tabs[0].classList.add('active');
+	            console.log("개인용 로그인 모드");
+	        } else {
+	            tabs[1].classList.add('active');
+	            console.log("기업용 로그인 모드");
+	        }
+	    }
+	</script>
 </body>
 </html>

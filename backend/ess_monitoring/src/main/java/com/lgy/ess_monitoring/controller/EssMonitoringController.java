@@ -17,6 +17,8 @@ import com.lgy.ess_monitoring.service.EssMonitoringService;
 import com.lgy.ess_monitoring.service.WeatherDataService;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.service.EssDeviceService;
+import com.lgy.ess_monitoring.dto.AlertDTO;
+import com.lgy.ess_monitoring.service.AlertService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +35,9 @@ public class EssMonitoringController {
     
     @Autowired
     private EssDeviceService deviceService;
+    
+    @Autowired
+    private AlertService alertService;
 
     // 실시간 모니터링 메인 화면
     @RequestMapping(value = "/main", method = RequestMethod.GET)
@@ -74,7 +79,7 @@ public class EssMonitoringController {
 
 
 
-    // 최신 모니터링 데이터 조회
+ // 최신 모니터링 데이터 조회
     @ResponseBody
     @RequestMapping(
         value = "/latest",
@@ -94,7 +99,19 @@ public class EssMonitoringController {
             return null;
         }
 
-        return monitoringService.getLatestMonitoring(deviceId);
+        EssMonitoringDTO dto = monitoringService.getLatestMonitoring(deviceId);
+
+        if (dto != null) {
+            Double todayGenerationKwh = monitoringService.getTodayGeneration(deviceId);
+
+            dto.setSolarGenerationKwh(
+                todayGenerationKwh == null
+                    ? java.math.BigDecimal.ZERO
+                    : java.math.BigDecimal.valueOf(todayGenerationKwh)
+            );
+        }
+
+        return dto;
     }
 
     // 최근 모니터링 이력 조회
@@ -165,5 +182,30 @@ public class EssMonitoringController {
         }
 
         return weatherDataService.getOrFetchWeatherList(deviceId);
+    }
+ // 최근 알림 조회
+    @ResponseBody
+    @RequestMapping(
+        value = "/alerts",
+        method = RequestMethod.GET,
+        produces = "application/json; charset=UTF-8"
+    )
+    public List<AlertDTO> alerts(
+            int deviceId,
+            HttpSession session
+    ) {
+
+        log.info("@# alerts()");
+        log.info("@# deviceId => {}", deviceId);
+
+        Integer memberId =
+            (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        return alertService
+            .getRecentAlertsByDeviceId(deviceId);
     }
 }

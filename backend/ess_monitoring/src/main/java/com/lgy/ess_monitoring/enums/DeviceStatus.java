@@ -3,7 +3,7 @@ package com.lgy.ess_monitoring.enums;
 public enum DeviceStatus {
     NORMAL("정상", "status-normal"),
     WARNING("경고", "status-warning"),
-    ERROR("에러", "status-danger"),
+    ERROR("장비 이상", "status-danger"),
     OFFLINE("오프라인", "status-offline");
 
     private final String label;

@@ -11,6 +11,7 @@ import com.lgy.ess_monitoring.dto.DashboardChartResponseDTO;
 import com.lgy.ess_monitoring.dto.DashboardSummaryDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceGroupDTO;
+import com.lgy.ess_monitoring.dto.DashboardChartDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -128,5 +129,24 @@ public class DashboardServiceImpl implements DashboardService {
         );
 
         return response;
+    }
+    @Override
+    public List<DashboardChartDTO> getHourlyCompareChart(
+            int memberId,
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId
+    ) {
+        return getDao().getHourlyCompareChart(memberId, selectedDate, groupId, deviceId);
+    }
+
+    @Override
+    public List<DashboardChartDTO> getDeviceCompareChart(
+            int memberId,
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId
+    ) {
+        return getDao().getDeviceCompareChart(memberId, selectedDate, groupId, deviceId);
     }
 }

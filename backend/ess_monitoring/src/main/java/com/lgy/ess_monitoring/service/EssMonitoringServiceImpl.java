@@ -77,4 +77,12 @@ public class EssMonitoringServiceImpl implements EssMonitoringService {
 
         return getDao().getMonitoringHistory(deviceId);
     }
+    
+ // 오늘 누적 발전량 조회
+    @Override
+    public Double getTodayGeneration(int deviceId) {
+        log.info("getTodayGeneration() deviceId={}", deviceId);
+
+        return getDao().getTodayGeneration(deviceId);
+    }
 }

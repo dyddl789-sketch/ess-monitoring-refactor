@@ -82,7 +82,27 @@ public class SimulationServiceImpl implements SimulationService {
             // 시간대별 태양광 발전 보정
             radiationFactor =
                     applyTimeFactor(radiationFactor, weather);
-
+            
+	         // ===============================
+	         // 발표용 출력 급감 시뮬레이션
+	         // - 2분 정상
+	         // - 2분 출력 저하
+	         // ===============================
+	         java.util.Calendar cal =
+	                 java.util.Calendar.getInstance();
+	
+	         int minute =
+	                 cal.get(java.util.Calendar.MINUTE);
+	
+	         // 4분 주기로 0,1분은 정상 / 2,3분은 출력 저하
+	         if (minute % 4 >= 2) {
+	
+	             radiationFactor *= 0.05;
+	
+	             log.warn("@# 출력 저하 시뮬레이션 적용");
+	         }
+            
+            
             // 태양광 시스템 손실률 반영
             double systemEfficiency = 0.85;
 
@@ -197,9 +217,10 @@ public class SimulationServiceImpl implements SimulationService {
             // 알림 자동 생성
             alertService.createAlertIfNeeded(
                     deviceId,
-                    dto.getSoc(),
-                    dto.getVoltage(),
-                    dto.getSolarGenerationKwh()
+                    BigDecimal.valueOf(soc),
+                    BigDecimal.valueOf(voltage),
+                    BigDecimal.valueOf(solarGenerationKwh),
+                    BigDecimal.valueOf(powerOutput)
             );
 
             log.info(
@@ -431,4 +452,6 @@ public class SimulationServiceImpl implements SimulationService {
         return BigDecimal.valueOf(value)
                 .setScale(scale, RoundingMode.HALF_UP);
     }
+    
+    
 }

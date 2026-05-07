@@ -18,9 +18,12 @@ public interface EssMemberService {
     // 이메일 중복 체크
     int emailCheck(String email);
 
-    // 내 정보 조회
+    // 회원 정보 조회
     EssMemberDTO getMemberInfo(int memberId);
 
-    // 내 정보 수정
+    // 회원 정보 수정
     int updateMemberInfo(EssMemberDTO member);
+
+    // 비밀번호 변경
+    int updatePassword(HashMap<String, String> params);
 }

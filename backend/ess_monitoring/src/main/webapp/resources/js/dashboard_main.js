@@ -197,6 +197,7 @@ function reloadDashboard() {
     loadSummary();
     loadDeviceTable();
     loadGenerationChart();
+    loadDashboardAlerts();
 }
 
 
@@ -304,18 +305,24 @@ $(document).ready(function () {
 
     // 날짜 초기화
     let date = $('#selectedDate').val();
+
     if (!date) {
-        $('#selectedDate').val(new Date().toISOString().split('T')[0]);
+        $('#selectedDate').val(
+            new Date().toISOString().split('T')[0]
+        );
     }
 
     // 최초 조회
     reloadDashboard();
 
     // 날짜 변경
-    $('#selectedDate').on('change', reloadDashboard);
+    $('#selectedDate').on('change', function () {
+        reloadDashboard();
+    });
 
     // 그룹 변경
     $('#groupSelect').on('change', function () {
+
         loadDeviceList(function () {
             $('#deviceSelect').val('');
             reloadDashboard();
@@ -323,9 +330,156 @@ $(document).ready(function () {
     });
 
     // 장비 변경
-    $('#deviceSelect').on('change', reloadDashboard);
+    $('#deviceSelect').on('change', function () {
+        reloadDashboard();
+    });
 
     // 조회 버튼
-    $('#refreshBtn').on('click', reloadDashboard);
+    $('#refreshBtn').on('click', function () {
+        reloadDashboard();
+    });
+});
 
+/*
+ * 날짜 포맷
+ */
+function formatDashboardAlertTime(value) {
+
+    if (!value) {
+        return '-';
+    }
+
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) {
+        return value;
+    }
+
+    const hour =
+        String(date.getHours()).padStart(2, '0');
+
+    const minute =
+        String(date.getMinutes()).padStart(2, '0');
+
+    return hour + ':' + minute;
+}
+
+
+/*
+ * 대시보드 알림 파라미터 생성
+ */
+function getDashboardAlertParams() {
+
+    const params = {
+        selectedDate: $('#selectedDate').val()
+    };
+
+    const groupId =
+        $('#groupSelect').val();
+
+    const deviceId =
+        $('#deviceSelect').val();
+
+    if (groupId) {
+        params.groupId = groupId;
+    }
+
+    if (deviceId) {
+        params.deviceId = deviceId;
+    }
+
+    return params;
+}
+
+
+/*
+ * 대시보드 최근 알림 조회
+ */
+function loadDashboardAlerts() {
+
+    $.ajax({
+        url: contextPath + '/dashboard/alerts',
+        type: 'GET',
+        data: getDashboardAlertParams(),
+        dataType: 'json',
+
+        success: function(list) {
+
+            let html = '';
+
+            if (!list || list.length === 0) {
+
+                html +=
+                    '<div class="dashboard-alert-item">' +
+                        '<span class="dashboard-alert-badge info">정보</span>' +
+                        '<div class="dashboard-alert-content">' +
+                            '<div class="dashboard-alert-message">최근 알림이 없습니다.</div>' +
+                        '</div>' +
+                    '</div>';
+
+                $('#dashboardAlertList').html(html);
+                return;
+            }
+
+            list.forEach(function(alert) {
+
+                let levelClass = 'info';
+                let levelText = '정보';
+
+                if (alert.alertLevel === 'WARNING') {
+                    levelClass = 'warning';
+                    levelText = '경고';
+                }
+
+                if (alert.alertLevel === 'CRITICAL') {
+                    levelClass = 'danger';
+                    levelText = '위험';
+                }
+
+                html +=
+                    '<div class="dashboard-alert-item" ' +
+                        'data-alert-id="' + alert.alertId + '">' +
+
+                        '<span class="dashboard-alert-badge ' + levelClass + '">' +
+                            levelText +
+                        '</span>' +
+
+                        '<div class="dashboard-alert-content">' +
+                            '<div class="dashboard-alert-message">' +
+                                alert.deviceName + ' ' + alert.message +
+                            '</div>' +
+                            '<div class="dashboard-alert-time">' +
+                                formatDashboardAlertTime(alert.createdAt) +
+                            '</div>' +
+                        '</div>' +
+
+                    '</div>';
+            });
+
+            $('#dashboardAlertList').html(html);
+        },
+
+        error: function() {
+            console.log('대시보드 알림 조회 실패');
+        }
+    });
+}
+
+
+/*
+ * 대시보드 알림 클릭
+ */
+$(document).on('click', '.dashboard-alert-item', function() {
+
+    const alertId =
+        $(this).data('alert-id');
+
+    if (!alertId) {
+        return;
+    }
+
+    location.href =
+        contextPath +
+        '/alert/detail?alertId=' +
+        alertId;
 });

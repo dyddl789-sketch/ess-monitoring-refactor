@@ -23,4 +23,7 @@ public interface EssMemberDAO {
 
     // 내 정보 수정
     int updateMemberInfo(EssMemberDTO member);
+
+    // 추가
+    int updatePassword(HashMap<String, String> params);
 }

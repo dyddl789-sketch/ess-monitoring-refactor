@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.lgy.ess_monitoring.dto.CsvUploadResultDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.service.EssDeviceService;
@@ -92,20 +92,16 @@ public class EssDeviceController {
         method = RequestMethod.GET,
         produces = "application/json; charset=UTF-8"
     )
-    public String deviceList(HttpSession session) throws Exception {
+    public List<EssDeviceDTO> deviceList(HttpSession session) {
         log.info("@# deviceList()");
 
         Integer memberId = (Integer) session.getAttribute("memberId");
 
-        List<EssDeviceDTO> deviceList = new ArrayList<EssDeviceDTO>();
-
-        if (memberId != null) {
-            deviceList = deviceService.getDeviceList(memberId);
+        if (memberId == null) {
+            return new ArrayList<EssDeviceDTO>();
         }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        return objectMapper.writeValueAsString(deviceList);
+        return deviceService.getDeviceList(memberId);
     }
 
     // 장비 삭제
