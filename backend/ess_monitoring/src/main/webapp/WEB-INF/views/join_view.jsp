@@ -14,17 +14,17 @@
 <div class="login-container">
     <div class="login-box">
 
-        <h1 class="logo" style="text-align:center; margin-bottom:20px; font-size:1.8rem;">ESS-M.S</h1>
-        <h2 style="text-align:center; margin-bottom:20px;">회원가입</h2>
+        <h1 class="logo join-logo">ESS-M.S</h1>
+		<h2 class="join-title">회원가입</h2>
 
         <div class="guide-box">
             ESS 모니터링 서비스는 회원 유형에 따라 장비 등록, 데이터 조회, 이상 알림 기능이 다르게 제공됩니다.
         </div>
 
         <c:if test="${not empty msg}">
-            <p style="color:red; text-align:center; margin-bottom:10px;">
-                ${msg}
-            </p>
+			<p class="error-message">
+			    ${msg}
+			</p>
         </c:if>
 
         <form action="${pageContext.request.contextPath}/join" method="post" onsubmit="return joinCheck();">
@@ -86,7 +86,7 @@
                     <button type="button" class="btn address-btn" onclick="execDaumPostcode()">주소검색</button>
                 </div>
 
-                <input type="text" id="roadAddress" placeholder="기본주소" readonly style="margin-bottom:6px;">
+                <input type="text" id="roadAddress" class="address-input" placeholder="기본주소" readonly>
                 <input type="text" id="detailAddress" placeholder="상세주소를 입력하세요">
 
                 <!-- DB의 address 컬럼에 실제 저장되는 값 -->
