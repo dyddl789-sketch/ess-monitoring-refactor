@@ -2,7 +2,13 @@
 target/
 backend/ess_monitoring/target/
 
-# STS/Eclipse local settings
-backend/ess_monitoring/.classpath
-backend/ess_monitoring/.settings/backend/ess_monitoring/target/
+# Eclipse / STS
+.classpath
+.project
+.settings/
+
+# Java
 *.class
+
+# Logs
+*.log
