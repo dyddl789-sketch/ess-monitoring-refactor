@@ -64,13 +64,7 @@ public class EssMemberController {
 
         log.info("@# login success");
 
-        session.setAttribute("loginMember", memberDto);
-        session.setAttribute("memberId", memberDto.getMemberId());
-        session.setAttribute("memberName", memberDto.getMemberName());
-        session.setAttribute("memberUserid", memberDto.getMemberUserid());
-        session.setAttribute("userType", memberDto.getUserType());
-        session.setAttribute("role", memberDto.getRole());
-        session.setAttribute("memberAddress", memberDto.getAddress());
+        setLoginSession(session, memberDto);
 
         log.info("@# session memberId => " + memberDto.getMemberId());
         log.info("@# session memberName => " + memberDto.getMemberName());
@@ -132,31 +126,11 @@ public class EssMemberController {
                 return "join_view";
             }
         }
-        
      // userType 값 확인
         log.info("@# join userType before => " + params.get("userType"));
 
-        // userType 한글값/화면값을 DB 허용값으로 변환
-        String fixedUserType = params.get("userType");
-
-        if ("개인".equals(fixedUserType) 
-                || "개인용".equals(fixedUserType) 
-                || "개인회원".equals(fixedUserType) 
-                || "일반회원".equals(fixedUserType)) {
-
-            params.put("userType", "PERSONAL");
-
-        } else if ("기업".equals(fixedUserType) 
-                || "기업용".equals(fixedUserType) 
-                || "기업회원".equals(fixedUserType)) {
-
-            params.put("userType", "COMPANY");
-
-        } else if (!"PERSONAL".equals(fixedUserType) && !"COMPANY".equals(fixedUserType)) {
-
-            // 예상 밖 값이면 기본값 PERSONAL로 처리
-            params.put("userType", "PERSONAL");
-        }
+        params.put("userType",
+                normalizeUserType(params.get("userType")));
 
         log.info("@# join userType after => " + params.get("userType"));
         
@@ -298,5 +272,52 @@ public class EssMemberController {
     @RequestMapping("/signup")
     public String signup() {
         return "signup";
+    }
+
+    /*
+     * =========================================================
+     * Helper Method
+     * =========================================================
+     */
+    // 로그인 세션 저장
+    private void setLoginSession(HttpSession session,
+                                 EssMemberDTO memberDto) {
+
+        session.setAttribute("loginMember", memberDto);
+        session.setAttribute("memberId", memberDto.getMemberId());
+        session.setAttribute("memberName", memberDto.getMemberName());
+        session.setAttribute("memberUserid", memberDto.getMemberUserid());
+        session.setAttribute("userType", memberDto.getUserType());
+        session.setAttribute("role", memberDto.getRole());
+        session.setAttribute("memberAddress", memberDto.getAddress());
+    }
+
+
+    // 회원 유형 변환
+    private String normalizeUserType(String userType) {
+
+        if ("PERSONAL".equals(userType)
+                || "COMPANY".equals(userType)) {
+
+            return userType;
+        }
+
+        if ("개인".equals(userType)
+                || "개인용".equals(userType)
+                || "개인회원".equals(userType)
+                || "일반회원".equals(userType)) {
+
+            return "PERSONAL";
+        }
+
+        if ("기업".equals(userType)
+                || "기업용".equals(userType)
+                || "기업회원".equals(userType)) {
+
+            return "COMPANY";
+        }
+
+        // 예상 밖 값이면 기본값 PERSONAL 처리
+        return "PERSONAL";
     }
 }
