@@ -53,7 +53,13 @@
             </p>
 
         </c:if>
+		<c:if test="${not empty successMsg}">
 
+		    <p class="success-message">
+		        ${successMsg}
+		    </p>
+		
+		</c:if>
         <form action="${pageContext.request.contextPath}/login"
               method="post">
 

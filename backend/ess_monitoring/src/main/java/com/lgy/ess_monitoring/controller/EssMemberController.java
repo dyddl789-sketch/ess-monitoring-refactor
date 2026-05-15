@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.lgy.ess_monitoring.dto.EssMemberDTO;
 import com.lgy.ess_monitoring.service.EssMemberService;
@@ -101,7 +102,8 @@ public class EssMemberController {
     // 회원가입 처리
     @RequestMapping("/join")
     public String join(@RequestParam HashMap<String, String> params,
-                       Model model) {
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
         String memberName = params.get("memberName");
         String memberUserid = params.get("memberUserid");
@@ -152,6 +154,10 @@ public class EssMemberController {
         log.info("@# join userType after => " + params.get("userType"));
         
         memberService.join(params);
+
+        redirectAttributes.addFlashAttribute(
+                "successMsg",
+                "회원가입이 완료되었습니다. 로그인해주세요.");
 
         return "redirect:/login_view";
     }
