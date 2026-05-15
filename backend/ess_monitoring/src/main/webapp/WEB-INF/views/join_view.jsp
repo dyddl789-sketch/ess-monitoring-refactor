@@ -4,93 +4,23 @@
 
 <html>
 <head>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/login_view.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/join_view.css">
 <meta charset="UTF-8">
 <title>ESS 회원가입</title>
-
-<style>
-    body {
-        background-color: #f4f7f9;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-    }
-
-    .login-container {
-        width: 100%;
-        padding: 20px;
-    }
-
-    .login-box {
-        max-width: 480px;
-        margin: 0 auto;
-    }
-
-    .guide-box {
-        background: #eef6ff;
-        border: 1px solid #cfe5ff;
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        margin-bottom: 18px;
-        color: #24527a;
-    }
-
-    .form-group {
-        margin-bottom: 14px;
-    }
-
-    .form-group small {
-        display: block;
-        margin-top: 4px;
-        color: #777;
-        font-size: 0.8rem;
-    }
-
-    .address-row {
-        display: flex;
-        gap: 6px;
-        margin-bottom: 6px;
-    }
-
-    .address-row input {
-        flex: 1;
-    }
-
-    .address-btn {
-        width: 120px !important;
-        margin-top: 0 !important;
-    }
-
-    .agree-box {
-        margin: 15px 0;
-        font-size: 0.9rem;
-    }
-
-    .agree-box label {
-        display: block;
-        margin-bottom: 6px;
-    }
-</style>
 </head>
 
 <body>
 <div class="login-container">
     <div class="login-box">
-
-        <h1 class="logo" style="text-align:center; margin-bottom:20px; font-size:1.8rem;">ESS-M.S</h1>
-        <h2 style="text-align:center; margin-bottom:20px;">회원가입</h2>
-
-        <div class="guide-box">
-            ESS 모니터링 서비스는 회원 유형에 따라 장비 등록, 데이터 조회, 이상 알림 기능이 다르게 제공됩니다.
-        </div>
+		
+		<h1 class="join-title">
+		    ESS-M.S 회원가입
+		</h1>
 
         <c:if test="${not empty msg}">
-            <p style="color:red; text-align:center; margin-bottom:10px;">
-                ${msg}
-            </p>
+			<p class="error-message">
+			    ${msg}
+			</p>
         </c:if>
 
         <form action="${pageContext.request.contextPath}/join" method="post" onsubmit="return joinCheck();">
@@ -130,18 +60,68 @@
             </div>
 
             <!-- phone -->
-            <div class="form-group">
-                <label>연락처</label>
-                <input type="text" id="phone" name="phone" placeholder="010-0000-0000">
-                <small>ESS 이상 알림, 장애 대응 연락용으로 사용됩니다.</small>
-            </div>
+			<div class="form-group">
+			    <label>연락처</label>
+			
+			    <div class="phone-row">
+			        <input type="text"
+			               id="phone1"
+			               maxlength="3"
+			               value="010">
+			
+			        <span class="input-separator">-</span>
+			
+			        <input type="text"
+			               id="phone2"
+			               maxlength="4"
+			               placeholder="1234">
+			
+			        <span class="input-separator">-</span>
+			
+			        <input type="text"
+			               id="phone3"
+			               maxlength="4"
+			               placeholder="5678">
+			    </div>
+			
+			    <input type="hidden"
+			           id="phone"
+			           name="phone">
+			
+			    <small>ESS 이상 알림, 장애 대응 연락용으로 사용됩니다.</small>
+			</div>
 
             <!-- email -->
-            <div class="form-group">
-                <label>이메일</label>
-                <input type="email" id="email" name="email" placeholder="email@example.com">
-                <small>리포트, 알림, 계정 안내 수신에 사용됩니다.</small>
-            </div>
+			<div class="form-group">
+			    <label>이메일</label>
+			
+			    <div class="email-row">
+			        <input type="text"
+			               id="emailId"
+			               placeholder="email">
+			
+			        <span class="input-separator">@</span>
+			
+			        <input type="text"
+			               id="emailDomain"
+			               placeholder="domain.com">
+			
+			        <select id="emailDomainSelect">
+			            <option value="">직접입력</option>
+			            <option value="naver.com">naver.com</option>
+			            <option value="gmail.com">gmail.com</option>
+			            <option value="daum.net">daum.net</option>
+			            <option value="kakao.com">kakao.com</option>
+			            <option value="nate.com">nate.com</option>
+			        </select>
+			    </div>
+			
+			    <input type="hidden"
+			           id="email"
+			           name="email">
+			
+			    <small>리포트, 알림, 계정 안내 수신에 사용됩니다.</small>
+			</div>
 
             <!-- address -->
             <div class="form-group">
@@ -152,13 +132,12 @@
                     <button type="button" class="btn address-btn" onclick="execDaumPostcode()">주소검색</button>
                 </div>
 
-                <input type="text" id="roadAddress" placeholder="기본주소" readonly style="margin-bottom:6px;">
+                <input type="text" id="roadAddress" class="address-input" placeholder="기본주소" readonly>
                 <input type="text" id="detailAddress" placeholder="상세주소를 입력하세요">
 
                 <!-- DB의 address 컬럼에 실제 저장되는 값 -->
                 <input type="hidden" id="address" name="address">
 
-                <small>ESS 설치지 또는 관리 주소를 입력해주세요.</small>
             </div>
 
             <!-- DB 저장 안 함: 화면 검증용 -->
@@ -190,99 +169,7 @@
 
     </div>
 </div>
-
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-
-<script>
-    function selectType(type) {
-        const tabs = document.querySelectorAll('.tab-btn');
-        tabs.forEach(tab => tab.classList.remove('active'));
-
-        if (type === 'PERSONAL') {
-            tabs[0].classList.add('active');
-        } else {
-            tabs[1].classList.add('active');
-        }
-
-        document.getElementById('userType').value = type;
-    }
-
-    function execDaumPostcode() {
-        new daum.Postcode({
-            oncomplete: function(data) {
-                var roadAddr = data.roadAddress;
-                var jibunAddr = data.jibunAddress;
-
-                document.getElementById('postcode').value = data.zonecode;
-
-                if (roadAddr !== '') {
-                    document.getElementById('roadAddress').value = roadAddr;
-                } else {
-                    document.getElementById('roadAddress').value = jibunAddr;
-                }
-
-                document.getElementById('detailAddress').focus();
-            }
-        }).open();
-    }
-
-    function makeFullAddress() {
-        var postcode = document.getElementById('postcode').value;
-        var roadAddress = document.getElementById('roadAddress').value;
-        var detailAddress = document.getElementById('detailAddress').value;
-
-        var fullAddress = "";
-
-        if (postcode !== "") {
-            fullAddress += "(" + postcode + ") ";
-        }
-
-        fullAddress += roadAddress;
-
-        if (detailAddress !== "") {
-            fullAddress += " " + detailAddress;
-        }
-
-        document.getElementById('address').value = fullAddress;
-    }
-
-    function joinCheck() {
-        const memberPw = document.getElementById('memberPw').value;
-        const memberPwCheck = document.getElementById('memberPwCheck').value;
-
-
-        // HTML id와 동일하게 수정
-        const agreeRequired = document.getElementById('agree_required').checked;
-        const agreeMonitoring = document.getElementById('agree_monitoring').checked;
-
-
-        if (memberPw.length < 8) {
-            alert("비밀번호는 8자 이상 입력해주세요.");
-            document.getElementById('memberPw').focus();
-            return false;
-        }
-
-        if (memberPw !== memberPwCheck) {
-            alert("비밀번호가 일치하지 않습니다.");
-            document.getElementById('memberPwCheck').focus();
-            return false;
-        }
-
-        if (!agreeRequired) {
-            alert("서비스 이용약관 및 개인정보 처리방침에 동의해주세요.");
-            return false;
-        }
-
-        if (!agreeMonitoring) {
-            alert("ESS 모니터링 데이터 수집 및 분석 목적 확인이 필요합니다.");
-            return false;
-        }
-
-        makeFullAddress();
-
-        return true;
-    }
-</script>
-
+<script src="${pageContext.request.contextPath}/resources/js/join_view.js"></script>
 </body>
 </html>

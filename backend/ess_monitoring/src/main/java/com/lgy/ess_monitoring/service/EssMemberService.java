@@ -10,7 +10,10 @@ public interface EssMemberService {
     void join(HashMap<String, String> params);
 
     // 로그인
-    EssMemberDTO login(HashMap<String, String> params);
+//    EssMemberDTO login(HashMap<String, String> params);
+    
+    // 아이디로 회원 조회
+    EssMemberDTO findByUserid(String memberUserid);
 
     // 아이디 중복 체크
     int idCheck(String memberUserid);

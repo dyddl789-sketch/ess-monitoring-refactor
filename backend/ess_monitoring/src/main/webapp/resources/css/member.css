@@ -1,11 +1,13 @@
 /* =========================
-   MEMBER COMMON
+   MEMBER PAGE - ESS DARK STYLE
 ========================= */
 
 .member-page {
     min-height: calc(100vh - 160px);
-    background: linear-gradient(to bottom, #f4f7fb, #eef2f7);
     padding: 80px 20px;
+    background:
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.22), transparent 34%),
+        linear-gradient(135deg, #020617 0%, #07111f 45%, #0b1f34 100%);
 }
 
 .member-container {
@@ -13,20 +15,24 @@
     margin: 0 auto;
 }
 
-/* 카드 */
-.member-card {
-    background: #ffffff;
-    border-radius: 22px;
-    padding: 42px;
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.08),
-        0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid #edf1f5;
-    position: relative;
-    overflow: hidden;
+.member-container.wide {
+    max-width: 860px;
 }
 
-/* 상단 포인트 라인 */
+/* 카드 */
+.member-card {
+    position: relative;
+    overflow: hidden;
+    padding: 46px 52px;
+    border-radius: 24px;
+    background:
+        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 34, 59, 0.96));
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
 .member-card::before {
     content: "";
     position: absolute;
@@ -34,135 +40,227 @@
     left: 0;
     width: 100%;
     height: 5px;
-    background: linear-gradient(
-        90deg,
-        #2563eb,
-        #3b82f6,
-        #60a5fa
-    );
+    background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
 }
 
 /* 타이틀 */
 .member-title {
-    margin-bottom: 34px;
+    margin-bottom: 38px;
     text-align: center;
 }
 
 .member-title span {
     display: inline-block;
+    margin-bottom: 12px;
+    color: #60a5fa;
     font-size: 0.8rem;
-    font-weight: 700;
-    color: #2563eb;
-    letter-spacing: 0.12em;
-    margin-bottom: 10px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
 }
 
 .member-title h2 {
-    font-size: 2rem;
-    color: #111827;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    color: #ffffff;
+    font-size: 2.2rem;
     font-weight: 800;
+    letter-spacing: -0.04em;
 }
 
 .member-title p {
-    color: #6b7280;
-    font-size: 0.95rem;
+    color: #cbd5e1;
+    font-size: 0.98rem;
     line-height: 1.6;
 }
 
 /* 메시지 */
 .member-message {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     padding: 14px 16px;
-    border-radius: 12px;
-    background: #eef4ff;
-    color: #2563eb;
+    border-radius: 14px;
+    background: rgba(37, 99, 235, 0.15);
+    color: #93c5fd;
     font-size: 0.92rem;
-    font-weight: 600;
+    font-weight: 700;
     text-align: center;
-    border: 1px solid #dbe7ff;
+    border: 1px solid rgba(96, 165, 250, 0.28);
 }
 
 .member-message.error {
-    background: #fff1f2;
-    border: 1px solid #fecdd3;
-    color: #dc2626;
+    background: rgba(220, 38, 38, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    color: #fca5a5;
 }
 
 /* 폼 */
 .form-group {
-    margin-bottom: 22px;
+    margin-bottom: 26px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
-    color: #374151;
-    font-size: 0.95rem;
-    font-weight: 700;
+    margin-bottom: 10px;
+    color: #f8fafc;
+    font-size: 0.98rem;
+    font-weight: 800;
 }
 
-/* 인풋 */
-.form-group input {
-    width: 100%;
-    height: 52px;
-    border: 1px solid #d1d5db;
+.form-group small {
+    display: block;
+    margin-top: 9px;
+    color: #94a3b8;
+    font-size: 0.84rem;
+}
+
+/* input 공통 */
+.form-group input,
+.form-group select {
+    height: 54px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
     border-radius: 14px;
-    padding: 0 16px;
-    font-size: 0.95rem;
-    background: #ffffff;
-    color: #111827;
+    padding: 0 18px;
+    background: rgba(15, 23, 42, 0.72);
+    color: #f8fafc;
+    font-size: 0.96rem;
+    box-sizing: border-box;
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease,
         background 0.2s ease;
-    box-sizing: border-box;
 }
 
-/* 포커스 */
-.form-group input:focus {
+.form-group input {
+    width: 100%;
+}
+
+.form-group input::placeholder {
+    color: #64748b;
+}
+
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
     border-color: #3b82f6;
-    background: #ffffff;
-    box-shadow:
-        0 0 0 4px rgba(59, 130, 246, 0.12);
+    background: rgba(15, 23, 42, 0.92);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
 }
 
-/* readonly */
 .form-group input[readonly] {
-    background: #f3f4f6;
-    color: #6b7280;
+    background: rgba(15, 23, 42, 0.5);
+    color: #94a3b8;
     cursor: not-allowed;
 }
 
-/* placeholder */
-.form-group input::placeholder {
-    color: #9ca3af;
+/* 연락처 */
+.phone-row {
+    display: grid;
+    grid-template-columns: 1fr 24px 1.3fr 24px 1.3fr;
+    align-items: center;
+    gap: 10px;
 }
 
-/* 설명 */
-.form-group small {
-    display: block;
-    margin-top: 8px;
-    color: #6b7280;
-    font-size: 0.82rem;
+.phone-row select,
+.phone-row input {
+    width: 100%;
+    text-align: center;
+}
+
+.phone-row span {
+    color: #60a5fa;
+    font-size: 1rem;
+    font-weight: 900;
+    text-align: center;
+}
+
+/* 이메일 */
+.email-row {
+    display: grid;
+    grid-template-columns: 1.2fr 28px 1.2fr 1fr;
+    align-items: center;
+    gap: 10px;
+}
+
+.email-row input,
+.email-row select {
+    width: 100%;
+}
+
+.email-row span {
+    color: #60a5fa;
+    font-size: 1rem;
+    font-weight: 900;
+    text-align: center;
+}
+
+.email-row input[readonly] {
+    background: rgba(15, 23, 42, 0.5);
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* select 깔끔하게 */
+.form-group select {
+    appearance: none;
+    cursor: pointer;
+    padding-right: 42px;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #93c5fd 50%),
+        linear-gradient(135deg, #93c5fd 50%, transparent 50%);
+    background-position:
+        calc(100% - 22px) 22px,
+        calc(100% - 16px) 22px;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+}
+
+/* 주소 */
+.address-row {
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    gap: 12px;
+    align-items: center;
+}
+
+.address-row input {
+    width: 100%;
+}
+
+.btn-address {
+    height: 54px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: #ffffff;
+    font-size: 0.94rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.32);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.btn-address:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.42);
 }
 
 /* 버튼 영역 */
 .member-btn-area {
-    display: flex;
-    gap: 12px;
-    margin-top: 34px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 40px;
 }
 
-/* 버튼 */
 .btn {
-    flex: 1;
-    height: 52px;
+    height: 56px;
     border: none;
-    border-radius: 14px;
-    font-size: 0.95rem;
-    font-weight: 700;
+    border-radius: 15px;
+    font-size: 0.98rem;
+    font-weight: 800;
     cursor: pointer;
     transition:
         transform 0.15s ease,
@@ -170,88 +268,65 @@
         background 0.2s ease;
 }
 
-/* hover */
 .btn:hover {
     transform: translateY(-2px);
 }
 
-/* primary */
 .btn-primary {
-    background: linear-gradient(
-        135deg,
-        #2563eb,
-        #3b82f6
-    );
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
     color: #ffffff;
-    box-shadow:
-        0 8px 18px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 12px 26px rgba(37, 99, 235, 0.35);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(
-        135deg,
-        #1d4ed8,
-        #2563eb
-    );
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
 }
 
-/* secondary */
 .btn-secondary {
-    background: #eef2f7;
-    color: #374151;
+    background: rgba(15, 23, 42, 0.45);
+    color: #e5e7eb;
+    border: 1px solid rgba(148, 163, 184, 0.45);
 }
 
 .btn-secondary:hover {
-    background: #e2e8f0;
+    background: rgba(30, 41, 59, 0.75);
 }
 
 /* 반응형 */
 @media (max-width: 768px) {
 
     .member-page {
-        padding: 40px 16px;
+        padding: 42px 16px;
     }
 
     .member-card {
-        padding: 28px 22px;
-        border-radius: 18px;
+        padding: 34px 22px;
+        border-radius: 20px;
     }
 
     .member-title h2 {
-        font-size: 1.6rem;
+        font-size: 1.7rem;
+    }
+
+    .phone-row {
+        grid-template-columns: 1fr 18px 1fr 18px 1fr;
+        gap: 6px;
+    }
+
+    .email-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .email-row span {
+        display: none;
+    }
+
+    .address-row {
+        grid-template-columns: 1fr;
     }
 
     .member-btn-area {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
-
-    .btn {
-        width: 100%;
-    }
-}
-
-.address-row {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.address-row input {
-    flex: 1;
-}
-
-.btn-address {
-    width: 110px;
-    height: 52px;
-    border: none;
-    border-radius: 12px;
-    background: #111827;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.btn-address:hover {
-    background: #1f2937;
 }
