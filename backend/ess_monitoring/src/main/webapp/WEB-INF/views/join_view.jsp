@@ -60,18 +60,68 @@
             </div>
 
             <!-- phone -->
-            <div class="form-group">
-                <label>연락처</label>
-                <input type="text" id="phone" name="phone" placeholder="010-0000-0000">
-                <small>ESS 이상 알림, 장애 대응 연락용으로 사용됩니다.</small>
-            </div>
+			<div class="form-group">
+			    <label>연락처</label>
+			
+			    <div class="phone-row">
+			        <input type="text"
+			               id="phone1"
+			               maxlength="3"
+			               value="010">
+			
+			        <span class="input-separator">-</span>
+			
+			        <input type="text"
+			               id="phone2"
+			               maxlength="4"
+			               placeholder="1234">
+			
+			        <span class="input-separator">-</span>
+			
+			        <input type="text"
+			               id="phone3"
+			               maxlength="4"
+			               placeholder="5678">
+			    </div>
+			
+			    <input type="hidden"
+			           id="phone"
+			           name="phone">
+			
+			    <small>ESS 이상 알림, 장애 대응 연락용으로 사용됩니다.</small>
+			</div>
 
             <!-- email -->
-            <div class="form-group">
-                <label>이메일</label>
-                <input type="email" id="email" name="email" placeholder="email@example.com">
-                <small>리포트, 알림, 계정 안내 수신에 사용됩니다.</small>
-            </div>
+			<div class="form-group">
+			    <label>이메일</label>
+			
+			    <div class="email-row">
+			        <input type="text"
+			               id="emailId"
+			               placeholder="email">
+			
+			        <span class="input-separator">@</span>
+			
+			        <input type="text"
+			               id="emailDomain"
+			               placeholder="domain.com">
+			
+			        <select id="emailDomainSelect">
+			            <option value="">직접입력</option>
+			            <option value="naver.com">naver.com</option>
+			            <option value="gmail.com">gmail.com</option>
+			            <option value="daum.net">daum.net</option>
+			            <option value="kakao.com">kakao.com</option>
+			            <option value="nate.com">nate.com</option>
+			        </select>
+			    </div>
+			
+			    <input type="hidden"
+			           id="email"
+			           name="email">
+			
+			    <small>리포트, 알림, 계정 안내 수신에 사용됩니다.</small>
+			</div>
 
             <!-- address -->
             <div class="form-group">

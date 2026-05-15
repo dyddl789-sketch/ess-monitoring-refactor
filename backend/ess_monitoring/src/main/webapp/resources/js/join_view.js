@@ -85,8 +85,84 @@
             alert("ESS 모니터링 데이터 수집 및 분석 목적 확인이 필요합니다.");
             return false;
         }
+		if (!makeFullPhone()) {
+		    return false;
+		}
+		
+		if (!makeFullEmail()) {
+		    return false;
+		}
+
 
         makeFullAddress();
 
         return true;
     }
+    function makeFullPhone() {
+    const phone1 = document.getElementById('phone1').value.trim();
+    const phone2 = document.getElementById('phone2').value.trim();
+    const phone3 = document.getElementById('phone3').value.trim();
+
+    if (phone1 === "" && phone2 === "" && phone3 === "") {
+        document.getElementById('phone').value = "";
+        return true;
+    }
+
+    if (!/^[0-9]{3}$/.test(phone1)
+            || !/^[0-9]{3,4}$/.test(phone2)
+            || !/^[0-9]{4}$/.test(phone3)) {
+
+        alert("연락처 형식을 확인해주세요.");
+        document.getElementById('phone2').focus();
+        return false;
+    }
+
+    document.getElementById('phone').value =
+            phone1 + "-" + phone2 + "-" + phone3;
+
+    return true;
+}
+
+function makeFullEmail() {
+    const emailId = document.getElementById('emailId').value.trim();
+    const emailDomain = document.getElementById('emailDomain').value.trim();
+
+    if (emailId === "" && emailDomain === "") {
+        document.getElementById('email').value = "";
+        return true;
+    }
+
+    if (emailId === "" || emailDomain === "") {
+        alert("이메일을 정확히 입력해주세요.");
+        document.getElementById('emailId').focus();
+        return false;
+    }
+
+    const fullEmail = (emailId + "@" + emailDomain).toLowerCase();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fullEmail)) {
+        alert("이메일 형식을 확인해주세요.");
+        document.getElementById('emailId').focus();
+        return false;
+    }
+
+    document.getElementById('email').value = fullEmail;
+
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const emailDomainSelect = document.getElementById('emailDomainSelect');
+    const emailDomain = document.getElementById('emailDomain');
+
+    emailDomainSelect.addEventListener('change', function() {
+        emailDomain.value = this.value;
+
+        if (this.value === "") {
+            emailDomain.readOnly = false;
+            emailDomain.focus();
+        } else {
+            emailDomain.readOnly = true;
+        }
+    });
+});

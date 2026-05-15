@@ -211,3 +211,54 @@ body {
         width: 100% !important;
     }
 }
+
+.phone-row,
+.email-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.phone-row input {
+    text-align: center;
+}
+
+.phone-row input:nth-child(1) {
+    width: 90px;
+}
+
+.phone-row input:nth-child(3),
+.phone-row input:nth-child(5) {
+    flex: 1;
+}
+
+.email-row input {
+    flex: 1;
+}
+
+.email-row select {
+    width: 150px;
+    height: 48px;
+    padding: 0 12px;
+    border: 1px solid rgba(130, 170, 220, 0.28);
+    border-radius: 8px;
+    background: rgba(9, 24, 48, 0.82);
+    color: #ffffff;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.input-separator {
+    color: #9fb2ce;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .email-row {
+        flex-wrap: wrap;
+    }
+
+    .email-row select {
+        width: 100%;
+    }
+}
