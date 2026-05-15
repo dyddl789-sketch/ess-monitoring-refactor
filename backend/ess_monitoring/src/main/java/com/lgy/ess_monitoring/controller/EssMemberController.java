@@ -227,11 +227,12 @@ public class EssMemberController {
     }
 
 
-    // 비밀번호 변경 처리
+ // 비밀번호 변경 처리
     @RequestMapping("/member/password/update")
     public String passwordUpdate(@RequestParam HashMap<String, String> params,
                                  HttpSession session,
-                                 Model model) {
+                                 Model model,
+                                 RedirectAttributes rttr) {
 
         Integer memberId = (Integer) session.getAttribute("memberId");
 
@@ -277,8 +278,14 @@ public class EssMemberController {
             return "member/password_change";
         }
 
-        model.addAttribute("msg", "비밀번호가 변경되었습니다.");
-        return "member/password_change";
+        session.invalidate();
+
+        rttr.addFlashAttribute(
+            "msg",
+            "비밀번호가 변경되었습니다. 변경된 비밀번호로 다시 로그인해주세요."
+        );
+
+        return "redirect:/login_view";
     }
     
     
