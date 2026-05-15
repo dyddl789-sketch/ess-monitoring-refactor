@@ -1,420 +1,154 @@
-/* 기본 초기화 */
-* {
+body {
+    min-height: 100vh;
     margin: 0;
-    padding: 0;
+    background:
+        radial-gradient(circle at 75% 20%, rgba(28, 102, 210, 0.28), transparent 32%),
+        linear-gradient(135deg, #020817 0%, #06172d 45%, #020817 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f8fafc;
+}
+
+.login-container {
+    width: 100%;
+    min-height: 100vh;
+    padding: 80px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Pretendard', sans-serif; 
-    line-height: 1.6;
-    color: #333;
-}
-
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-
-/* 상단 메뉴바 */
-header {
-    background: #fff;
-    border-bottom: 1px solid #ddd;
-    padding: 15px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-header .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-header nav ul {
-    display: flex;
-    list-style: none;
-}
-
-header nav ul li {
-    margin-left: 20px;
-}
-
-header nav ul li a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-}
-
-
-
-/* 히어로 섹션 */
-.hero {
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../photo/자연 풍경(도시포함).jpg');
-    background-size: cover;
-    background-position: center;
-    height: 500px;
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.hero h2 { font-size: 3rem; margin-bottom: 10px; }
-.btn {
-    padding: 10px 25px;
-    background: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    margin-top: 20px;
-    border-radius: 5px;
-}
-
-
-
-/* 서비스 소개 */
-.services {
-    display: flex;
-    gap: 20px;
-    padding: 60px 0;
-}
-
-.service-card {
-    flex: 1;
-    padding: 30px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-
-
-/* 게시판 */
-.board { padding: 40px 0; }
-.board-table {
+.login-box {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+    max-width: 460px;
+    padding: 36px 40px;
+    border: 1px solid rgba(120, 170, 230, 0.35);
+    border-radius: 18px;
+    background: rgba(4, 13, 29, 0.78);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
 }
 
-.board-table th, .board-table td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-}
-
-
-
-.contact-form .btn:hover {
-    background-color: #0056b3;
-}
-
-
-.board-table th { background: #f4f4f4; }
-
-
-
-/* --------로그인 버튼 -----------*/
-/* 기존 네비게이션 스타일 유지 및 로그인 버튼 강조 */
-header nav ul {
-    display: flex;
-    list-style: none;
-    align-items: center; /* 세로 중앙 정렬 */
-}
-
-header nav ul li {
-    margin-left: 20px;
-}
-
-header nav ul li a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    transition: color 0.3s;
-}
-
-header nav ul li a:hover {
-    color: #007bff; /* 마우스 올렸을 때 강조색 */
-}
-
-/* 로그인 버튼 전용 스타일 */
-.login-btn {
-    padding: 7px 10px;
-    border: 2px solid #007bff; /* 파란색 테두리 */
-    border-radius: 10px;       /* 둥근 버튼 형태 */
-    color: #007bff !important; /* 글자색 강제 지정 */
-    transition: all 0.3s ease;
-}
-
-.login-btn:hover {
-    background-color: #007bff; /* 마우스 올리면 배경이 파란색으로 */
-    color: #fff !important;    /* 글자색은 흰색으로 */
-}
-
-
-
-
-/* --------날씨 섹션 스타일 -----------*/
-.weather-section {
-    padding: 10px 10px;
-    background: #ffffff;
-    margin-top: -10px; /* Hero 섹션에 살짝 걸치게 하여 세련된 느낌 연출 */
-    position: relative;
-    z-index: 10;
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-.weather-title {
+.login-logo {
+    margin: 0 0 12px;
     text-align: center;
-    margin-bottom: 10px;
+    color: #ffffff;
+    font-size: 1.9rem;
+    font-weight: 800;
 }
 
-.weather-title h3 {
-    font-size: 1.0rem;
-    color: #2c3e50;
-}
-
-.weather-grid {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.weather-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 5px;
-    min-width: 50px;
-}
-
-.weather-item .city {
-    font-weight: bold;
-    font-size: 1.0rem;
-    margin-bottom: 5px;
-}
-
-.weather-item .icon {
-    font-size: 1.5rem;
-    margin-bottom: 5px;
-}
-
-.weather-item .temp {
-    color: #007bff;
-    font-weight: bold;
-    font-size: 1.0rem;
-}
-
-
-
-/* --------문의 게시판 폼 스타일 -----------*/
-.contact-form-container {
-    max-width: 600px;
-    margin: 0 auto;
-    background: #fdfdfd;
-    padding: 40px;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.form-group input, 
-.form-group textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-
-.form-group textarea {
-    resize: none; /* 크기 조절 방지 */
-}
-
-
-
-/* -------- 서비스 소개 페이지 스타일 ----------- */
-
-.sub-hero {
-    background: #2c3e50; /* 비즈니스 블루 그레이 */
-    color: #fff;
-    padding: 40px 0;
+.login-title {
+    margin: 0 0 26px;
     text-align: center;
-}
-
-.sub-hero h2 { font-size: 2.5rem; margin-bottom: 10px; }
-
-.about-section {
-    padding: 60px 0;
-    text-align: center;
-}
-
-.about-text h3 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #007bff;
-}
-
-.about-text p {
-    max-width: 1000px;
-    margin: 0 auto;
-    font-size: 1.1rem;
-    color: #666;
-}
-
-.features-bg {
-    background: #f4f7f9;
-    padding: 80px 0;
-}
-
-.features-grid {
-    display: flex;
-    gap: 30px;
-    justify-content: space-between;
-}
-
-.feature-item {
-    flex: 1;
-    background: #fff;
-    padding: 40px 20px;
-    border-radius: 15px;
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.feature-item:hover {
-    transform: translateY(-10px); /* 살짝 올라가는 효과 */
-}
-
-.f-icon {
-    font-size: 3rem;
-    margin-bottom: 15px;
-}
-
-.feature-item h4 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-}
-
-
-
-/* -------- 주요 기능 섹션 스타일 ----------- */
-.key-features-section {
-    padding: 80px 20px;
-    text-align: center;
-}
-
-.key-features-section h2 {
-    font-size: 2.5rem;
-    margin-bottom: 50px;
-    color: #2c3e50;
-}
-
-.key-features-list {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.key-feature-item {
-    display: flex;
-    gap: 30px;
-    align-items: flex-start;
-    background: #f9f9f9;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: left;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.key-feature-item:hover {
-    transform: translateX(10px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-}
-
-.feature-number {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 60px;
-    background: #007bff;
-    color: #fff;
-    font-size: 1.8rem;
-    font-weight: bold;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.key-feature-item h4 {
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-    color: #2c3e50;
-}
-
-.key-feature-item p {
-    color: #666;
-    font-size: 1rem;
-    line-height: 1.6;
-}
-
-
-
-/* -------- 로그인 탭 스타일 ----------- */
-
-/* 로그인 페이지 전체를 감싸는 영역 (헤더 제외 높이 조절) */
-.login-page-wrapper {
-    background-color: #f4f7f9;
-    min-height: calc(100vh - 70px); /* 헤더 높이를 뺀 나머지 전체 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 0;
+    color: #ffffff;
+    font-size: 1.35rem;
 }
 
 .login-type-tabs {
     display: flex;
-    margin-bottom: 25px;
-    border-bottom: 2px solid #eee;
+    margin-bottom: 28px;
+    border-bottom: 1px solid rgba(130, 170, 220, 0.25);
 }
 
 .tab-btn {
     flex: 1;
-    padding: 12px;
-    border: none;
-    background: none;
+    padding: 14px 0;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: #9fb2ce;
     font-size: 1rem;
-    font-weight: bold;
-    color: #999;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s;
 }
 
 .tab-btn.active {
-    color: #007bff;
-    border-bottom: 2px solid #007bff; /* 선택된 탭 강조 */
+    color: #4da3ff;
+    border-bottom-color: #4da3ff;
 }
 
-.tab-btn:hover {
-    color: #007bff;
+.error-message {
+    margin: 0 0 14px;
+    text-align: center;
+    color: #ff6b6b;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.form-group input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid rgba(130, 170, 220, 0.28);
+    border-radius: 8px;
+    background: rgba(9, 24, 48, 0.82);
+    color: #ffffff;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.form-group input::placeholder {
+    color: #8da2c0;
+}
+
+.form-group input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 18px 0 22px;
+    color: #c9d7ea;
+    font-size: 0.9rem;
+}
+
+.find-pw {
+    color: #4da3ff;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.login-submit {
+    width: 100%;
+    height: 50px;
+    border: 0;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.login-submit:hover {
+    filter: brightness(1.08);
+}
+
+.login-footer {
+    margin-top: 24px;
+    text-align: center;
+    color: #a9bdd8;
+    font-size: 0.95rem;
+}
+
+.login-footer a {
+    color: #4da3ff;
+    text-decoration: none;
+    font-weight: 700;
 }

@@ -4,7 +4,6 @@
 
 <html>
 <head>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/login_view.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/join_view.css">
 <meta charset="UTF-8">
 <title>ESS 회원가입</title>
@@ -13,13 +12,10 @@
 <body>
 <div class="login-container">
     <div class="login-box">
-
-        <h1 class="logo join-logo">ESS-M.S</h1>
-		<h2 class="join-title">회원가입</h2>
-
-        <div class="guide-box">
-            ESS 모니터링 서비스는 회원 유형에 따라 장비 등록, 데이터 조회, 이상 알림 기능이 다르게 제공됩니다.
-        </div>
+		
+		<h1 class="join-title">
+		    ESS-M.S 회원가입
+		</h1>
 
         <c:if test="${not empty msg}">
 			<p class="error-message">

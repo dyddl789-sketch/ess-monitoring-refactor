@@ -1,3 +1,7 @@
+	window.onload = function() {
+	    window.scrollTo(0, 0);
+	};
+
     function selectType(type) {
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(tab => tab.classList.remove('active'));

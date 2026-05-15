@@ -28,7 +28,7 @@ public class EssMemberController {
         return "login_view";
     }
 
-    // 로그인 처리
+ // 로그인 처리
     @RequestMapping("/login")
     public String login(@RequestParam("memberUserid") String memberUserid,
                         @RequestParam("memberPw") String memberPw,
@@ -40,24 +40,41 @@ public class EssMemberController {
         log.info("@# memberUserid => " + memberUserid);
         log.info("@# userType => " + userType);
 
-        HashMap<String, String> params = new HashMap<>();
-
-        params.put("memberUserid", memberUserid);
-        params.put("memberPw", memberPw);
-        params.put("userType", userType);
-
-        log.info("@# login params => " + params);
-
-        EssMemberDTO memberDto = memberService.login(params);
+        // 아이디 기준 회원 조회
+        EssMemberDTO memberDto =
+                memberService.findByUserid(memberUserid);
 
         log.info("@# memberDto => " + memberDto);
 
+        // 1. 아이디 없음
         if (memberDto == null) {
 
-            log.info("@# login fail");
+            log.info("@# login fail : invalid userid");
 
             model.addAttribute("msg",
-                    "아이디, 비밀번호 또는 회원유형이 일치하지 않습니다.");
+                    "등록되지 않은 아이디입니다.");
+
+            return "login_view";
+        }
+
+        // 2. 회원유형 불일치
+        if (!userType.equals(memberDto.getUserType())) {
+
+            log.info("@# login fail : invalid userType");
+
+            model.addAttribute("msg",
+                    "선택한 회원유형과 계정 정보가 일치하지 않습니다.");
+
+            return "login_view";
+        }
+
+        // 3. 비밀번호 불일치
+        if (!memberPw.equals(memberDto.getMemberPw())) {
+
+            log.info("@# login fail : invalid password");
+
+            model.addAttribute("msg",
+                    "비밀번호가 일치하지 않습니다.");
 
             return "login_view";
         }
