@@ -26,7 +26,7 @@ public class EssMemberController {
     // 로그인 화면
     @RequestMapping("/login_view")
     public String loginView() {
-        return "login_view";
+        return "member/login_view";
     }
 
  // 로그인 처리
@@ -55,7 +55,7 @@ public class EssMemberController {
             model.addAttribute("msg",
                     "등록되지 않은 아이디입니다.");
 
-            return "login_view";
+            return "member/login_view";
         }
 
         // 2. 회원유형 불일치
@@ -66,7 +66,7 @@ public class EssMemberController {
             model.addAttribute("msg",
                     "선택한 회원유형과 계정 정보가 일치하지 않습니다.");
 
-            return "login_view";
+            return "member/login_view";
         }
 
         // 3. 비밀번호 불일치
@@ -77,7 +77,7 @@ public class EssMemberController {
             model.addAttribute("msg",
                     "비밀번호가 일치하지 않습니다.");
 
-            return "login_view";
+            return "member/login_view";
         }
 
         log.info("@# login success");
@@ -96,7 +96,7 @@ public class EssMemberController {
     // 회원가입 화면
     @RequestMapping("/join_view")
     public String joinView() {
-        return "join_view";
+        return "member/join_view";
     }
 
     // 회원가입 처리
@@ -113,28 +113,28 @@ public class EssMemberController {
 
         if (memberName == null || memberName.trim().isEmpty()) {
             model.addAttribute("msg", "이름을 입력해주세요.");
-            return "join_view";
+            return "member/join_view";
         }
 
         if (memberUserid == null || memberUserid.trim().isEmpty()) {
             model.addAttribute("msg", "아이디를 입력해주세요.");
-            return "join_view";
+            return "member/join_view";
         }
 
         if (memberPw == null || memberPw.trim().isEmpty()) {
             model.addAttribute("msg", "비밀번호를 입력해주세요.");
-            return "join_view";
+            return "member/join_view";
         }
 
         if (userType == null || userType.trim().isEmpty()) {
             model.addAttribute("msg", "회원 유형을 선택해주세요.");
-            return "join_view";
+            return "member/join_view";
         }
 
         int idCount = memberService.idCheck(memberUserid);
         if (idCount > 0) {
             model.addAttribute("msg", "이미 사용 중인 아이디입니다.");
-            return "join_view";
+            return "member/join_view";
         }
 
         if (email != null && !email.trim().isEmpty()) {
@@ -142,7 +142,7 @@ public class EssMemberController {
 
             if (emailCount > 0) {
                 model.addAttribute("msg", "이미 사용 중인 이메일입니다.");
-                return "join_view";
+                return "member/join_view";
             }
         }
      // userType 값 확인
@@ -168,7 +168,7 @@ public class EssMemberController {
         Integer memberId = (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
-            return "redirect:/login_view";
+        	return "redirect:/login_view";
         }
 
         EssMemberDTO memberDto = memberService.getMemberInfo(memberId);
@@ -187,7 +187,7 @@ public class EssMemberController {
         Integer memberId = (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
-            return "redirect:/login_view";
+        	return "redirect:/login_view";
         }
 
         EssMemberDTO member = new EssMemberDTO();
@@ -220,7 +220,7 @@ public class EssMemberController {
         Integer memberId = (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
-            return "redirect:/login_view";
+        	return "redirect:/login_view";
         }
 
         return "member/password_change";
@@ -237,7 +237,7 @@ public class EssMemberController {
         Integer memberId = (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
-            return "redirect:/login_view";
+        	return "redirect:/login_view";
         }
 
         String currentPw = params.get("currentPw");
@@ -298,11 +298,6 @@ public class EssMemberController {
         return "redirect:/main";
     }
 
-    // signup.jsp 따로 사용할 경우
-    @RequestMapping("/signup")
-    public String signup() {
-        return "signup";
-    }
 
     /*
      * =========================================================

@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import lombok.Data;
 
 @Data
-public class EssDeviceGroupDTO {
+public class EssGroupDTO {
 
     private int groupId;
     private int memberId;

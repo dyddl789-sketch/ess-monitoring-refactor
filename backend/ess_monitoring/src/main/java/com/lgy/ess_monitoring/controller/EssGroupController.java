@@ -7,15 +7,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.lgy.ess_monitoring.dto.EssDeviceGroupDTO;
-import com.lgy.ess_monitoring.service.GroupService;
+import com.lgy.ess_monitoring.dto.EssGroupDTO;
+import com.lgy.ess_monitoring.service.EssGroupService;
 
 @Controller
 @RequestMapping("/group")
-public class GroupController {
+public class EssGroupController {
 
     @Autowired
-    private GroupService groupService;
+    private EssGroupService groupService;
 
     // 그룹 관리 화면
     @RequestMapping("/manage")
@@ -40,7 +40,7 @@ public class GroupController {
 
     // 그룹 등록
     @RequestMapping("/insert")
-    public String insert(EssDeviceGroupDTO group, HttpSession session) {
+    public String insert(EssGroupDTO group, HttpSession session) {
         Integer memberId = (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
@@ -55,7 +55,7 @@ public class GroupController {
 
     // 그룹 수정
     @RequestMapping("/update")
-    public String update(EssDeviceGroupDTO group, HttpSession session) {
+    public String update(EssGroupDTO group, HttpSession session) {
         Integer memberId = (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
