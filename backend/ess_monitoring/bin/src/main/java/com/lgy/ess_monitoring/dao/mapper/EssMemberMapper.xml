@@ -1,0 +1,140 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lgy.ess_monitoring.dao.EssMemberDAO">
+
+    <!-- ===================== 회원가입 ===================== -->
+    <insert id="join" parameterType="hashmap">
+        INSERT INTO ess_member (
+            member_name,
+            member_userid,
+            member_pw,
+            user_type,
+            phone,
+            email,
+            address,
+            join_date
+        ) VALUES (
+            #{memberName},
+            #{memberUserid},
+            #{memberPw},
+            #{userType},
+            #{phone},
+            #{email},
+            #{address},
+            NOW()
+        )
+    </insert>
+
+<!-- ===================== 로그인 ===================== -->
+<!-- 	<select id="login"
+	        parameterType="hashmap"
+	        resultType="com.lgy.ess_monitoring.dto.EssMemberDTO">
+	
+	    SELECT
+	        member_id,
+	        member_name,
+	        member_userid,
+	        member_pw,
+	        user_type,
+	        phone,
+	        email,
+	        address,
+	        join_date,
+	        role
+	    FROM ess_member
+	    WHERE member_userid = #{memberUserid}
+	      AND member_pw = #{memberPw}
+	      AND user_type = #{userType}
+	
+	</select> -->
+
+
+    <!-- ===================== 아이디로 회원 조회 로그인 ===================== -->
+    <select id="findByUserid"
+            parameterType="string"
+            resultType="com.lgy.ess_monitoring.dto.EssMemberDTO">
+
+        SELECT
+            member_id,
+            member_name,
+            member_userid,
+            member_pw,
+            user_type,
+            phone,
+            email,
+            address,
+            join_date,
+            role
+        FROM ess_member
+        WHERE member_userid = #{memberUserid}
+
+    </select>
+	
+    <!-- ===================== 아이디 중복 체크 ===================== -->
+    <select id="idCheck"
+            parameterType="string"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM ess_member
+        WHERE member_userid = #{memberUserid}
+    </select>
+
+    <!-- ===================== 이메일 중복 체크 ===================== -->
+    <select id="emailCheck"
+            parameterType="string"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM ess_member
+        WHERE email = #{email}
+    </select>
+    <!-- ===================== 내 정보 조회 ===================== -->
+		<select id="getMemberInfo"
+		        parameterType="int"
+		        resultType="com.lgy.ess_monitoring.dto.EssMemberDTO">
+		
+		    SELECT
+		        member_id,
+		        member_name,
+		        member_userid,
+		        member_pw,
+		        user_type,
+		        phone,
+		        email,
+		        address,
+		        join_date,
+		        role
+		    FROM ess_member
+		    WHERE member_id = #{memberId}
+		
+		</select>
+		
+		
+		<!-- ===================== 내 정보 수정 ===================== -->
+		<update id="updateMemberInfo"
+		        parameterType="com.lgy.ess_monitoring.dto.EssMemberDTO">
+		
+		    UPDATE ess_member
+		    SET
+		        member_name = #{memberName},
+		        phone = #{phone},
+		        email = #{email},
+		        address = #{address}
+		    WHERE member_id = #{memberId}
+		
+		</update>
+    
+	<!-- 비밀번호 변경 -->
+	<update id="updatePassword"
+	        parameterType="hashmap">
+	
+	    UPDATE ess_member
+	    SET member_pw = #{newPw}
+	    WHERE member_id = #{memberId}
+	      AND member_pw = #{currentPw}
+	
+	</update>
+</mapper>

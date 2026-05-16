@@ -140,21 +140,7 @@
                         설치 위치와 장비 정보를 입력해 새로운 ESS를 등록합니다.
                     </p>
                 </div>
-                
-			<c:if test="${sessionScope.userType eq 'COMPANY'}">
-			    <div class="main-guide-card"
-			         onclick="checkLogin(function(){ moveView('groupList', loadGroupList); })">
-			
-			        <div class="main-guide-icon">◎</div>
-			
-			        <h4>그룹 관리</h4>
-			
-			        <p>
-			            기업 회원은 ESS 장비를 그룹 단위로 생성하고 관리할 수 있습니다.
-			        </p>
-			    </div>
-			</c:if>
-			
+
                 <div class="main-guide-card"
                      onclick="checkLogin(function(){ moveView('deviceList', loadDeviceList); })">
 
@@ -244,7 +230,6 @@
 
 <script src="${pageContext.request.contextPath}/resources/js/main.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/device_register.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/group_manage.js"></script>
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 

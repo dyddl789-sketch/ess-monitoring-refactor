@@ -1,0 +1,216 @@
+.device-register-page {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.register-header {
+    margin-bottom: 22px;
+}
+
+.register-header h2 {
+    margin: 0 0 6px;
+    font-size: 26px;
+    color: #111827;
+}
+
+.register-header p {
+    margin: 0;
+    color: #64748b;
+}
+
+.form-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+}
+
+.form-section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 22px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-group label span {
+    color: #dc2626;
+}
+
+.form-input {
+    height: 42px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 0 12px;
+    font-size: 14px;
+    background: #ffffff;
+    color: #111827;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.form-input[readonly] {
+    background: #f8fafc;
+    color: #475569;
+}
+
+.address-row {
+    display: flex;
+    gap: 10px;
+}
+
+.address-row .form-input {
+    flex: 1;
+}
+
+.detail-address {
+    margin-top: 10px;
+}
+
+.address-result {
+    margin-top: 10px;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.form-button-area {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.btn-primary,
+.btn-sub,
+.btn-gray-form {
+    height: 42px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-sub {
+    background: #111827;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.btn-sub:hover {
+    background: #1f2937;
+}
+
+.btn-gray-form {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.btn-gray-form:hover {
+    background: #d1d5db;
+}
+/* ===============================
+   장비 등록 페이지 전체 여백
+================================ */
+.device-register-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* ===============================
+   제목 영역
+================================ */
+.register-header {
+    margin-bottom: 28px;
+}
+
+/* ===============================
+   입력 카드 간격
+================================ */
+.form-card {
+    margin-bottom: 24px;
+}
+
+/* ===============================
+   등록 화면 배경
+================================ */
+.main {
+    background: #f1f5f9;
+}
+
+/* ===============================
+   입력 요소 기본 높이
+================================ */
+.form-input {
+    height: 46px;
+    transition: all 0.2s ease;
+}
+
+/* ===============================
+   입력 요소 hover/focus 효과
+================================ */
+.form-input:hover {
+    border-color: #94a3b8;
+}
+
+.form-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.register-header h2 {
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.register-header p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 15px;
+    margin-top: 6px;
+}

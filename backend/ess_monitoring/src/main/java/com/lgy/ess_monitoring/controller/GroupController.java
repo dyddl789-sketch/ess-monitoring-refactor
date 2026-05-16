@@ -21,10 +21,15 @@ public class GroupController {
     @RequestMapping("/manage")
     public String manage(HttpSession session, Model model) {
         Integer memberId = (Integer) session.getAttribute("memberId");
+        String userType = (String) session.getAttribute("userType");
 
         if (memberId == null) {
-            return "redirect:/login_view";
+        	return "redirect:/login_view";
         }
+        if (!"COMPANY".equals(userType)) {
+            return "redirect:/main";
+        }
+        
 
         model.addAttribute("groupList", groupService.getGroupList(memberId));
         System.out.println("memberId = " + memberId);
