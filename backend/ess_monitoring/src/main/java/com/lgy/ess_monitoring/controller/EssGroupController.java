@@ -50,7 +50,7 @@ public class EssGroupController {
         group.setMemberId(memberId);
         groupService.insertGroup(group);
 
-        return "redirect:/group/manage";
+        return "redirect:/main";
     }
 
     // 그룹 수정
@@ -65,7 +65,7 @@ public class EssGroupController {
         group.setMemberId(memberId);
         groupService.updateGroup(group);
 
-        return "redirect:/group/manage";
+        return "redirect:/main";
     }
 
     // 그룹 삭제
@@ -79,6 +79,6 @@ public class EssGroupController {
 
         groupService.deleteGroup(groupId, memberId);
 
-        return "redirect:/group/manage";
+        return "redirect:/main";
     }
 }

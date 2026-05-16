@@ -25,4 +25,5 @@ public class WeatherDTO {
     private boolean night;
     
     private String essStatus;
+    private String weatherTheme;
 }
