@@ -90,5 +90,34 @@ public interface DashboardDAO {
             @Param("groupId") Integer groupId,
             @Param("deviceId") Integer deviceId
     );
+    
+    // ===============================
+    // 최근 7일 발전량 차트
+    // ===============================
+    List<DashboardChartDTO> getWeeklyGenerationChart(
+            @Param("memberId") int memberId,
+            @Param("selectedDate") String selectedDate,
+            @Param("groupId") Integer groupId,
+            @Param("deviceId") Integer deviceId
+    );
+
+    // ===============================
+    // 최근 6개월 월별 발전량 차트
+    // ===============================
+    List<DashboardChartDTO> getMonthlyGenerationChart(
+            @Param("memberId") int memberId,
+            @Param("selectedDate") String selectedDate,
+            @Param("groupId") Integer groupId,
+            @Param("deviceId") Integer deviceId
+    );
+
+    // ===============================
+    // 장비별 발전량 TOP5
+    // ===============================
+    List<DashboardChartDTO> getTopDeviceGenerationChart(
+            @Param("memberId") int memberId,
+            @Param("selectedDate") String selectedDate,
+            @Param("groupId") Integer groupId
+    );
        
 }

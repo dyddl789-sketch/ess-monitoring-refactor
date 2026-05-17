@@ -1,11 +1,19 @@
-let generationCompareChart;
-let socCompareChart;
-let deviceGenerationChart;
+let weeklyGenerationChart;
+let monthlyGenerationChart;
+let deviceTopChart;
 
 function getDashboardChartParams() {
-    const params = {
-        selectedDate: $('#selectedDate').val()
-    };
+
+    const params = {};
+
+    let selectedDate = $('#selectedDate').val();
+
+    if (!selectedDate) {
+        selectedDate = new Date().toISOString().split('T')[0];
+        $('#selectedDate').val(selectedDate);
+    }
+
+    params.selectedDate = selectedDate;
 
     const groupId = $('#groupSelect').val();
     const deviceId = $('#deviceSelect').val();
@@ -21,277 +29,255 @@ function getDashboardChartParams() {
     return params;
 }
 
-function emptyChartMessage(ctx, message) {
-    return;
-}
+function commonChartOptions() {
 
-function initGenerationCompareChart() {
-    const ctx = document.getElementById('generationCompareChart').getContext('2d');
-
-    generationCompareChart = new Chart(ctx, {
-        data: {
-            labels: [],
-            datasets: [
-                {
-                    type: 'bar',
-                    label: '선택일 발전량',
-                    data: [],
-                    backgroundColor: 'rgba(37, 99, 235, 0.75)',
-                    borderRadius: 8,
-                    yAxisID: 'y'
-                },
-                {
-                    type: 'bar',
-                    label: '이전일 발전량',
-                    data: [],
-                    backgroundColor: 'rgba(203, 213, 225, 0.9)',
-                    borderRadius: 8,
-                    yAxisID: 'y'
-                },
-                {
-                    type: 'line',
-                    label: '발전량 차이',
-                    data: [],
-                    borderColor: '#22c55e',
-                    backgroundColor: '#22c55e',
-                    tension: 0.35,
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    yAxisID: 'y1'
-                }
-            ]
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 400
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false
-            },
-            plugins: {
-                legend: {
-                    position: 'top'
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 12,
+                    padding: 16,
+                    color: '#475569'
                 }
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'kWh'
-                    }
+            tooltip: {
+                backgroundColor: '#0f172a',
+                padding: 12
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false
                 },
-                y1: {
-                    position: 'right',
-                    grid: {
-                        drawOnChartArea: false
-                    },
-                    title: {
-                        display: true,
-                        text: '차이'
-                    }
+                ticks: {
+                    color: '#64748b'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: '#e5e7eb'
+                },
+                ticks: {
+                    color: '#64748b'
                 }
             }
         }
-    });
+    };
 }
 
-function initSocCompareChart() {
-    const ctx = document.getElementById('socCompareChart').getContext('2d');
+function initWeeklyGenerationChart() {
 
-    socCompareChart = new Chart(ctx, {
+    const ctx = document.getElementById('generationCompareChart');
+
+    if (!ctx) {
+        return;
+    }
+
+    weeklyGenerationChart = new Chart(ctx.getContext('2d'), {
         type: 'line',
         data: {
             labels: [],
             datasets: [
                 {
-                    label: '선택일 SOC',
+                    label: '최근 7일 발전량',
                     data: [],
                     borderColor: '#2563eb',
-                    backgroundColor: '#2563eb',
-                    tension: 0.35,
-                    borderWidth: 3,
-                    pointRadius: 4
-                },
-                {
-                    label: '이전일 SOC',
-                    data: [],
-                    borderColor: '#cbd5e1',
-                    backgroundColor: '#cbd5e1',
-                    tension: 0.35,
-                    borderWidth: 3,
-                    pointRadius: 4
+                    backgroundColor: 'rgba(37, 99, 235, 0.10)',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    tension: 0.3,
+                    fill: true
                 }
             ]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
+        options: commonChartOptions()
     });
 }
 
-function initDeviceGenerationChart() {
-    const ctx = document.getElementById('deviceGenerationChart').getContext('2d');
+function initDeviceTopChart() {
 
-    deviceGenerationChart = new Chart(ctx, {
+    const ctx = document.getElementById('deviceGenerationChart');
+
+    if (!ctx) {
+        return;
+    }
+
+    deviceTopChart = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
         data: {
             labels: [],
             datasets: [
                 {
-                    type: 'bar',
-                    label: '선택일 발전량',
+                    label: '장비별 월간 발전량',
                     data: [],
                     backgroundColor: 'rgba(37, 99, 235, 0.75)',
-                    borderRadius: 8,
-                    yAxisID: 'y'
-                },
-                {
-                    type: 'bar',
-                    label: '이전일 발전량',
-                    data: [],
-                    backgroundColor: 'rgba(203, 213, 225, 0.9)',
-                    borderRadius: 8,
-                    yAxisID: 'y'
-                },
-                {
-                    type: 'line',
-                    label: '차이',
-                    data: [],
-                    borderColor: '#22c55e',
-                    backgroundColor: '#22c55e',
-                    tension: 0.35,
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    yAxisID: 'y1'
+                    borderRadius: 4,
+                    barThickness: 22
                 }
             ]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false
-            },
-            plugins: {
-                legend: {
-                    position: 'top'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'kWh'
-                    }
-                },
-                y1: {
-                    position: 'right',
-                    grid: {
-                        drawOnChartArea: false
-                    },
-                    title: {
-                        display: true,
-                        text: '차이'
-                    }
-                }
+        options: Object.assign(
+            {},
+            commonChartOptions(),
+            {
+                indexAxis: 'y'
             }
+        )
+    });
+}
+
+function initMonthlyGenerationChart() {
+
+    const ctx = document.getElementById('socCompareChart');
+
+    if (!ctx) {
+        return;
+    }
+
+    monthlyGenerationChart = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: '월별 발전량',
+                    data: [],
+                    backgroundColor: 'rgba(37, 99, 235, 0.75)',
+                    borderRadius: 4,
+                    barThickness: 28
+                }
+            ]
+        },
+        options: commonChartOptions()
+    });
+}
+
+function loadWeeklyGenerationChart() {
+
+    if (!weeklyGenerationChart) {
+        return;
+    }
+
+    $.ajax({
+        url: contextPath + '/dashboard/chart/weekly',
+        type: 'GET',
+        data: getDashboardChartParams(),
+        dataType: 'json',
+
+        success: function(list) {
+
+            list = list || [];
+
+            const labels = [];
+            const values = [];
+
+            list.forEach(function(row) {
+                labels.push(row.label);
+                values.push(Number(row.dailyKwh || row.value || 0));
+            });
+
+            weeklyGenerationChart.data.labels = labels;
+            weeklyGenerationChart.data.datasets[0].data = values;
+            weeklyGenerationChart.update();
+        },
+
+        error: function() {
+            console.log('최근 7일 발전량 차트 조회 실패');
         }
     });
 }
 
-function loadHourlyChart() {
+function loadMonthlyGenerationChart() {
+
+    if (!monthlyGenerationChart) {
+        return;
+    }
+
     $.ajax({
-        url: contextPath + '/dashboard/chart/hourly',
+        url: contextPath + '/dashboard/chart/monthly',
         type: 'GET',
         data: getDashboardChartParams(),
         dataType: 'json',
+
         success: function(list) {
-            if (!list) {
-                list = [];
-            }
+
+            list = list || [];
 
             const labels = [];
-            const selectedGeneration = [];
-            const previousGeneration = [];
-            const generationDiff = [];
-            const selectedSoc = [];
-            const previousSoc = [];
+            const values = [];
 
             list.forEach(function(row) {
                 labels.push(row.label);
-                selectedGeneration.push(Number(row.selectedGeneration || 0));
-                previousGeneration.push(Number(row.previousGeneration || 0));
-                generationDiff.push(Number(row.generationDiff || 0));
-                selectedSoc.push(Number(row.selectedSoc || 0));
-                previousSoc.push(Number(row.previousSoc || 0));
+                values.push(Number(row.monthlyKwh || row.value || 0));
             });
 
-            generationCompareChart.data.labels = labels;
-            generationCompareChart.data.datasets[0].data = selectedGeneration;
-            generationCompareChart.data.datasets[1].data = previousGeneration;
-            generationCompareChart.data.datasets[2].data = generationDiff;
-            generationCompareChart.update();
-
-            socCompareChart.data.labels = labels;
-            socCompareChart.data.datasets[0].data = selectedSoc;
-            socCompareChart.data.datasets[1].data = previousSoc;
-            socCompareChart.update();
+            monthlyGenerationChart.data.labels = labels;
+            monthlyGenerationChart.data.datasets[0].data = values;
+            monthlyGenerationChart.update();
         },
+
         error: function() {
-            console.log('시간별 차트 데이터 조회 실패');
+            console.log('월별 발전량 차트 조회 실패');
         }
     });
 }
 
-function loadDeviceChart() {
+function loadDeviceTopChart() {
+
+    if (!deviceTopChart) {
+        return;
+    }
+
     $.ajax({
-        url: contextPath + '/dashboard/chart/device',
+        url: contextPath + '/dashboard/chart/device-top',
         type: 'GET',
         data: getDashboardChartParams(),
         dataType: 'json',
+
         success: function(list) {
-            if (!list) {
-                list = [];
-            }
+
+            list = list || [];
 
             const labels = [];
-            const selectedGeneration = [];
-            const previousGeneration = [];
-            const generationDiff = [];
+            const values = [];
 
             list.forEach(function(row) {
-                labels.push(row.label);
-                selectedGeneration.push(Number(row.selectedGeneration || 0));
-                previousGeneration.push(Number(row.previousGeneration || 0));
-                generationDiff.push(Number(row.generationDiff || 0));
+                labels.push(row.deviceName || row.label);
+                values.push(Number(row.monthlyKwh || row.value || 0));
             });
 
-            deviceGenerationChart.data.labels = labels;
-            deviceGenerationChart.data.datasets[0].data = selectedGeneration;
-            deviceGenerationChart.data.datasets[1].data = previousGeneration;
-            deviceGenerationChart.data.datasets[2].data = generationDiff;
-            deviceGenerationChart.update();
+            deviceTopChart.data.labels = labels;
+            deviceTopChart.data.datasets[0].data = values;
+            deviceTopChart.update();
         },
+
         error: function() {
-            console.log('장비별 차트 데이터 조회 실패');
+            console.log('장비별 TOP5 차트 조회 실패');
         }
     });
 }
 
 function loadDashboardCharts() {
-    loadHourlyChart();
-    loadDeviceChart();
+
+    loadWeeklyGenerationChart();
+    loadMonthlyGenerationChart();
+    loadDeviceTopChart();
 }
 
 $(document).ready(function() {
-    initGenerationCompareChart();
-    initSocCompareChart();
-    initDeviceGenerationChart();
+
+    initWeeklyGenerationChart();
+    initMonthlyGenerationChart();
+    initDeviceTopChart();
 
     loadDashboardCharts();
 
@@ -309,10 +295,5 @@ $(document).ready(function() {
 
     $('#selectedDate').on('change', function() {
         loadDashboardCharts();
-    });
-
-    $('.chart-tab').on('click', function() {
-        $('.chart-tab').removeClass('active');
-        $(this).addClass('active');
     });
 });

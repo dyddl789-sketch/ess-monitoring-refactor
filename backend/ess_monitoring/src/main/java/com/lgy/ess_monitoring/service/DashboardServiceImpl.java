@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lgy.ess_monitoring.dao.DashboardDAO;
+import com.lgy.ess_monitoring.dto.DashboardChartDTO;
 import com.lgy.ess_monitoring.dto.DashboardChartResponseDTO;
 import com.lgy.ess_monitoring.dto.DashboardSummaryDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.dto.EssGroupDTO;
-import com.lgy.ess_monitoring.dto.DashboardChartDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,12 +22,10 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired
     private SqlSession sqlSession;
 
-    // DAO 가져오기
     private DashboardDAO getDao() {
         return sqlSession.getMapper(DashboardDAO.class);
     }
 
-    // 대시보드 요약 정보 조회
     @Override
     public DashboardSummaryDTO getDashboardSummary(
             int memberId,
@@ -37,10 +35,14 @@ public class DashboardServiceImpl implements DashboardService {
     ) {
         log.info("getDashboardSummary() memberId={}, selectedDate={}", memberId, selectedDate);
 
-        return getDao().getDashboardSummary(memberId, selectedDate, groupId, deviceId);
+        return getDao().getDashboardSummary(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
     }
 
-    // 대시보드 장비 상태 목록 조회
     @Override
     public List<EssDeviceDTO> getDashboardDeviceStatusList(
             int memberId,
@@ -50,10 +52,14 @@ public class DashboardServiceImpl implements DashboardService {
     ) {
         log.info("getDashboardDeviceStatusList() memberId={}, selectedDate={}", memberId, selectedDate);
 
-        return getDao().getDashboardDeviceStatusList(memberId, selectedDate, groupId, deviceId);
+        return getDao().getDashboardDeviceStatusList(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
     }
 
-    // 회원 기준 장비 그룹 목록 조회
     @Override
     public List<EssGroupDTO> getGroups(int memberId) {
         log.info("getGroups() memberId={}", memberId);
@@ -61,7 +67,6 @@ public class DashboardServiceImpl implements DashboardService {
         return getDao().getGroups(memberId);
     }
 
-    // 발전량 차트 조회
     @Override
     public DashboardChartResponseDTO getGenerationChart(
             int memberId,
@@ -79,7 +84,6 @@ public class DashboardServiceImpl implements DashboardService {
         DashboardChartResponseDTO response = new DashboardChartResponseDTO();
         response.setLimitCount(limit);
 
-        // 장비를 직접 선택한 경우: 선택 장비 1개 기준
         if (deviceId != null) {
             response.setChartType("DEVICE");
             response.setChartTitle("선택 장비 발전량");
@@ -92,7 +96,6 @@ public class DashboardServiceImpl implements DashboardService {
             return response;
         }
 
-        // 그룹을 선택한 경우: 해당 그룹 안의 장비별 발전량
         if (groupId != null) {
             response.setChartType("DEVICE");
             response.setChartTitle("선택 그룹 내 장비별 발전량");
@@ -105,7 +108,6 @@ public class DashboardServiceImpl implements DashboardService {
             return response;
         }
 
-        // 기업 사용자: 그룹별 발전량
         if ("COMPANY".equals(userType)) {
             response.setChartType("GROUP");
             response.setChartTitle("그룹별 선택일 발전량");
@@ -118,7 +120,6 @@ public class DashboardServiceImpl implements DashboardService {
             return response;
         }
 
-        // 개인 사용자: 장비별 발전량
         response.setChartType("DEVICE");
         response.setChartTitle("장비별 선택일 발전량");
         response.setTotalItemCount(
@@ -130,6 +131,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         return response;
     }
+
     @Override
     public List<DashboardChartDTO> getHourlyCompareChart(
             int memberId,
@@ -137,7 +139,12 @@ public class DashboardServiceImpl implements DashboardService {
             Integer groupId,
             Integer deviceId
     ) {
-        return getDao().getHourlyCompareChart(memberId, selectedDate, groupId, deviceId);
+        return getDao().getHourlyCompareChart(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
     }
 
     @Override
@@ -147,6 +154,60 @@ public class DashboardServiceImpl implements DashboardService {
             Integer groupId,
             Integer deviceId
     ) {
-        return getDao().getDeviceCompareChart(memberId, selectedDate, groupId, deviceId);
+        return getDao().getDeviceCompareChart(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
+    }
+
+    @Override
+    public List<DashboardChartDTO> getWeeklyGenerationChart(
+            int memberId,
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId
+    ) {
+        log.info("getWeeklyGenerationChart() memberId={}, selectedDate={}", memberId, selectedDate);
+
+        return getDao().getWeeklyGenerationChart(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
+    }
+
+    @Override
+    public List<DashboardChartDTO> getMonthlyGenerationChart(
+            int memberId,
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId
+    ) {
+        log.info("getMonthlyGenerationChart() memberId={}, selectedDate={}", memberId, selectedDate);
+
+        return getDao().getMonthlyGenerationChart(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
+    }
+
+    @Override
+    public List<DashboardChartDTO> getTopDeviceGenerationChart(
+            int memberId,
+            String selectedDate,
+            Integer groupId
+    ) {
+        log.info("getTopDeviceGenerationChart() memberId={}, selectedDate={}", memberId, selectedDate);
+
+        return getDao().getTopDeviceGenerationChart(
+                memberId,
+                selectedDate,
+                groupId
+        );
     }
 }

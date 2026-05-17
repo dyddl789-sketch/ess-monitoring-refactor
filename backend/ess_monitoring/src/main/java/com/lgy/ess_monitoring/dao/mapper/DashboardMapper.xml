@@ -5,75 +5,69 @@
 <mapper namespace="com.lgy.ess_monitoring.dao.DashboardDAO">
 
     <!-- 대시보드 요약 조회 -->
-    <select id="getDashboardSummary"
-            resultType="com.lgy.ess_monitoring.dto.DashboardSummaryDTO">
-
-        SELECT
-            COUNT(DISTINCT d.device_id) AS totalDeviceCount,
-
-            COUNT(DISTINCT CASE
-                WHEN m.monitor_id IS NOT NULL
-                THEN d.device_id
-            END) AS collectedDeviceCount,
-
-            COUNT(DISTINCT CASE
-                WHEN m.monitor_id IS NULL
-                THEN d.device_id
-            END) AS uncollectedDeviceCount,
-
-            COUNT(DISTINCT CASE
-                WHEN m.monitor_id IS NOT NULL
-                 AND m.soc = 0
-                THEN d.device_id
-            END) AS offlineDeviceCount,
-
-            IFNULL(
-                SUM(
-                    CASE
-                        WHEN m.solar_generation_kwh BETWEEN 0 AND d.capacity_kw * 24
-                        THEN m.solar_generation_kwh
-                    END
-                ), 0
-            ) AS todayGenerationKwh,
-
-            IFNULL(
-                AVG(
-                    CASE
-                        WHEN m.soc BETWEEN 0 AND 100
-                        THEN m.soc
-                    END
-                ), 0
-            ) AS averageSoc,
-
-            IFNULL(
-                SUM(
-                    CASE
-                        WHEN m.saved_cost >= 0
-                         AND m.solar_generation_kwh BETWEEN 0 AND d.capacity_kw * 24
-                         AND m.saved_cost &lt;= m.solar_generation_kwh * d.electricity_rate
-                        THEN m.saved_cost
-                    END
-                ), 0
-            ) AS todaySavedCost
-
-        FROM ess_device d
-        LEFT JOIN monitoring m
-          ON d.device_id = m.device_id
-         AND m.record_time &gt;= STR_TO_DATE(#{selectedDate}, '%Y-%m-%d')
-         AND m.record_time &lt; DATE_ADD(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'), INTERVAL 1 DAY)
-         AND MINUTE(m.record_time) = 0
-
-        WHERE d.member_id = #{memberId}
-
-        <if test="groupId != null">
-            AND d.group_id = #{groupId}
-        </if>
-
-        <if test="deviceId != null">
-            AND d.device_id = #{deviceId}
-        </if>
-
-    </select>
+		<select id="getDashboardSummary"
+		        resultType="com.lgy.ess_monitoring.dto.DashboardSummaryDTO">
+		
+		    SELECT
+		        COUNT(DISTINCT d.device_id) AS totalDeviceCount,
+		
+		        COUNT(DISTINCT CASE
+		            WHEN d.status != 'OFFLINE'
+		            THEN d.device_id
+		        END) AS activeDeviceCount,
+		
+		        COUNT(DISTINCT CASE
+		            WHEN d.status = 'OFFLINE'
+		            THEN d.device_id
+		        END) AS offlineDeviceCount,
+		
+		        COUNT(DISTINCT CASE
+		            WHEN el.log_id IS NOT NULL
+		            THEN d.device_id
+		        END) AS collectedDeviceCount,
+		
+		        IFNULL(SUM(
+		            CASE
+		                WHEN el.log_date = STR_TO_DATE(#{selectedDate}, '%Y-%m-%d')
+		                THEN el.daily_kwh
+		                ELSE 0
+		            END
+		        ), 0) AS todayGenerationKwh,
+		
+		        IFNULL(SUM(el.daily_kwh), 0) AS monthlyGenerationKwh,
+		
+		        IFNULL(AVG(el.efficiency), 0) AS averageEfficiency,
+		
+		        IFNULL(AVG(el.efficiency), 0) AS averageSoc,
+		
+		        IFNULL(SUM(
+		            CASE
+		                WHEN el.log_date = STR_TO_DATE(#{selectedDate}, '%Y-%m-%d')
+		                THEN el.cost
+		                ELSE 0
+		            END
+		        ), 0) AS todaySavedCost,
+		
+		        IFNULL(SUM(el.cost), 0) AS monthlySavedCost
+		
+		    FROM ess_device d
+		
+		    LEFT JOIN energy_log el
+		      ON d.device_id = el.device_id
+		     AND DATE_FORMAT(el.log_date, '%Y-%m') =
+		         DATE_FORMAT(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'), '%Y-%m')
+		
+		    WHERE d.member_id = #{memberId}
+		
+		    <if test="groupId != null">
+		        AND d.group_id = #{groupId}
+		    </if>
+		
+		    <if test="deviceId != null">
+		        AND d.device_id = #{deviceId}
+		    </if>
+		
+		</select>
 
 
     <!-- 대시보드 장비 배터리 상태 조회 -->
@@ -390,5 +384,108 @@
         GROUP BY t.label
         ORDER BY selectedGeneration DESC
     </select>
-
+	
+	<!-- 최근 7일 발전량 차트 -->
+	<select id="getWeeklyGenerationChart"
+	        resultType="com.lgy.ess_monitoring.dto.DashboardChartDTO">
+	
+	    SELECT
+	        DATE_FORMAT(el.log_date, '%m-%d') AS label,
+	        IFNULL(SUM(el.daily_kwh), 0) AS dailyKwh,
+	        IFNULL(SUM(el.cost), 0) AS savedCost,
+	        IFNULL(AVG(el.efficiency), 0) AS efficiency,
+	        IFNULL(SUM(el.daily_kwh), 0) AS value
+	
+	    FROM energy_log el
+	    JOIN ess_device d
+	      ON el.device_id = d.device_id
+	
+	    WHERE d.member_id = #{memberId}
+	      AND el.log_date BETWEEN DATE_SUB(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'), INTERVAL 6 DAY)
+	                          AND STR_TO_DATE(#{selectedDate}, '%Y-%m-%d')
+	
+	    <if test="groupId != null">
+	        AND d.group_id = #{groupId}
+	    </if>
+	
+	    <if test="deviceId != null">
+	        AND d.device_id = #{deviceId}
+	    </if>
+	
+	    GROUP BY el.log_date
+	    ORDER BY el.log_date ASC
+	
+	</select>
+	
+	
+	<!-- 최근 6개월 월별 발전량 차트 -->
+	<select id="getMonthlyGenerationChart"
+	        resultType="com.lgy.ess_monitoring.dto.DashboardChartDTO">
+	
+	    SELECT
+	        DATE_FORMAT(el.log_date, '%Y-%m') AS label,
+	        IFNULL(SUM(el.daily_kwh), 0) AS monthlyKwh,
+	        IFNULL(SUM(el.cost), 0) AS savedCost,
+	        IFNULL(AVG(el.efficiency), 0) AS efficiency,
+	        IFNULL(SUM(el.daily_kwh), 0) AS value
+	
+	    FROM energy_log el
+	    JOIN ess_device d
+	      ON el.device_id = d.device_id
+	
+	    WHERE d.member_id = #{memberId}
+	      AND el.log_date >= DATE_FORMAT(
+	            DATE_SUB(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'), INTERVAL 5 MONTH),
+	            '%Y-%m-01'
+	      )
+	      AND el.log_date <![CDATA[ <= ]]> LAST_DAY(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'))
+	
+	    <if test="groupId != null">
+	        AND d.group_id = #{groupId}
+	    </if>
+	
+	    <if test="deviceId != null">
+	        AND d.device_id = #{deviceId}
+	    </if>
+	
+	    GROUP BY DATE_FORMAT(el.log_date, '%Y-%m')
+	    ORDER BY label ASC
+	
+	</select>
+	
+	
+	<!-- 장비별 월간 발전량 TOP5 -->
+	<select id="getTopDeviceGenerationChart"
+	        resultType="com.lgy.ess_monitoring.dto.DashboardChartDTO">
+	
+	    SELECT
+	        d.device_name AS label,
+	        d.device_name AS deviceName,
+	        IFNULL(g.group_name, '미지정 그룹') AS groupName,
+	        IFNULL(SUM(el.daily_kwh), 0) AS monthlyKwh,
+	        IFNULL(SUM(el.cost), 0) AS savedCost,
+	        IFNULL(AVG(el.efficiency), 0) AS efficiency,
+	        IFNULL(SUM(el.daily_kwh), 0) AS value
+	
+	    FROM ess_device d
+	
+	    LEFT JOIN ess_device_group g
+	      ON d.group_id = g.group_id
+	
+	    LEFT JOIN energy_log el
+	      ON d.device_id = el.device_id
+	     AND DATE_FORMAT(el.log_date, '%Y-%m') =
+	         DATE_FORMAT(STR_TO_DATE(#{selectedDate}, '%Y-%m-%d'), '%Y-%m')
+	
+	    WHERE d.member_id = #{memberId}
+	
+	    <if test="groupId != null">
+	        AND d.group_id = #{groupId}
+	    </if>
+	
+	    GROUP BY d.device_id, d.device_name, g.group_name
+	    ORDER BY monthlyKwh DESC
+	    LIMIT 5
+	
+	</select>
 </mapper>

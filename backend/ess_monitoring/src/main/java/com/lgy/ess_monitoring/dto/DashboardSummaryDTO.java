@@ -4,29 +4,41 @@ import lombok.Data;
 
 /**
  * 대시보드 요약 정보 DTO
- * - 선택 날짜 기준 통계
  */
 @Data
 public class DashboardSummaryDTO {
 
-    /** 전체 장비 수 */
+    // 전체 장비 수
     private int totalDeviceCount;
 
-    /** 선택일 데이터 수집 장비 수 */
-    private int collectedDeviceCount;
+    // 운영 장비 수
+    private int activeDeviceCount;
 
-    /** 선택일 미수집 장비 수 */
-    private int uncollectedDeviceCount;
-
-    /** 선택일 오프라인 장비 수 (SOC = 0) */
+    // 오프라인 장비 수
     private int offlineDeviceCount;
 
-    /** 선택일 예상 발전량 합계 (kWh) */
+    // 데이터 수집 장비 수
+    private int collectedDeviceCount;
+
+    // =========================
+    // energy_log 기준 통계
+    // =========================
+
+    // 선택일 발전량
     private Double todayGenerationKwh;
 
-    /** 선택일 평균 SOC (%) */
+    // 월간 발전량
+    private Double monthlyGenerationKwh;
+
+    // 평균 효율
+    private Double averageEfficiency;
+
+    // 평균 SOC (기존 호환)
     private Double averageSoc;
 
-    /** 선택일 예상 절감 금액 (원) */
+    // 절감 금액
     private Double todaySavedCost;
+
+    // 월간 절감 금액
+    private Double monthlySavedCost;
 }

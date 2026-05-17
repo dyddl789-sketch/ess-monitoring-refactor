@@ -326,4 +326,103 @@ public class DashboardController {
                 deviceId
         );
     }
+    
+    // 최근 7일 발전량 차트
+    @ResponseBody
+    @RequestMapping(
+        value = "/chart/weekly",
+        method = RequestMethod.GET,
+        produces = "application/json; charset=UTF-8"
+    )
+    public List<DashboardChartDTO> weeklyChart(
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId,
+            HttpSession session
+    ) {
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            selectedDate =
+                    LocalDate.now().toString();
+        }
+
+        return dashboardService.getWeeklyGenerationChart(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
+    }
+
+
+    // 최근 6개월 월별 발전량 차트
+    @ResponseBody
+    @RequestMapping(
+        value = "/chart/monthly",
+        method = RequestMethod.GET,
+        produces = "application/json; charset=UTF-8"
+    )
+    public List<DashboardChartDTO> monthlyChart(
+            String selectedDate,
+            Integer groupId,
+            Integer deviceId,
+            HttpSession session
+    ) {
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            selectedDate =
+                    LocalDate.now().toString();
+        }
+
+        return dashboardService.getMonthlyGenerationChart(
+                memberId,
+                selectedDate,
+                groupId,
+                deviceId
+        );
+    }
+
+
+    // 장비별 월간 발전량 TOP5 차트
+    @ResponseBody
+    @RequestMapping(
+        value = "/chart/device-top",
+        method = RequestMethod.GET,
+        produces = "application/json; charset=UTF-8"
+    )
+    public List<DashboardChartDTO> deviceTopChart(
+            String selectedDate,
+            Integer groupId,
+            HttpSession session
+    ) {
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            selectedDate =
+                    LocalDate.now().toString();
+        }
+
+        return dashboardService.getTopDeviceGenerationChart(
+                memberId,
+                selectedDate,
+                groupId
+        );
+    }
 }
