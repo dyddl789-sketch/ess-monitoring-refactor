@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.lgy.ess_monitoring.dto.DashboardChartDTO;
 import com.lgy.ess_monitoring.dto.DashboardSummaryDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
-import com.lgy.ess_monitoring.dto.EssDeviceGroupDTO;
+import com.lgy.ess_monitoring.dto.EssGroupDTO;
 
 public interface DashboardDAO {
 
@@ -34,7 +34,7 @@ public interface DashboardDAO {
     );
 
     // 회원 기준 장비 그룹 목록 조회
-    List<EssDeviceGroupDTO> getGroups(
+    List<EssGroupDTO> getGroups(
             @Param("memberId") int memberId
     );
 

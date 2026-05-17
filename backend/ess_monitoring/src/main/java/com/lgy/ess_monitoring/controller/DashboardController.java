@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.lgy.ess_monitoring.dto.DashboardChartResponseDTO;
 import com.lgy.ess_monitoring.dto.DashboardSummaryDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
-import com.lgy.ess_monitoring.dto.EssDeviceGroupDTO;
+import com.lgy.ess_monitoring.dto.EssGroupDTO;
 import com.lgy.ess_monitoring.dto.WeatherDTO;
 import com.lgy.ess_monitoring.service.DashboardService;
 import com.lgy.ess_monitoring.service.EssDeviceService;
@@ -130,7 +130,7 @@ public class DashboardController {
         // =============================
         // 1. 대시보드 기본 데이터 조회
         // =============================
-        List<EssDeviceGroupDTO> groupList = dashboardService.getGroups(memberId);
+        List<EssGroupDTO> groupList = dashboardService.getGroups(memberId);
 
         List<EssDeviceDTO> deviceList =
                 dashboardService.getDashboardDeviceStatusList(

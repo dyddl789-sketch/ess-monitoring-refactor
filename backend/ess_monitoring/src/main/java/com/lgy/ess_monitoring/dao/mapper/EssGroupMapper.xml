@@ -2,12 +2,12 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.lgy.ess_monitoring.dao.GroupDAO">
+<mapper namespace="com.lgy.ess_monitoring.dao.EssGroupDAO">
 
     <!-- 그룹 목록 + 장비 수 -->
     <select id="getGroupList"
             parameterType="int"
-            resultType="com.lgy.ess_monitoring.dto.EssDeviceGroupDTO">
+            resultType="com.lgy.ess_monitoring.dto.EssGroupDTO">
         SELECT
             g.group_id,
             g.member_id,
@@ -30,7 +30,7 @@
 
     <!-- 그룹 등록 -->
     <insert id="insertGroup"
-            parameterType="com.lgy.ess_monitoring.dto.EssDeviceGroupDTO">
+            parameterType="com.lgy.ess_monitoring.dto.EssGroupDTO">
         INSERT INTO ess_device_group (
             member_id,
             group_name,
@@ -44,7 +44,7 @@
 
     <!-- 그룹 수정 -->
     <update id="updateGroup"
-            parameterType="com.lgy.ess_monitoring.dto.EssDeviceGroupDTO">
+            parameterType="com.lgy.ess_monitoring.dto.EssGroupDTO">
         UPDATE ess_device_group
         SET
             group_name = #{groupName},

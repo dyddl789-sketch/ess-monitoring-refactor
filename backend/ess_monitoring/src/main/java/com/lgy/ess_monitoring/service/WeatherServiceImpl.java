@@ -210,38 +210,42 @@ public class WeatherServiceImpl implements WeatherService {
 	    return sunMap;
 	}
 	
-//	강수 형태가 있으면 비, 눈 아이콘, 강수가 없으면 하늘 상태를 기준으로 아이콘 결정
-	private String getWeatherIcon(String skyStatus, String rainType) {
-		 // 비 또는 소나기
-        if ("비".equals(rainType) || "소나기".equals(rainType)) {
-            return "🌧️";
-        }
+	// 강수 형태 우선
+	// 강수가 없으면 하늘 상태 + 야간 여부 기준 아이콘 결정
+	private String getWeatherIcon(
+	        String skyStatus,
+	        String rainType,
+	        boolean isNight) {
 
-        // 눈
-        if ("눈".equals(rainType)) {
-            return "❄️";
-        }
+	    // 비 또는 소나기
+	    if ("비".equals(rainType)
+	            || "소나기".equals(rainType)) {
+	        return "rain";
+	    }
 
-        // 비/눈
-        if ("비/눈".equals(rainType)) {
-            return "🌨️";
-        }
+	    // 눈
+	    if ("눈".equals(rainType)) {
+	        return "snow";
+	    }
 
-        // 하늘 상태 기준
-        if ("맑음".equals(skyStatus)) {
-            return "☀️";
-        }
+	    // 비/눈
+	    if ("비/눈".equals(rainType)) {
+	        return "snow";
+	    }
 
-        if ("구름많음".equals(skyStatus)) {
-            return "⛅";
-        }
+	    // 야간 + 맑음
+	    if (isNight && "맑음".equals(skyStatus)) {
+	        return "night";
+	    }
 
-        if ("흐림".equals(skyStatus)) {
-            return "☁️";
-        }
+	    // 흐림 / 구름많음
+	    if ("흐림".equals(skyStatus)
+	            || "구름많음".equals(skyStatus)) {
+	        return "cloudy";
+	    }
 
-        // 값이 없거나 예상 밖이면 기본 아이콘
-        return "🌡️";
+	    // 기본 맑음
+	    return "clear";
 	}
 	
 //	(47051) 부산 사상구 대동로64번길 25 103동 1402호(문자열 안에 "부산"이 포함되어 있으면 부산을 대표도시로 설정
@@ -392,10 +396,16 @@ public class WeatherServiceImpl implements WeatherService {
 	            dto.setRainy(dto.getRainType() != null && !"없음".equals(dto.getRainType()));
 	            dto.setCloudy("흐림".equals(dto.getSkyStatus()) || "구름많음".equals(dto.getSkyStatus()));
 	            
-	            //야간 여부
+	            //야간 여부 계산
 	            dto.setNight(isNightBySun(dto.getFcstTime(), sunrise, sunset));
-	            
-	            dto.setWeatherIcon(getWeatherIcon(dto.getSkyStatus(), dto.getRainType()));
+	            //날씨 상태 기반 아이콘 설정
+	            dto.setWeatherIcon(
+	                    getWeatherIcon(
+	                            dto.getSkyStatus(),
+	                            dto.getRainType(),
+	                            dto.isNight()));
+	            //메인 화면 배경용 테마 설정
+	            dto.setWeatherTheme(getWeatherTheme(dto));
 	            weatherList.add(dto);
 	            
 	            
@@ -480,6 +490,33 @@ public class WeatherServiceImpl implements WeatherService {
 	    }
 
 	    return weatherList;
+	}
+	
+	private String getWeatherTheme(WeatherDTO dto) {
+	    if (dto == null) {
+	        return "clear";
+	    }
+
+	    String rainType = dto.getRainType();
+	    String skyStatus = dto.getSkyStatus();
+
+	    if ("눈".equals(rainType) || "비/눈".equals(rainType)) {
+	        return "snow";
+	    }
+
+	    if ("비".equals(rainType) || "소나기".equals(rainType)) {
+	        return "rain";
+	    }
+
+	    if (dto.isNight()) {
+	        return "night";
+	    }
+
+	    if ("흐림".equals(skyStatus) || "구름많음".equals(skyStatus)) {
+	        return "cloudy";
+	    }
+
+	    return "clear";
 	}
 }
 

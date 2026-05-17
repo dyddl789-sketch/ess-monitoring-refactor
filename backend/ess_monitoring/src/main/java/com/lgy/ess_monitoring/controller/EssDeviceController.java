@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.lgy.ess_monitoring.dto.CsvUploadResultDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.service.EssDeviceService;
+import com.lgy.ess_monitoring.service.EssGroupService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +30,10 @@ public class EssDeviceController {
 
     @Autowired
     private EssDeviceService deviceService;
-
+    
+    @Autowired
+    private EssGroupService essGroupService;
+    
     // 장비 상태 화면
     @RequestMapping(value = "/status", method = RequestMethod.GET)
     public String deviceStatus(HttpSession session) {
@@ -45,7 +50,7 @@ public class EssDeviceController {
 
     // 장비 등록 페이지
     @RequestMapping(value = "/registerForm", method = RequestMethod.GET)
-    public String registerForm(HttpSession session) {
+    public String registerForm(HttpSession session, Model model) {
         log.info("@# registerForm()");
 
         Integer memberId = (Integer) session.getAttribute("memberId");
@@ -53,6 +58,7 @@ public class EssDeviceController {
         if (memberId == null) {
             return "redirect:/login_view";
         }
+        model.addAttribute("groupList", essGroupService.getGroupList(memberId));
 
         return "device/registerForm";
     }
@@ -218,16 +224,16 @@ public class EssDeviceController {
                 "attachment; filename=\"device_template.csv\""
         );
 
-        // UTF-8 BOM (엑셀 한글 깨짐 방지)
+     // UTF-8 BOM (엑셀 한글 깨짐 방지)
         String csv =
                 "\uFEFF" +
-                "groupName,deviceName,location,capacityKw,deviceType,status,latitude,longitude,essCapacityKwh,currentChargeKwh,chargeEfficiency,dischargeEfficiency,electricityRate\r\n" +
+                "groupName,deviceName,location,capacityKw,deviceType,latitude,longitude,essCapacityKwh,currentChargeKwh,electricityRate\r\n" +
 
-                "부산공장,CSV_부산공장_1호기,부산 동구,50,HYBRID,NORMAL,35.129,129.045,100,50,95,90,150\r\n" +
+                "부산공장,CSV_부산공장_1호기,부산 동구,50,HYBRID,35.129,129.045,100,50,150\r\n" +
 
-                "부산공장,CSV_부산공장_2호기,부산 사하구,80,HYBRID,NORMAL,35.104,128.974,160,80,95,90,150\r\n" +
+                "부산공장,CSV_부산공장_2호기,부산 사하구,80,HYBRID,35.104,128.974,160,80,150\r\n" +
 
-                ",CSV_그룹없음_1호기,부산 해운대구,30,HYBRID,NORMAL,35.163,129.163,60,20,95,90,150\r\n";
+                ",CSV_그룹없음_1호기,부산 해운대구,30,HYBRID,35.163,129.163,60,20,150\r\n";
 
         byte[] bytes = csv.getBytes("UTF-8");
 

@@ -6,31 +6,31 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lgy.ess_monitoring.dao.GroupDAO;
-import com.lgy.ess_monitoring.dto.EssDeviceGroupDTO;
+import com.lgy.ess_monitoring.dao.EssGroupDAO;
+import com.lgy.ess_monitoring.dto.EssGroupDTO;
 
 @Service
-public class GroupServiceImpl implements GroupService {
+public class EssGroupServiceImpl implements EssGroupService {
 
     @Autowired
     private SqlSession sqlSession;
 
-    private GroupDAO getDao() {
-        return sqlSession.getMapper(GroupDAO.class);
+    private EssGroupDAO getDao() {
+        return sqlSession.getMapper(EssGroupDAO.class);
     }
 
     @Override
-    public List<EssDeviceGroupDTO> getGroupList(int memberId) {
+    public List<EssGroupDTO> getGroupList(int memberId) {
         return getDao().getGroupList(memberId);
     }
 
     @Override
-    public int insertGroup(EssDeviceGroupDTO group) {
+    public int insertGroup(EssGroupDTO group) {
         return getDao().insertGroup(group);
     }
 
     @Override
-    public int updateGroup(EssDeviceGroupDTO group) {
+    public int updateGroup(EssGroupDTO group) {
         return getDao().updateGroup(group);
     }
 

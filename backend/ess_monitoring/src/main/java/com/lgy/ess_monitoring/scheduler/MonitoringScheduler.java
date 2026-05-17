@@ -23,7 +23,7 @@ public class MonitoringScheduler {
     private SimulationService simulationService;
 
     // 테스트용: 1분마다 실행
-    @Scheduled(fixedRate = 60000)
+//    @Scheduled(fixedRate = 60000)
     public void runMonitoringSimulation() {
         log.info("@# [Scheduler] 모니터링 시뮬레이션 시작");
 

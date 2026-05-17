@@ -9,7 +9,7 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/main.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/header.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/device_register.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/registerForm.css">
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4c85272f51538d1512f6a5f19d0c8e2a&libraries=services"></script>
@@ -25,91 +25,110 @@
 <%@ include file="/WEB-INF/views/header.jsp" %>
 
 <section class="hero">
-    <div class="hero-content">
-        <div class="hero-badge">Solar ESS Monitoring Platform</div>
+    <div class="hero-inner">
 
-        <h2>
-            실시간 ESS 모니터링을<br>
-            더 직관적이고 안정적으로
-        </h2>
+        <div class="hero-content">
+            <div class="hero-badge">Solar ESS Monitoring Platform</div>
 
-        <p>
-            태양광 ESS 장비의 상태, 전압, 전류, SOC, 알림 이력을<br>
-            한눈에 확인하고 빠르게 관리할 수 있는 통합 대시보드입니다.
-        </p>
+            <h2>
+                실시간 ESS 모니터링을<br>
+                더 직관적이고 안정적으로
+            </h2>
 
-        <div class="hero-buttons">
-            <button type="button" class="hero-btn"
-                onclick="checkLogin(function(){ moveView('register', loadRegister); })">
-                ESS 기기 등록
-            </button>
+            <p>
+                태양광 ESS 장비의 상태, 전압, 전류, SOC, 알림 이력을<br>
+                한눈에 확인하고 빠르게 관리할 수 있는 통합 대시보드입니다.
+            </p>
 
-            <button type="button" class="hero-btn secondary"
-                onclick="checkLogin(function(){ location.href='${pageContext.request.contextPath}/dashboard/main'; })">
-                통합 대시보드 이동
-            </button>
-        </div>
-    </div>
-</section>
+            <div class="hero-buttons">
+                <button type="button" class="hero-btn"
+                    onclick="checkLogin(function(){ moveView('register', loadRegister); })">
+                    ESS 기기 등록
+                </button>
 
-<!-- ============================= -->
-<!-- 날씨 예보 영역 시작 -->
-<!-- ============================= -->
-<section class="weather-section">
-    <div class="weather-header">
-        <div>
-            <h3>대표 지역 날씨 예보</h3>
-            <p>${weatherBaseText}</p>
-        </div>
-
-        <c:if test="${not empty weatherList}">
-            <span>${weatherList[0].city}</span>
-        </c:if>
-    </div>
-
-    <c:choose>
-        <c:when test="${empty weatherList}">
-            <div class="weather-empty">
-                날씨 정보를 불러오지 못했습니다.
+                <button type="button" class="hero-btn secondary"
+                    onclick="checkLogin(function(){ location.href='${pageContext.request.contextPath}/dashboard/main'; })">
+                    통합 대시보드 이동
+                </button>
             </div>
-        </c:when>
+        </div>
 
-        <c:otherwise>
-            <div class="weather-list">
-                <c:forEach var="weather" items="${weatherList}" varStatus="status">
-                    <c:if test="${status.index lt 5}">
-                        <div class="weather-card">
+        <c:choose>
+            <c:when test="${empty weatherList}">
+                <div class="hero-weather-card clear">
+                    <div class="hero-weather-empty">
+                        날씨 정보를 불러오지 못했습니다.
+                    </div>
+                </div>
+            </c:when>
 
-                            <div class="weather-time">
-                                ${weather.fcstTime}
+            <c:otherwise>
+                <c:set var="currentWeather" value="${weatherList[0]}" />
+
+                <div class="hero-weather-card ${currentWeather.weatherTheme}">
+                    <div class="hero-weather-overlay">
+
+                        <div class="hero-weather-top">
+                            <div>
+                                <h3>${currentWeather.city}</h3>
                             </div>
 
-                            <div class="weather-icon">
-                                ${weather.weatherIcon}
-                            </div>
-
-                            <div class="weather-status">
-                                ${weather.skyStatus}
-                            </div>
-
-                            <div class="weather-temp">
-                                ${weather.temperature}
-                            </div>
-
-                            <div class="weather-rain">
-                                강수확률 ${weather.rainProb}
-                            </div>
-
+                            <span class="hero-weather-badge">
+                                대표 ESS 위치 기준
+                            </span>
+                                <c:if test="${not empty mainDevice}">
+							        <div class="hero-main-device">
+							            대표 장비 :
+							            <strong>${mainDevice.deviceName}</strong>
+							        </div>
+							    </c:if>
                         </div>
-                    </c:if>
-                </c:forEach>
-            </div>
-        </c:otherwise>
-    </c:choose>
+
+                        <div class="hero-weather-main">
+							<div class="hero-weather-icon">
+							    <img
+							        src="${pageContext.request.contextPath}/resources/img/weather-icon/${currentWeather.weatherIcon}.svg"
+							        alt="weather icon">
+							</div>
+
+                            <div>
+                                <strong>${currentWeather.temperature}</strong>
+                                <p>${currentWeather.skyStatus}</p>
+                            </div>
+                        </div>
+
+                        <div class="hero-weather-info">
+                            <span>강수확률 ${currentWeather.rainProb}</span>
+                            <span>일출 ${currentWeather.sunrise}</span>
+                            <span>일몰 ${currentWeather.sunset}</span>
+                        </div>
+
+						<div class="hero-weather-forecast">
+						    <c:forEach var="weather" items="${weatherList}" varStatus="status">
+						        <c:if test="${status.index lt 5}">
+						            <div class="hero-forecast-item">
+						                <span>${weather.fcstTime}</span>
+						
+						                <div class="hero-forecast-icon">
+						                    <img
+						                        src="${pageContext.request.contextPath}/resources/img/weather-icon/${weather.weatherIcon}.svg"
+						                        alt="weather icon">
+						                </div>
+						
+						                <p>${weather.skyStatus}</p>
+						                <strong>${weather.temperature}</strong>
+						            </div>
+						        </c:if>
+						    </c:forEach>
+						</div>
+
+                    </div>
+                </div>
+            </c:otherwise>
+        </c:choose>
+
+    </div>
 </section>
-<!-- ============================= -->
-<!-- 날씨 예보 영역 끝 -->
-<!-- ============================= -->
 
 <div class="main-content-wrap">
     <div id="contentArea">
@@ -243,7 +262,7 @@
 </script>
 
 <script src="${pageContext.request.contextPath}/resources/js/main.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/device_register.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/registerForm.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/group_manage.js"></script>
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>

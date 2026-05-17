@@ -10,7 +10,7 @@ import com.lgy.ess_monitoring.dao.DashboardDAO;
 import com.lgy.ess_monitoring.dto.DashboardChartResponseDTO;
 import com.lgy.ess_monitoring.dto.DashboardSummaryDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
-import com.lgy.ess_monitoring.dto.EssDeviceGroupDTO;
+import com.lgy.ess_monitoring.dto.EssGroupDTO;
 import com.lgy.ess_monitoring.dto.DashboardChartDTO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     // 회원 기준 장비 그룹 목록 조회
     @Override
-    public List<EssDeviceGroupDTO> getGroups(int memberId) {
+    public List<EssGroupDTO> getGroups(int memberId) {
         log.info("getGroups() memberId={}", memberId);
 
         return getDao().getGroups(memberId);
