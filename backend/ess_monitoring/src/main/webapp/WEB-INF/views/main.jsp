@@ -10,6 +10,8 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/main.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/header.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/registerForm.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4c85272f51538d1512f6a5f19d0c8e2a&libraries=services"></script>
@@ -148,23 +150,27 @@
 
             <div class="main-guide-grid">
 
-                <div class="main-guide-card"
-                     onclick="checkLogin(function(){ moveView('register', loadRegister); })">
-
-                    <div class="main-guide-icon">＋</div>
-
-                    <h4>ESS 등록</h4>
-
-                    <p>
-                        설치 위치와 장비 정보를 입력해 새로운 ESS를 등록합니다.
-                    </p>
-                </div>
-                
+			<div class="main-guide-card"
+			     onclick="checkLogin(function(){ moveView('register', loadRegister); })">
+			
+			    <div class="main-guide-icon">
+			        <i class="fa-solid fa-bolt"></i>
+			    </div>
+			
+			    <h4>ESS 등록</h4>
+			
+			    <p>
+			        설치 위치와 장비 정보를 입력해 새로운 ESS를 등록합니다.
+			    </p>
+			</div>
+			
 			<c:if test="${sessionScope.userType eq 'COMPANY'}">
 			    <div class="main-guide-card"
 			         onclick="checkLogin(function(){ moveView('groupList', loadGroupList); })">
 			
-			        <div class="main-guide-icon">◎</div>
+			        <div class="main-guide-icon">
+			            <i class="fa-solid fa-layer-group"></i>
+			        </div>
 			
 			        <h4>그룹 관리</h4>
 			
@@ -174,29 +180,33 @@
 			    </div>
 			</c:if>
 			
-                <div class="main-guide-card"
-                     onclick="checkLogin(function(){ moveView('deviceList', loadDeviceList); })">
-
-                    <div class="main-guide-icon">▣</div>
-
-                    <h4>ESS 관리</h4>
-
-                    <p>
-                        등록된 ESS 목록을 확인하고 상세 모니터링으로 이동합니다.
-                    </p>
-                </div>
-
-                <div class="main-guide-card"
-                     onclick="checkLogin(function(){ location.href='${pageContext.request.contextPath}/dashboard/main'; })">
-
-                    <div class="main-guide-icon">●</div>
-
-                    <h4>통합 대시보드</h4>
-
-                    <p>
-                        SOC, 전압, 전류, 발전량, 알림 현황을 한눈에 확인합니다.
-                    </p>
-                </div>
+			<div class="main-guide-card"
+			     onclick="checkLogin(function(){ moveView('deviceList', loadDeviceList); })">
+			
+			    <div class="main-guide-icon">
+			        <i class="fa-solid fa-car-battery"></i>
+			    </div>
+			
+			    <h4>ESS 관리</h4>
+			
+			    <p>
+			        등록된 ESS 목록을 확인하고 상세 모니터링으로 이동합니다.
+			    </p>
+			</div>
+			
+			<div class="main-guide-card"
+			     onclick="checkLogin(function(){ location.href='${pageContext.request.contextPath}/dashboard/main'; })">
+			
+			    <div class="main-guide-icon">
+			        <i class="fa-solid fa-chart-line"></i>
+			    </div>
+			
+			    <h4>통합 대시보드</h4>
+			
+			    <p>
+			        SOC, 전압, 전류, 발전량, 알림 현황을 한눈에 확인합니다.
+			    </p>
+			</div>
 
             </div>
         </section>

@@ -315,3 +315,6 @@ CREATE TABLE board_comment (
     FOREIGN KEY (member_id) REFERENCES ess_member(member_id)
     ON DELETE CASCADE
 ) COMMENT='문의게시판 관리자 댓글';
+
+ALTER TABLE ess_device
+MODIFY install_date DATE DEFAULT (CURRENT_DATE);

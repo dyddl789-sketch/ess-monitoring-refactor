@@ -38,7 +38,7 @@
             #{capacityKw},
             #{deviceType},
             #{status},
-            #{installDate},
+            COALESCE(#{installDate}, CURRENT_DATE),
             #{latitude},
             #{longitude},
             #{nx},
