@@ -9,7 +9,7 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/main.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/header.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/device_register.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/registerForm.css">
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4c85272f51538d1512f6a5f19d0c8e2a&libraries=services"></script>
@@ -262,7 +262,7 @@
 </script>
 
 <script src="${pageContext.request.contextPath}/resources/js/main.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/device_register.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/registerForm.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/group_manage.js"></script>
 
 <%@ include file="/WEB-INF/views/footer.jsp" %>

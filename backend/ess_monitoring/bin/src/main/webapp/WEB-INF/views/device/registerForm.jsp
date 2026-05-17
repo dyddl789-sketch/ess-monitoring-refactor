@@ -80,16 +80,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label>현재 상태</label>
-                        <select name="status" id="status" class="form-input">
-                            <option value="NORMAL">정상</option>
-                            <option value="WARNING">경고</option>
-                            <option value="ERROR">오류</option>
-                            <option value="OFFLINE">오프라인</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
                         <label>설치 날짜</label>
                         <input type="date" name="installDate" id="installDate"
                                class="form-input">
@@ -146,14 +136,14 @@
                         <label>태양광 설비 용량(kW) <span>*</span></label>
                         <input type="number" step="0.01" name="capacityKw" id="capacityKw"
                                class="form-input"
-                               placeholder="예: 10.5">
+                               placeholder="예: 50">
                     </div>
 
                     <div class="form-group">
                         <label>ESS 저장 용량(kWh) <span>*</span></label>
                         <input type="number" step="0.01" name="essCapacityKwh" id="essCapacityKwh"
                                class="form-input"
-                               placeholder="예: 50">
+                               placeholder="예: 100">
                     </div>
 
                     <div class="form-group">
@@ -168,20 +158,6 @@
                         <input type="number" step="0.01" name="electricityRate" id="electricityRate"
                                class="form-input"
                                value="150.00">
-                    </div>
-
-                    <div class="form-group">
-                        <label>충전 효율(%)</label>
-                        <input type="number" step="0.01" name="chargeEfficiency" id="chargeEfficiency"
-                               class="form-input"
-                               value="90.00">
-                    </div>
-
-                    <div class="form-group">
-                        <label>방전 효율(%)</label>
-                        <input type="number" step="0.01" name="dischargeEfficiency" id="dischargeEfficiency"
-                               class="form-input"
-                               value="90.00">
                     </div>
 
                 </div>
@@ -235,14 +211,25 @@
                     CSV 양식 다운로드
                 </button>
 
-                <label class="csv-file-label">
-                    <input type="file"
-                           id="csvFile"
-                           name="csvFile"
-                           accept=".csv,.txt">
-
-                    <span id="csvFileName">선택된 파일 없음</span>
-                </label>
+			<div class="csv-file-label">
+			
+			    <input type="file"
+			           id="csvFile"
+			           name="csvFile"
+			           accept=".csv,.txt"
+			           hidden>
+			
+			    <button type="button"
+			            id="csvSelectBtn"
+			            class="btn-csv-select">
+			        파일 선택
+			    </button>
+			
+			    <span id="csvFileName">
+			        선택된 파일 없음
+			    </span>
+			
+			</div>
 
                 <button type="button"
                         class="btn-csv-upload"
@@ -253,7 +240,9 @@
             </div>
 
             <p class="csv-help-text">
-                ※ 다운로드한 CSV 양식 파일의 첫 줄은 수정하거나 삭제하지 말고 그대로 업로드해주세요.
+                ※ groupName은 미리 생성된 그룹명과 정확히 일치해야 합니다.<br>
+    			※ CSV 등록 전 그룹 관리에서 그룹을 먼저 생성해주세요.<br>
+    			※ 첫 번째 헤더 행은 수정하지 마세요.
             </p>
 
             <div id="csvResultBox" class="csv-result-box"></div>
@@ -307,15 +296,24 @@
          * CSV 파일 선택 시 파일명 표시
          */
         document.addEventListener("DOMContentLoaded", function () {
+
             const csvFile = document.getElementById("csvFile");
             const csvFileName = document.getElementById("csvFileName");
 
             if (csvFile && csvFileName) {
+
                 csvFile.addEventListener("change", function () {
-                    csvFileName.textContent =
-                        this.files.length > 0 ? this.files[0].name : "선택된 파일 없음";
+
+                    if (this.files.length > 0) {
+                        csvFileName.textContent = this.files[0].name;
+                    } else {
+                        csvFileName.textContent = "선택된 파일 없음";
+                    }
+
                 });
+
             }
+
         });
 
         /*
@@ -390,6 +388,15 @@
                 }
             });
         }
+        /*
+         * 파일 선택 버튼 클릭
+         */
+        document.getElementById("csvSelectBtn")
+            .addEventListener("click", function () {
+
+                document.getElementById("csvFile").click();
+
+            });
     </script>
 
 </section>

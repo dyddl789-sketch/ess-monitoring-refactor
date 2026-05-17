@@ -80,16 +80,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label>현재 상태</label>
-                        <select name="status" id="status" class="form-input">
-                            <option value="NORMAL">정상</option>
-                            <option value="WARNING">경고</option>
-                            <option value="ERROR">오류</option>
-                            <option value="OFFLINE">오프라인</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
                         <label>설치 날짜</label>
                         <input type="date" name="installDate" id="installDate"
                                class="form-input">
@@ -170,19 +160,6 @@
                                value="150.00">
                     </div>
 
-                    <div class="form-group">
-                        <label>충전 효율(%)</label>
-                        <input type="number" step="0.01" name="chargeEfficiency" id="chargeEfficiency"
-                               class="form-input"
-                               value="90.00">
-                    </div>
-
-                    <div class="form-group">
-                        <label>방전 효율(%)</label>
-                        <input type="number" step="0.01" name="dischargeEfficiency" id="dischargeEfficiency"
-                               class="form-input"
-                               value="90.00">
-                    </div>
 
                 </div>
             </div>
@@ -234,15 +211,15 @@
                         onclick="location.href='${pageContext.request.contextPath}/device/csv/template'">
                     CSV 양식 다운로드
                 </button>
-
-                <label class="csv-file-label">
-                    <input type="file"
-                           id="csvFile"
-                           name="csvFile"
-                           accept=".csv,.txt">
-
-                    <span id="csvFileName">선택된 파일 없음</span>
-                </label>
+			<label class="csv-file-label" for="csvFile">
+			    <input type="file"
+			           id="csvFile"
+			           name="csvFile"
+			           accept=".csv,.txt"
+			           hidden>
+			
+			    <span id="csvFileName">선택된 파일 없음</span>
+			</label>
 
                 <button type="button"
                         class="btn-csv-upload"
@@ -252,144 +229,16 @@
 
             </div>
 
-            <p class="csv-help-text">
-                ※ 다운로드한 CSV 양식 파일의 첫 줄은 수정하거나 삭제하지 말고 그대로 업로드해주세요.
-            </p>
+			<p class="csv-help-text">
+			    ※ groupName은 미리 생성된 그룹명과 정확히 일치해야 합니다.<br>
+			    ※ CSV 등록 전 그룹 관리에서 그룹을 먼저 생성해주세요.<br>
+			    ※ 첫 번째 헤더 행은 수정하지 마세요.
+			</p>
 
             <div id="csvResultBox" class="csv-result-box"></div>
 
         </div>
 
     </div>
-
-    <script>
-        /*
-         * 등록 방식 전환
-         *
-         * single:
-         * - 기기 직접 등록 폼 표시
-         *
-         * csv:
-         * - CSV 등록 영역 표시
-         */
-        function showRegisterMode(mode) {
-            const singleSection = document.getElementById("singleRegisterSection");
-            const csvSection = document.getElementById("csvRegisterSection");
-            const buttons = document.querySelectorAll(".mode-btn");
-
-            if (!singleSection || !csvSection) {
-                console.log("@# register section not found");
-                return;
-            }
-
-            buttons.forEach(function (btn) {
-                btn.classList.remove("active");
-            });
-
-            if (mode === "single") {
-                singleSection.style.display = "block";
-                csvSection.style.display = "none";
-
-                if (buttons.length > 0) {
-                    buttons[0].classList.add("active");
-                }
-            } else {
-                singleSection.style.display = "none";
-                csvSection.style.display = "block";
-
-                if (buttons.length > 1) {
-                    buttons[1].classList.add("active");
-                }
-            }
-        }
-
-        /*
-         * CSV 파일 선택 시 파일명 표시
-         */
-        document.addEventListener("DOMContentLoaded", function () {
-            const csvFile = document.getElementById("csvFile");
-            const csvFileName = document.getElementById("csvFileName");
-
-            if (csvFile && csvFileName) {
-                csvFile.addEventListener("change", function () {
-                    csvFileName.textContent =
-                        this.files.length > 0 ? this.files[0].name : "선택된 파일 없음";
-                });
-            }
-        });
-
-        /*
-         * CSV 등록 처리
-         *
-         * 요청 URL:
-         * POST /device/csv/upload
-         */
-        function uploadDeviceCsv() {
-            console.log("@# uploadDeviceCsv()");
-
-            var fileInput = $("#csvFile")[0];
-
-            if (fileInput.files.length === 0) {
-                alert("업로드할 CSV 파일을 선택하세요.");
-                return;
-            }
-
-            var formData = new FormData();
-            formData.append("csvFile", fileInput.files[0]);
-
-            $.ajax({
-                type: "post",
-                url: "${pageContext.request.contextPath}/device/csv/upload",
-                data: formData,
-                processData: false,
-                contentType: false,
-
-                success: function(result) {
-                    console.log("@# csv upload result =>", result);
-
-                    var html = "";
-                    html += "<div class='csv-result'>";
-
-                    if (result.failCount === 0) {
-                        html += "<p>CSV 등록 완료: "
-                             + result.successCount
-                             + "개 장비가 등록되었습니다.</p>";
-                    } else {
-                        html += "<p>CSV 등록 완료</p>";
-                        html += "<p>성공: "
-                             + result.successCount
-                             + "건 / 실패: "
-                             + result.failCount
-                             + "건</p>";
-                    }
-
-                    if (result.errorList && result.errorList.length > 0) {
-                        html += "<ul>";
-
-                        for (var i = 0; i < result.errorList.length; i++) {
-                            html += "<li>" + result.errorList[i] + "</li>";
-                        }
-
-                        html += "</ul>";
-                    }
-
-                    html += "</div>";
-
-                    $("#csvResultBox").html(html);
-
-                    if (result.successCount > 0) {
-                        alert("CSV 등록이 완료되었습니다.");
-                    }
-                },
-
-                error: function(xhr) {
-                    console.log("@# csv upload error");
-                    console.log(xhr.responseText);
-
-                    alert("CSV 파일 업로드 중 오류가 발생했습니다.");
-                }
-            });
-        }
-    </script>
 
 </section>
