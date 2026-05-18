@@ -3,70 +3,51 @@ package com.lgy.ess_monitoring.service;
 import java.util.List;
 
 import com.lgy.ess_monitoring.dto.DashboardChartDTO;
-import com.lgy.ess_monitoring.dto.DashboardChartResponseDTO;
 import com.lgy.ess_monitoring.dto.DashboardSummaryDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.dto.EssGroupDTO;
 
 public interface DashboardService {
 
+    // 요약 카드
     DashboardSummaryDTO getDashboardSummary(
             int memberId,
-            String selectedDate,
+            String selectedMonth,
             Integer groupId,
             Integer deviceId
     );
 
+    // 장비 목록
     List<EssDeviceDTO> getDashboardDeviceStatusList(
             int memberId,
-            String selectedDate,
             Integer groupId,
             Integer deviceId
     );
 
+    // 그룹 목록
     List<EssGroupDTO> getGroups(int memberId);
 
-    DashboardChartResponseDTO getGenerationChart(
-            int memberId,
-            String selectedDate,
-            Integer groupId,
-            Integer deviceId
-    );
-
-    List<DashboardChartDTO> getHourlyCompareChart(
-            int memberId,
-            String selectedDate,
-            Integer groupId,
-            Integer deviceId
-    );
-
-    List<DashboardChartDTO> getDeviceCompareChart(
-            int memberId,
-            String selectedDate,
-            Integer groupId,
-            Integer deviceId
-    );
-
-    // energy_log 기반 최근 7일 발전량
-    List<DashboardChartDTO> getWeeklyGenerationChart(
-            int memberId,
-            String selectedDate,
-            Integer groupId,
-            Integer deviceId
-    );
-
-    // energy_log 기반 최근 6개월 월별 발전량
+    // 월별 발전량
     List<DashboardChartDTO> getMonthlyGenerationChart(
             int memberId,
-            String selectedDate,
+            String selectedMonth,
             Integer groupId,
             Integer deviceId
     );
 
-    // energy_log 기반 장비별 발전량 TOP5
+    // 월별 절감 금액
+    List<DashboardChartDTO> getMonthlyCostChart(
+            int memberId,
+            String selectedMonth,
+            Integer groupId,
+            Integer deviceId
+    );
+
+    // 장비별 TOP5
     List<DashboardChartDTO> getTopDeviceGenerationChart(
             int memberId,
-            String selectedDate,
-            Integer groupId
+            String selectedMonth,
+            Integer groupId,
+            Integer deviceId
     );
 }

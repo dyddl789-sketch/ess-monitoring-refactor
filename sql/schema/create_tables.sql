@@ -153,28 +153,36 @@ CREATE TABLE monitoring (
 
 
 CREATE TABLE energy_log (
+
   log_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '에너지 로그 ID',
 
   device_id INT NOT NULL COMMENT '해당 장비',
 
-  daily_kwh DECIMAL(10,2) COMMENT '일일 발전/충전량(kWh)',
+  daily_kwh DECIMAL(10,2)
+    COMMENT '일일 발전/충전량(kWh)',
 
-  monthly_kwh DECIMAL(10,2) COMMENT '월간 발전/충전량(kWh)',
+  cost DECIMAL(12,2)
+    COMMENT '일일 절감 금액',
 
-  cost DECIMAL(12,2) COMMENT '절감 금액',
+  efficiency DECIMAL(5,2)
+    DEFAULT 80
+    COMMENT '일일 운영 효율(%)',
 
-  efficiency DECIMAL(5,2) DEFAULT 80 COMMENT '운영 효율(%)',
-
-  log_date DATE NOT NULL COMMENT '기록 날짜',
+  log_date DATE NOT NULL
+    COMMENT '기록 날짜',
 
   CONSTRAINT fk_energylog_device
-    FOREIGN KEY (device_id) REFERENCES ess_device(device_id)
+    FOREIGN KEY (device_id)
+    REFERENCES ess_device(device_id)
     ON DELETE CASCADE,
 
-  UNIQUE KEY uq_energy_log_device_date (device_id, log_date),
+  UNIQUE KEY uq_energy_log_device_date
+    (device_id, log_date),
 
-  INDEX idx_energylog_date (log_date)
-) COMMENT='일/월 단위 에너지 통계 로그';
+  INDEX idx_energylog_date
+    (log_date)
+
+) COMMENT='장비별 일일 에너지 통계 로그';
 
 
 CREATE TABLE ess_alert (
@@ -318,3 +326,12 @@ CREATE TABLE board_comment (
 
 ALTER TABLE ess_device
 MODIFY install_date DATE DEFAULT (CURRENT_DATE);
+
+ALTER TABLE ess_control_log
+ADD INDEX idx_control_device_time (device_id, created_at);
+
+ALTER TABLE ess_device
+ADD deleted_yn CHAR(1) DEFAULT 'N' COMMENT '논리삭제 여부';
+
+ALTER TABLE ess_device
+ADD deleted_at DATETIME NULL COMMENT '삭제 처리 시간';

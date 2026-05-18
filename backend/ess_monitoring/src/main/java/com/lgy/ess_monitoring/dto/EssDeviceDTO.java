@@ -39,4 +39,7 @@ public class EssDeviceDTO {
     private String groupName;
     private Double soc;
     private String recordTime;
+    
+    private String deletedYn;
+    private String deletedAt;
 }

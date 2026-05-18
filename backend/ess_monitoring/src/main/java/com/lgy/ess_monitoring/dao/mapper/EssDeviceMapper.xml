@@ -80,6 +80,7 @@
             electricity_rate as electricityRate
         from ess_device
         where member_id = #{_parameter}
+ 		 and deleted_yn = 'N'
         order by device_id desc
     </select>
 
@@ -91,17 +92,21 @@
             resultType="int">
         select count(*)
         from ess_device
-        where member_id = #{_parameter}
+		where member_id = #{_parameter}
+		  and deleted_yn = 'N'
     </select>
 
     <!-- ============================= -->
     <!-- 기기 삭제 -->
     <!-- ============================= -->
-    <delete id="deleteDevice">
-        delete from ess_device
-        where device_id = #{deviceId}
-          and member_id = #{memberId}
-    </delete>
+	<update id="deleteDevice">
+	    UPDATE ess_device
+		SET deleted_yn = 'Y',
+		    deleted_at = NOW(),
+		    is_main = 'N'
+	    WHERE device_id = #{deviceId}
+	      AND member_id = #{memberId}
+	</update>
 
     <!-- ============================= -->
     <!-- 기기 상세 -->
@@ -131,6 +136,7 @@
             electricity_rate as electricityRate
         from ess_device
         where device_id = #{_parameter}
+  			and deleted_yn = 'N'
     </select>
 
     <!-- ============================= -->
@@ -171,7 +177,8 @@
                 from monitoring m2
                 where m2.device_id = d.device_id
            )
-        where d.member_id = #{memberId}
+		where d.member_id = #{memberId}
+		  and d.deleted_yn = 'N'
 
         <if test="groupId != null">
             and d.group_id = #{groupId}
@@ -211,8 +218,9 @@
             discharge_efficiency as dischargeEfficiency,
             electricity_rate as electricityRate
         from ess_device
-        where member_id = #{_parameter}
-          and is_main = 'Y'
+		where member_id = #{_parameter}
+		  and is_main = 'Y'
+		  and deleted_yn = 'N'
         limit 1
     </select>
 

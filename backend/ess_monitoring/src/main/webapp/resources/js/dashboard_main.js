@@ -1,15 +1,27 @@
+/**
+ * 대시보드 메인 JS
+ * - selectedMonth 기준
+ * - 요약 카드 / 장비 셀렉트 / 알림 처리
+ */
+
 function getSummaryParams() {
 
     const params = {};
 
-    let selectedDate = $('#selectedDate').val();
+    let selectedMonth = $('#selectedMonth').val();
 
-    if (!selectedDate) {
-        selectedDate = new Date().toISOString().split('T')[0];
-        $('#selectedDate').val(selectedDate);
+    if (!selectedMonth) {
+        const today = new Date();
+
+        selectedMonth =
+            today.getFullYear() +
+            '-' +
+            String(today.getMonth() + 1).padStart(2, '0');
+
+        $('#selectedMonth').val(selectedMonth);
     }
 
-    params.selectedDate = selectedDate;
+    params.selectedMonth = selectedMonth;
 
     const groupId = $('#groupSelect').val();
     const deviceId = $('#deviceSelect').val();
@@ -25,6 +37,8 @@ function getSummaryParams() {
     return params;
 }
 
+
+// 요약 카드 조회
 function loadSummary() {
 
     $.ajax({
@@ -40,66 +54,79 @@ function loadSummary() {
                 return;
             }
 
-            const totalDeviceCount = Number(data.totalDeviceCount || 0);
-            const activeDeviceCount = Number(data.activeDeviceCount || data.collectedDeviceCount || 0);
+            const totalDeviceCount =
+                Number(data.totalDeviceCount || 0);
 
-            const todayGeneration = Number(data.todayGenerationKwh || 0);
-            const monthlyGeneration = Number(data.monthlyGenerationKwh || 0);
-            const monthlySavedCost = Number(data.monthlySavedCost || data.todaySavedCost || 0);
-            const averageEfficiency = Number(data.averageEfficiency || data.averageSoc || 0);
+            const operatingDeviceCount =
+                Number(data.operatingDeviceCount || 0);
 
-            $('#collectedDeviceCount')
-                .text(activeDeviceCount + ' / ' + totalDeviceCount + '대');
+            const monthlyGeneration =
+                Number(data.monthlyGenerationKwh || 0);
 
-            $('#collectionSubInfo')
-                .text('운영 장비 / 전체 등록 장비');
+            const monthlySavedCost =
+                Number(data.monthlySavedCost || 0);
 
-            $('#todayGenerationKwh')
-                .text(todayGeneration.toFixed(1) + ' kWh');
+            const averageEfficiency =
+                Number(data.averageEfficiency || 0);
+                
+            const deletedDeviceCount =
+   				 Number(data.deletedDeviceCount || 0);
+
+            $('#monthlyGenerationKwh')
+                .text(monthlyGeneration.toFixed(1) + ' kWh');
 
             $('#generationSubInfo')
-                .text('선택일 발전량');
+                .text('선택 월 발전량 합계');
 
-            $('#averageSoc')
-                .text(averageEfficiency.toFixed(1) + '%');
-
-            $('#socSubInfo')
-                .text('energy_log 평균 효율');
-
-            $('#todaySavedCost')
+            $('#monthlySavedCost')
                 .text(monthlySavedCost.toLocaleString() + '원');
 
             $('#savedCostSubInfo')
-                .text('선택월 절감 금액');
+                .text('선택 월 절감 금액 합계');
 
-            if ($('#monthlyGenerationKwh').length > 0) {
-                $('#monthlyGenerationKwh')
-                    .text(monthlyGeneration.toFixed(1) + ' kWh');
-            }
+            $('#averageEfficiency')
+                .text(averageEfficiency.toFixed(1) + '%');
+
+            $('#efficiencySubInfo')
+                .text('선택 월 평균 효율');
+
+            $('#operatingDeviceCount')
+                .text(operatingDeviceCount + ' / ' + totalDeviceCount + '대');
+
+			$('#deviceSubInfo')
+			    .text(
+			        '운영 종료 ' +
+			        deletedDeviceCount +
+			        '대 · 기록 포함'
+			    );
         },
 
         error: function() {
             setEmptySummary();
-            console.log('대시보드 요약 정보 조회 실패');
+            console.log('대시보드 요약 조회 실패');
         }
     });
 }
 
+
+// 요약 카드 초기화
 function setEmptySummary() {
 
-    $('#collectedDeviceCount').text('-');
-    $('#collectionSubInfo').text('장비 데이터 없음');
-
-    $('#todayGenerationKwh').text('-');
+    $('#monthlyGenerationKwh').text('-');
     $('#generationSubInfo').text('발전량 데이터 없음');
 
-    $('#averageSoc').text('-');
-    $('#socSubInfo').text('효율 데이터 없음');
-
-    $('#todaySavedCost').text('-');
+    $('#monthlySavedCost').text('-');
     $('#savedCostSubInfo').text('절감 금액 데이터 없음');
+
+    $('#averageEfficiency').text('-');
+    $('#efficiencySubInfo').text('효율 데이터 없음');
+
+    $('#operatingDeviceCount').text('-');
+    $('#deviceSubInfo').text('장비 데이터 없음');
 }
 
+
+// 그룹 변경 시 장비 목록 갱신
 function loadDeviceList(callback) {
 
     const params = getSummaryParams();
@@ -139,6 +166,8 @@ function loadDeviceList(callback) {
     });
 }
 
+
+// 대시보드 전체 갱신
 function reloadDashboard() {
 
     loadSummary();
@@ -149,6 +178,8 @@ function reloadDashboard() {
     }
 }
 
+
+// HTML 이스케이프
 function escapeHtml(value) {
 
     if (value == null) {
@@ -163,6 +194,8 @@ function escapeHtml(value) {
         .replace(/'/g, '&#039;');
 }
 
+
+// 알림 시간 표시
 function formatDashboardAlertTime(value) {
 
     if (!value) {
@@ -175,12 +208,23 @@ function formatDashboardAlertTime(value) {
         return value;
     }
 
-    const hour = String(date.getHours()).padStart(2, '0');
-    const minute = String(date.getMinutes()).padStart(2, '0');
+    const month =
+        String(date.getMonth() + 1).padStart(2, '0');
 
-    return hour + ':' + minute;
+    const day =
+        String(date.getDate()).padStart(2, '0');
+
+    const hour =
+        String(date.getHours()).padStart(2, '0');
+
+    const minute =
+        String(date.getMinutes()).padStart(2, '0');
+
+    return month + '-' + day + ' ' + hour + ':' + minute;
 }
 
+
+// 최근 알림 조회
 function loadDashboardAlerts() {
 
     $.ajax({
@@ -224,9 +268,11 @@ function loadDashboardAlerts() {
 
                 html +=
                     '<div class="dashboard-alert-item" data-alert-id="' + alert.alertId + '">' +
+
                         '<span class="dashboard-alert-badge ' + levelClass + '">' +
                             levelText +
                         '</span>' +
+
                         '<div class="dashboard-alert-content">' +
                             '<div class="dashboard-alert-message">' +
                                 escapeHtml(alert.deviceName) + ' ' + escapeHtml(alert.message) +
@@ -235,6 +281,7 @@ function loadDashboardAlerts() {
                                 formatDashboardAlertTime(alert.createdAt) +
                             '</div>' +
                         '</div>' +
+
                     '</div>';
             });
 
@@ -247,17 +294,25 @@ function loadDashboardAlerts() {
     });
 }
 
+
+// 초기 로딩
 $(document).ready(function() {
 
-    if ($('#selectedDate').length > 0 && !$('#selectedDate').val()) {
-        $('#selectedDate').val(
-            new Date().toISOString().split('T')[0]
-        );
+    if ($('#selectedMonth').length > 0 && !$('#selectedMonth').val()) {
+
+        const today = new Date();
+
+        const selectedMonth =
+            today.getFullYear() +
+            '-' +
+            String(today.getMonth() + 1).padStart(2, '0');
+
+        $('#selectedMonth').val(selectedMonth);
     }
 
     reloadDashboard();
 
-    $('#selectedDate').on('change', function() {
+    $('#selectedMonth').on('change', function() {
         reloadDashboard();
     });
 
@@ -267,6 +322,7 @@ $(document).ready(function() {
             $('#deviceSelect').val('');
             reloadDashboard();
         });
+
     });
 
     $('#deviceSelect').on('change', function() {
@@ -278,6 +334,8 @@ $(document).ready(function() {
     });
 });
 
+
+// 알림 클릭
 $(document).on('click', '.dashboard-alert-item', function() {
 
     const alertId = $(this).data('alert-id');

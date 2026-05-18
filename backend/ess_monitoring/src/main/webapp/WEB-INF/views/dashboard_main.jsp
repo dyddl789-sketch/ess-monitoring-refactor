@@ -26,6 +26,7 @@
 
   <!-- 필터 -->
   <div class="filter-box">
+
     <select id="groupSelect">
       <option value="">전체 그룹</option>
       <c:forEach var="group" items="${groupList}">
@@ -45,35 +46,35 @@
     </select>
 
     <input type="month" id="selectedMonth" value="${selectedMonth}">
-    <input type="date" id="selectedDate" value="${selectedDate}" style="display:none;">
     <button type="button" id="refreshBtn">조회</button>
+
   </div>
 
   <!-- 요약 카드 -->
   <section class="dashboard-summary-grid">
 
     <div class="summary-card">
-      <div class="summary-title">이번 달 발전량</div>
-      <div class="summary-value" id="todayGenerationKwh">-</div>
-      <div class="summary-sub" id="generationSubInfo">energy_log 기준 월간 합계</div>
+      <div class="summary-title">선택 월 발전량</div>
+      <div class="summary-value" id="monthlyGenerationKwh">-</div>
+      <div class="summary-sub" id="generationSubInfo">월간 발전량 합계</div>
     </div>
 
     <div class="summary-card">
-      <div class="summary-title">이번 달 절감 금액</div>
-      <div class="summary-value" id="todaySavedCost">-</div>
-      <div class="summary-sub" id="savedCostSubInfo">energy_log cost 기준</div>
+      <div class="summary-title">선택 월 절감 금액</div>
+      <div class="summary-value" id="monthlySavedCost">-</div>
+      <div class="summary-sub" id="savedCostSubInfo">월간 절감 금액 합계</div>
     </div>
 
     <div class="summary-card">
       <div class="summary-title">평균 효율</div>
-      <div class="summary-value" id="averageSoc">-</div>
-      <div class="summary-sub" id="socSubInfo">energy_log efficiency 평균</div>
+      <div class="summary-value" id="averageEfficiency">-</div>
+      <div class="summary-sub" id="efficiencySubInfo">월간 평균 효율</div>
     </div>
 
     <div class="summary-card">
       <div class="summary-title">운영 장비 수</div>
-      <div class="summary-value" id="collectedDeviceCount">-</div>
-      <div class="summary-sub" id="collectionSubInfo">등록 장비 기준</div>
+      <div class="summary-value" id="operatingDeviceCount">-</div>
+      <div class="summary-sub" id="deviceSubInfo">운영 장비 / 전체 장비</div>
     </div>
 
   </section>
@@ -82,34 +83,34 @@
   <section class="dashboard-main-grid">
 
     <div class="card chart-card">
-      <div class="section-title">최근 7일 발전량 추이</div>
-      <div class="section-subtitle">일별 발전량 합계 kWh</div>
+      <div class="section-title">최근 6개월 발전량</div>
+      <div class="section-subtitle">월별 발전량 합계</div>
 
       <div class="chart-box-large">
-        <canvas id="generationCompareChart"></canvas>
+        <canvas id="monthlyGenerationChart"></canvas>
       </div>
     </div>
 
     <div class="card chart-card">
-      <div class="section-title">장비별 이번 달 발전량 TOP 5</div>
-      <div class="section-subtitle">장비별 월간 발전량 비교</div>
+      <div class="section-title">장비별 발전량 TOP 5</div>
+      <div class="section-subtitle">선택 월 기준 장비별 발전량</div>
 
       <div class="chart-box-large">
-        <canvas id="deviceGenerationChart"></canvas>
+        <canvas id="deviceTopChart"></canvas>
       </div>
     </div>
 
   </section>
 
-  <!-- 하단 통계 -->
+  <!-- 하단 -->
   <section class="dashboard-bottom-grid">
 
     <div class="card chart-card">
-      <div class="section-title">월별 발전량 통계</div>
-      <div class="section-subtitle">최근 6개월 발전량 추이</div>
+      <div class="section-title">최근 6개월 절감 금액</div>
+      <div class="section-subtitle">월별 절감 금액 합계</div>
 
       <div class="chart-box">
-        <canvas id="socCompareChart"></canvas>
+        <canvas id="monthlyCostChart"></canvas>
       </div>
     </div>
 
@@ -146,6 +147,7 @@
           </c:when>
 
           <c:otherwise>
+
             <div class="dashboard-weather-current">
               <div class="dashboard-weather-icon">
                 ${weatherList[0].weatherIcon}
@@ -182,6 +184,7 @@
                 </c:if>
               </c:forEach>
             </div>
+
           </c:otherwise>
         </c:choose>
 
@@ -191,7 +194,7 @@
   </section>
 
   <div class="dashboard-note">
-    ※ 대시보드는 energy_log에 저장된 일/월 단위 통계 데이터를 기준으로 표시됩니다.
+    ※ 대시보드는 energy_log에 저장된 일별 통계 데이터를 월 단위로 집계하여 표시합니다.
   </div>
 
 </main>
