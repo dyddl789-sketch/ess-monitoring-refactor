@@ -125,71 +125,104 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="dashboard-weather-box">
-
-        <div class="dashboard-weather-header">
-          <div>
-            <div class="section-title">대표 지역 날씨</div>
-            <p>${weatherBaseText}</p>
-          </div>
-
-          <c:if test="${not empty weatherList}">
-            <span>${weatherList[0].city}</span>
-          </c:if>
-        </div>
-
-        <c:choose>
-          <c:when test="${empty weatherList}">
-            <div class="weather-empty">
-              날씨 정보를 불러오지 못했습니다.
-            </div>
-          </c:when>
-
-          <c:otherwise>
-
-            <div class="dashboard-weather-current">
-              <div class="dashboard-weather-icon">
-                ${weatherList[0].weatherIcon}
-              </div>
-
-              <div>
-                <div class="dashboard-weather-temp">
-                  ${weatherList[0].temperature}
-                </div>
-                <div class="dashboard-weather-status">
-                  ${weatherList[0].skyStatus}
-                </div>
-              </div>
-
-              <div class="dashboard-weather-detail">
-                <div>예보시간 ${weatherList[0].fcstTime}</div>
-                <div>강수확률 ${weatherList[0].rainProb}</div>
-
-                <c:if test="${not empty mainDevice}">
-                  <div>대표기기 ${mainDevice.deviceName}</div>
-                </c:if>
-              </div>
-            </div>
-
-            <div class="dashboard-weather-list">
-              <c:forEach var="weather" items="${weatherList}" varStatus="status">
-                <c:if test="${status.index lt 4}">
-                  <div class="dashboard-weather-item">
-                    <div class="weather-time">${weather.fcstTime}</div>
-                    <div class="weather-icon">${weather.weatherIcon}</div>
-                    <div class="weather-temp">${weather.temperature}</div>
-                    <div class="weather-status">${weather.skyStatus}</div>
-                  </div>
-                </c:if>
-              </c:forEach>
-            </div>
-
-          </c:otherwise>
-        </c:choose>
-
-      </div>
-    </div>
+	<div class="card dashboard-weather-card ${not empty weatherList ? weatherList[0].weatherTheme : 'clear'}">
+	
+	    <div class="dashboard-weather-overlay">
+	
+	        <div class="dashboard-weather-header">
+	            <div>
+	                <div class="section-title">대표 지역 날씨</div>
+	                <p>${weatherBaseText}</p>
+	            </div>
+	
+	            <c:if test="${not empty weatherList}">
+	                <span>${weatherList[0].city}</span>
+	            </c:if>
+	        </div>
+	
+	        <c:choose>
+	
+	            <c:when test="${empty weatherList}">
+	                <div class="weather-empty">
+	                    날씨 정보를 불러오지 못했습니다.
+	                </div>
+	            </c:when>
+	
+	            <c:otherwise>
+	                <c:set var="currentWeather" value="${weatherList[0]}" />
+	
+	                <div class="dashboard-weather-current">
+	
+	                    <div class="dashboard-weather-icon">
+	                        <img
+	                            src="${pageContext.request.contextPath}/resources/img/weather-icon/${currentWeather.weatherIcon}.svg"
+	                            alt="weather icon">
+	                    </div>
+	
+	                    <div class="dashboard-weather-main-text">
+	                        <div class="dashboard-weather-temp">
+	                            ${currentWeather.temperature}
+	                        </div>
+	                        <div class="dashboard-weather-status">
+	                            ${currentWeather.skyStatus}
+	                        </div>
+	                    </div>
+	
+	                    <div class="dashboard-weather-detail">
+	                        <div>예보시간 ${currentWeather.fcstTime}</div>
+	                        <div>강수확률 ${currentWeather.rainProb}</div>
+	
+	                        <c:if test="${not empty mainDevice}">
+	                            <div>대표기기 ${mainDevice.deviceName}</div>
+	                        </c:if>
+	                    </div>
+	
+	                </div>
+	
+	                <c:if test="${not empty mainDevice}">
+	                    <div class="dashboard-main-device">
+	                        대표 장비 :
+	                        <strong>${mainDevice.deviceName}</strong>
+	                    </div>
+	                </c:if>
+	
+	                <div class="dashboard-weather-list">
+	                    <c:forEach var="weather" items="${weatherList}" varStatus="status">
+	                        <c:if test="${status.index lt 4}">
+	
+	                            <div class="dashboard-weather-item">
+	
+	                                <div class="weather-time">
+	                                    ${weather.fcstTime}
+	                                </div>
+	
+	                                <div class="weather-icon">
+	                                    <img
+	                                        src="${pageContext.request.contextPath}/resources/img/weather-icon/${weather.weatherIcon}.svg"
+	                                        alt="weather icon">
+	                                </div>
+	
+	                                <div class="weather-temp">
+	                                    ${weather.temperature}
+	                                </div>
+	
+	                                <div class="weather-status">
+	                                    ${weather.skyStatus}
+	                                </div>
+	
+	                            </div>
+	
+	                        </c:if>
+	                    </c:forEach>
+	                </div>
+	
+	            </c:otherwise>
+	
+	        </c:choose>
+	
+	    </div>
+	
+	</div>
 
   </section>
 

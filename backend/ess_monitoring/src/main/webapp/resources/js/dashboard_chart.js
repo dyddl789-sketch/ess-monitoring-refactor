@@ -89,6 +89,72 @@ function commonChartOptions() {
     };
 }
 
+// 상대적 축 범위 적용
+function applyRelativeYAxis(chart, values, unit = 200) {
+
+    if (!values || values.length === 0) {
+        return;
+    }
+
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+
+    if (maxValue <= 0) {
+        return;
+    }
+
+    const upperPadding = maxValue * 0.12;
+    const lowerPadding = maxValue * 0.05;
+
+    const min =
+        Math.floor((minValue - lowerPadding) / unit) * unit;
+
+    const max =
+        Math.ceil((maxValue + upperPadding) / unit) * unit;
+
+    chart.options.scales.y.beginAtZero = false;
+
+    chart.options.scales.y.min =
+        Math.max(0, min);
+
+    chart.options.scales.y.max =
+        max;
+}
+
+
+// 가로 차트용 축 범위
+function applyRelativeXAxis(chart, values, unit = 100) {
+
+    if (!values || values.length === 0) {
+        return;
+    }
+
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+
+    if (maxValue <= 0) {
+        return;
+    }
+
+    const upperPadding = maxValue * 0.12;
+    const lowerPadding = maxValue * 0.05;
+
+    const min =
+        Math.floor((minValue - lowerPadding) / unit) * unit;
+
+    const max =
+        Math.ceil((maxValue + upperPadding) / unit) * unit;
+
+    chart.options.scales.x.beginAtZero = false;
+
+    chart.options.scales.x.min =
+        Math.max(0, min);
+
+    chart.options.scales.x.max =
+        max;
+}
+
+
 
 // 최근 6개월 발전량
 function initMonthlyGenerationChart() {
@@ -209,9 +275,16 @@ function loadMonthlyGenerationChart() {
                 values.push(Number(row.monthlyKwh || row.value || 0));
             });
 
-            monthlyGenerationChart.data.labels = labels;
-            monthlyGenerationChart.data.datasets[0].data = values;
-            monthlyGenerationChart.update();
+			monthlyGenerationChart.data.labels = labels;
+			monthlyGenerationChart.data.datasets[0].data = values;
+			
+		applyRelativeYAxis(
+		    monthlyGenerationChart,
+		    values,
+		    200
+		);
+			
+			monthlyGenerationChart.update();
         },
 
         error: function() {
@@ -246,9 +319,16 @@ function loadMonthlyCostChart() {
                 values.push(Number(row.savedCost || row.value || 0));
             });
 
-            monthlyCostChart.data.labels = labels;
-            monthlyCostChart.data.datasets[0].data = values;
-            monthlyCostChart.update();
+			monthlyCostChart.data.labels = labels;
+			monthlyCostChart.data.datasets[0].data = values;
+			
+		applyRelativeYAxis(
+		    monthlyCostChart,
+		    values,
+		    20000
+		);
+			
+			monthlyCostChart.update();
         },
 
         error: function() {
@@ -283,9 +363,16 @@ function loadDeviceTopChart() {
                 values.push(Number(row.monthlyKwh || row.value || 0));
             });
 
-            deviceTopChart.data.labels = labels;
-            deviceTopChart.data.datasets[0].data = values;
-            deviceTopChart.update();
+			deviceTopChart.data.labels = labels;
+			deviceTopChart.data.datasets[0].data = values;
+			
+		applyRelativeXAxis(
+		    deviceTopChart,
+		    values,
+		    100
+		);
+			
+			deviceTopChart.update();
         },
 
         error: function() {

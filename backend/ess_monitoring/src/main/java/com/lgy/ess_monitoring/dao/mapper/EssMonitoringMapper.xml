@@ -1,52 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.lgy.ess_monitoring.dao.EssMonitoringDAO">
 
-	<!-- 특정 디바이스 최신 모니터링 1건 조회 -->
-	<select id="getLatestMonitoring"
-	        parameterType="int"
-	        resultType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
-	    SELECT
-	        m.monitor_id,
-	        m.device_id,
-	        m.voltage,
-	        m.current_a,
-	        m.soc,
-	        m.power_output,
-	        m.solar_generation_kwh,
-	        m.charged_energy_kwh,
-	        m.used_energy_kwh,
-	        m.saved_cost,
-	        m.record_time,
-	        d.device_name,
-	        d.location,
-	        d.status AS device_status,
-	        g.group_name,
-	        w.sky_status,
-	        w.rain_type,
-	        w.temperature
-	    FROM monitoring m
-	    JOIN ess_device d
-	      ON m.device_id = d.device_id
-	    LEFT JOIN ess_device_group g
-	      ON d.group_id = g.group_id
-	    LEFT JOIN weather_data w
-	      ON w.device_id = d.device_id
-	     AND CONCAT(w.fcst_date, w.fcst_time) >= DATE_FORMAT(m.record_time, '%Y%m%d%H00')
-	    WHERE m.device_id = #{deviceId}
-	      AND m.record_time <![CDATA[ <= ]]> NOW()
-	    ORDER BY m.record_time DESC,
-	             w.fcst_date ASC,
-	             w.fcst_time ASC
-	    LIMIT 1
-	</select>
-
-    <!-- 회원 기준 모니터링 목록 조회 -->
-    <select id="getMonitoringListByMemberId"
-            parameterType="int"
+    <!-- 특정 디바이스 최신 모니터링 1건 조회 -->
+    <select id="getLatestMonitoring"
             resultType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
+
         SELECT
             m.monitor_id,
             m.device_id,
@@ -62,27 +24,67 @@
             d.device_name,
             d.location,
             d.status AS device_status,
-            g.group_name,
-            w.sky_status,
-            w.rain_type,
-            w.temperature
+            g.group_name
+
         FROM monitoring m
+
         JOIN ess_device d
           ON m.device_id = d.device_id
+
         LEFT JOIN ess_device_group g
           ON d.group_id = g.group_id
-        LEFT JOIN weather_data w
-          ON w.device_id = d.device_id
-         AND CONCAT(w.fcst_date, w.fcst_time) >= DATE_FORMAT(m.record_time, '%Y%m%d%H00')
-        WHERE d.member_id = #{memberId}
-        ORDER BY m.record_time DESC,
-                 w.fcst_date ASC,
-                 w.fcst_time ASC
+
+        WHERE m.device_id = #{deviceId}
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
+
+        ORDER BY m.record_time DESC
+
+        LIMIT 1
+
     </select>
+
+
+    <!-- 회원 기준 모니터링 목록 조회 -->
+    <select id="getMonitoringListByMemberId"
+            resultType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
+
+        SELECT
+            m.monitor_id,
+            m.device_id,
+            m.voltage,
+            m.current_a,
+            m.soc,
+            m.power_output,
+            m.solar_generation_kwh,
+            m.charged_energy_kwh,
+            m.used_energy_kwh,
+            m.saved_cost,
+            m.record_time,
+            d.device_name,
+            d.location,
+            d.status AS device_status,
+            g.group_name
+
+        FROM monitoring m
+
+        JOIN ess_device d
+          ON m.device_id = d.device_id
+
+        LEFT JOIN ess_device_group g
+          ON d.group_id = g.group_id
+
+        WHERE d.member_id = #{memberId}
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
+
+        ORDER BY m.record_time DESC
+
+    </select>
+
 
     <!-- 모니터링 데이터 저장 -->
     <insert id="insertMonitoring"
             parameterType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
+
         INSERT INTO monitoring (
             device_id,
             voltage,
@@ -106,59 +108,252 @@
             #{savedCost},
             NOW()
         )
+
     </insert>
 
+
     <!-- 전체 모니터링 데이터 개수 -->
-    <select id="getTotalCount" resultType="int">
+    <select id="getTotalCount"
+            resultType="int">
+
         SELECT COUNT(*)
         FROM monitoring
+
     </select>
+
 
     <!-- 회원별 모니터링 데이터 개수 -->
     <select id="getMemberCount"
-            parameterType="int"
             resultType="int">
+
         SELECT COUNT(*)
+
         FROM monitoring m
+
         JOIN ess_device d
           ON m.device_id = d.device_id
+
         WHERE d.member_id = #{memberId}
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
+
     </select>
-	
-	
-	<!-- 최근 모니터링 이력 조회 -->
-	<select id="getMonitoringHistory"
-	        parameterType="int"
-	        resultType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
-	
-	    SELECT
-	        monitor_id,
-	        device_id,
-	        voltage,
-	        current_a,
-	        soc,
-	        power_output,
-	        solar_generation_kwh,
-	        charged_energy_kwh,
-	        used_energy_kwh,
-	        saved_cost,
-	        record_time
-	    FROM monitoring
-	    WHERE device_id = #{deviceId}
-	      AND record_time <![CDATA[ <= ]]> NOW()
-	      AND MINUTE(record_time) != 0
-	    ORDER BY record_time DESC
-	    LIMIT 10
-	
-	</select>
-	
-	<!-- 오늘 누적 발전량 조회 -->
-	<select id="getTodayGeneration"
-	        parameterType="int"
-	        resultType="double">
-	    SELECT IFNULL(SUM(solar_generation_kwh), 0)
-	    FROM monitoring
-	    WHERE device_id = #{deviceId}
-	      AND DATE(record_time) = CURDATE()
-	</select>
+
+
+    <!-- 그룹 목록 -->
+    <select id="getGroups"
+            resultType="com.lgy.ess_monitoring.dto.EssGroupDTO">
+
+        SELECT
+            group_id,
+            group_name,
+            description,
+            created_at
+
+        FROM ess_device_group
+
+        WHERE member_id = #{memberId}
+
+        ORDER BY group_id ASC
+
+    </select>
+
+
+    <!-- 그룹별 장비 목록 -->
+    <select id="getDevices"
+            resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+
+        SELECT
+            device_id,
+            member_id,
+            group_id,
+            device_name,
+            location,
+            capacity_kw,
+            device_type,
+            status,
+            install_date,
+            is_main,
+            ess_capacity_kwh,
+            current_charge_kwh,
+            charge_efficiency,
+            discharge_efficiency,
+            electricity_rate
+
+        FROM ess_device
+
+        WHERE member_id = #{memberId}
+          AND IFNULL(deleted_yn, 'N') = 'N'
+
+        <if test="groupId != null and groupId != ''">
+            AND group_id = #{groupId}
+        </if>
+
+        ORDER BY device_id ASC
+
+    </select>
+
+
+    <!-- 상단 카드 / 계측 요약 -->
+    <select id="getMonitoringSummary"
+            resultType="com.lgy.ess_monitoring.dto.MonitoringSummaryDTO">
+
+        SELECT
+            d.status AS deviceStatus,
+
+            latest.soc AS soc,
+            latest.power_output AS powerOutput,
+            latest.voltage AS voltage,
+            latest.current_a AS currentA,
+            latest.record_time AS recordTime,
+
+            IFNULL(el.daily_kwh, 0) AS dailyKwh,
+            IFNULL(el.cost, 0) AS savedCost,
+
+            IFNULL(avg7.generationSevenDayAvg, 0) AS generationSevenDayAvg,
+            IFNULL(avg7.costSevenDayAvg, 0) AS costSevenDayAvg
+
+        FROM ess_device d
+
+        LEFT JOIN (
+            SELECT
+                m1.device_id,
+                m1.soc,
+                m1.power_output,
+                m1.voltage,
+                m1.current_a,
+                m1.record_time
+            FROM monitoring m1
+            JOIN (
+                SELECT
+                    device_id,
+                    MAX(record_time) AS max_record_time
+                FROM monitoring
+                WHERE DATE(record_time) = #{selectedDate}
+                GROUP BY device_id
+            ) m2
+              ON m1.device_id = m2.device_id
+             AND m1.record_time = m2.max_record_time
+        ) latest
+          ON d.device_id = latest.device_id
+
+        LEFT JOIN energy_log el
+          ON d.device_id = el.device_id
+         AND el.log_date = #{selectedDate}
+
+        LEFT JOIN (
+            SELECT
+                device_id,
+                AVG(daily_kwh) AS generationSevenDayAvg,
+                AVG(cost) AS costSevenDayAvg
+            FROM energy_log
+            WHERE log_date BETWEEN DATE_SUB(#{selectedDate}, INTERVAL 6 DAY)
+                               AND #{selectedDate}
+            GROUP BY device_id
+        ) avg7
+          ON d.device_id = avg7.device_id
+
+        WHERE d.member_id = #{memberId}
+          AND d.device_id = #{deviceId}
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
+
+    </select>
+
+
+    <!-- 선택일 시간별 모니터링 이력 -->
+    <select id="getMonitoringHistory"
+            resultType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
+
+        SELECT
+            m.monitor_id,
+            m.device_id,
+            m.voltage,
+            m.current_a,
+            m.soc,
+            m.power_output,
+            m.solar_generation_kwh,
+            m.charged_energy_kwh,
+            m.used_energy_kwh,
+            m.saved_cost,
+            m.record_time
+
+        FROM monitoring m
+
+        JOIN ess_device d
+          ON m.device_id = d.device_id
+
+        WHERE d.member_id = #{memberId}
+          AND m.device_id = #{deviceId}
+          AND DATE(m.record_time) = #{selectedDate}
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
+
+        ORDER BY m.record_time ASC
+
+    </select>
+
+
+    <!-- 오늘 누적 발전량 조회 -->
+    <select id="getTodayGeneration"
+            resultType="double">
+
+        SELECT IFNULL(SUM(solar_generation_kwh), 0)
+
+        FROM monitoring
+
+        WHERE device_id = #{deviceId}
+          AND DATE(record_time) = CURDATE()
+
+    </select>
+
+
+    <!-- 최근 7일 발전량 / 절감 금액 -->
+    <select id="getWeeklyMonitoringChart"
+            resultType="com.lgy.ess_monitoring.dto.DashboardChartDTO">
+
+        SELECT
+            DATE_FORMAT(el.log_date, '%m-%d') AS label,
+            IFNULL(el.daily_kwh, 0) AS dailyKwh,
+            IFNULL(el.daily_kwh, 0) AS value,
+            IFNULL(el.cost, 0) AS cost,
+            IFNULL(el.cost, 0) AS savedCost
+
+        FROM energy_log el
+
+        JOIN ess_device d
+          ON el.device_id = d.device_id
+
+        WHERE d.member_id = #{memberId}
+          AND el.device_id = #{deviceId}
+          AND el.log_date BETWEEN DATE_SUB(#{selectedDate}, INTERVAL 6 DAY)
+                              AND #{selectedDate}
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
+
+        ORDER BY el.log_date ASC
+
+    </select>
+
+
+    <!-- 최근 알림 -->
+    <select id="getMonitoringAlerts"
+            resultType="com.lgy.ess_monitoring.dto.AlertDTO">
+
+        SELECT
+            a.alert_id,
+            a.device_id,
+            a.alert_type,
+            a.alert_level,
+            a.message,
+            a.status,
+            a.control_action,
+            a.created_at
+
+        FROM ess_alert a
+
+        WHERE a.device_id = #{deviceId}
+
+        ORDER BY a.created_at DESC
+
+        LIMIT 5
+
+    </select>
+
 </mapper>

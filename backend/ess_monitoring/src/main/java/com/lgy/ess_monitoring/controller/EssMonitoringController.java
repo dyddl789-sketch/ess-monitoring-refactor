@@ -1,5 +1,6 @@
 package com.lgy.ess_monitoring.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -11,14 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.lgy.ess_monitoring.dto.EssMonitoringDTO;
-import com.lgy.ess_monitoring.dto.WeatherDataDTO;
-import com.lgy.ess_monitoring.service.EssMonitoringService;
-import com.lgy.ess_monitoring.service.WeatherDataService;
-import com.lgy.ess_monitoring.dto.EssDeviceDTO;
-import com.lgy.ess_monitoring.service.EssDeviceService;
 import com.lgy.ess_monitoring.dto.AlertDTO;
+import com.lgy.ess_monitoring.dto.DashboardChartDTO;
+import com.lgy.ess_monitoring.dto.EssDeviceDTO;
+import com.lgy.ess_monitoring.dto.EssGroupDTO;
+import com.lgy.ess_monitoring.dto.EssMonitoringDTO;
+import com.lgy.ess_monitoring.dto.MonitoringSummaryDTO;
 import com.lgy.ess_monitoring.service.AlertService;
+import com.lgy.ess_monitoring.service.EssDeviceService;
+import com.lgy.ess_monitoring.service.EssMonitoringService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,15 +33,12 @@ public class EssMonitoringController {
     private EssMonitoringService monitoringService;
 
     @Autowired
-    private WeatherDataService weatherDataService;
-    
-    @Autowired
     private EssDeviceService deviceService;
-    
+
     @Autowired
     private AlertService alertService;
 
-    // 실시간 모니터링 메인 화면
+    // 상세 모니터링 메인 화면
     @RequestMapping(value = "/main", method = RequestMethod.GET)
     public String monitoringMain(
             Integer deviceId,
@@ -52,70 +51,98 @@ public class EssMonitoringController {
         Integer memberId =
             (Integer) session.getAttribute("memberId");
 
-        log.info("@# session memberId => {}", memberId);
-
         if (memberId == null) {
             return "redirect:/login_view";
         }
 
-        /*
-         * 장비 목록 조회
-         */
-        List<EssDeviceDTO> deviceList =
-            deviceService.getDeviceList(memberId);
+        // 그룹 목록
+        List<EssGroupDTO> groupList =
+            monitoringService.getGroups(memberId);
 
-        /*
-         * JSP 전달
-         */
+        // 장비 목록
+        List<EssDeviceDTO> deviceList =
+            monitoringService.getDevices(
+                memberId,
+                null
+            );
+
+        model.addAttribute("groupList", groupList);
+        model.addAttribute("deviceList", deviceList);
         model.addAttribute("deviceId", deviceId);
 
         model.addAttribute(
-            "deviceList",
-            deviceList
+            "selectedDate",
+            LocalDate.now().toString()
         );
 
         return "monitoring_main";
     }
 
-
-
- // 최신 모니터링 데이터 조회
+    // 그룹별 장비 목록
     @ResponseBody
     @RequestMapping(
-        value = "/latest",
+        value = "/devices",
         method = RequestMethod.GET,
         produces = "application/json; charset=UTF-8"
     )
-    public EssMonitoringDTO latestMonitoring(
-            int deviceId,
+    public List<EssDeviceDTO> getDevices(
+            Integer groupId,
             HttpSession session
     ) {
-        log.info("@# latestMonitoring()");
-        log.info("@# deviceId => {}", deviceId);
+        log.info("@# getDevices()");
+        log.info("@# groupId => {}", groupId);
 
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Integer memberId =
+            (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
             return null;
         }
 
-        EssMonitoringDTO dto = monitoringService.getLatestMonitoring(deviceId);
-
-        if (dto != null) {
-            Double todayGenerationKwh = monitoringService.getTodayGeneration(deviceId);
-
-            dto.setSolarGenerationKwh(
-                todayGenerationKwh == null
-                    ? java.math.BigDecimal.ZERO
-                    : java.math.BigDecimal.valueOf(todayGenerationKwh)
-            );
-        }
-
-        return dto;
+        return monitoringService.getDevices(
+            memberId,
+            groupId
+        );
     }
 
-    // 최근 모니터링 이력 조회
-    // 그래프 초기 데이터용
+    // 상단 카드 / 최신 상태
+    @ResponseBody
+    @RequestMapping(
+        value = "/summary",
+        method = RequestMethod.GET,
+        produces = "application/json; charset=UTF-8"
+    )
+    public MonitoringSummaryDTO getMonitoringSummary(
+            Integer deviceId,
+            String selectedDate,
+            HttpSession session
+    ) {
+        log.info("@# getMonitoringSummary()");
+        log.info("@# deviceId => {}", deviceId);
+        log.info("@# selectedDate => {}", selectedDate);
+
+        Integer memberId =
+            (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        if (selectedDate == null
+                || selectedDate.isEmpty()) {
+
+            selectedDate =
+                LocalDate.now().toString();
+        }
+
+        return monitoringService.getMonitoringSummary(
+            memberId,
+            deviceId,
+            selectedDate
+        );
+    }
+
+    // 시간별 모니터링 이력
     @ResponseBody
     @RequestMapping(
         value = "/history",
@@ -123,67 +150,73 @@ public class EssMonitoringController {
         produces = "application/json; charset=UTF-8"
     )
     public List<EssMonitoringDTO> monitoringHistory(
-            int deviceId,
+            Integer deviceId,
+            String selectedDate,
             HttpSession session
     ) {
         log.info("@# monitoringHistory()");
         log.info("@# deviceId => {}", deviceId);
+        log.info("@# selectedDate => {}", selectedDate);
 
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Integer memberId =
+            (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
             return null;
         }
 
-        return monitoringService.getMonitoringHistory(deviceId);
+        if (selectedDate == null
+                || selectedDate.isEmpty()) {
+
+            selectedDate =
+                LocalDate.now().toString();
+        }
+
+        return monitoringService.getMonitoringHistory(
+            memberId,
+            deviceId,
+            selectedDate
+        );
     }
 
-    // 현재 날씨 조회
+    // 최근 7일 차트
     @ResponseBody
     @RequestMapping(
-        value = "/weather/current",
+        value = "/weekly",
         method = RequestMethod.GET,
         produces = "application/json; charset=UTF-8"
     )
-    public WeatherDataDTO currentWeather(
-            int deviceId,
+    public List<DashboardChartDTO> getWeeklyMonitoringChart(
+            Integer deviceId,
+            String selectedDate,
             HttpSession session
     ) {
-        log.info("@# currentWeather()");
+        log.info("@# getWeeklyMonitoringChart()");
         log.info("@# deviceId => {}", deviceId);
+        log.info("@# selectedDate => {}", selectedDate);
 
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Integer memberId =
+            (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
             return null;
         }
 
-        return weatherDataService.getOrFetchCurrentWeather(deviceId);
-    }
+        if (selectedDate == null
+                || selectedDate.isEmpty()) {
 
-    // 시간별 날씨 목록 조회
-    @ResponseBody
-    @RequestMapping(
-        value = "/weather/list",
-        method = RequestMethod.GET,
-        produces = "application/json; charset=UTF-8"
-    )
-    public List<WeatherDataDTO> weatherList(
-            int deviceId,
-            HttpSession session
-    ) {
-        log.info("@# weatherList()");
-        log.info("@# deviceId => {}", deviceId);
-
-        Integer memberId = (Integer) session.getAttribute("memberId");
-
-        if (memberId == null) {
-            return null;
+            selectedDate =
+                LocalDate.now().toString();
         }
 
-        return weatherDataService.getOrFetchWeatherList(deviceId);
+        return monitoringService.getWeeklyMonitoringChart(
+            memberId,
+            deviceId,
+            selectedDate
+        );
     }
- // 최근 알림 조회
+
+    // 최근 알림
     @ResponseBody
     @RequestMapping(
         value = "/alerts",
@@ -191,10 +224,10 @@ public class EssMonitoringController {
         produces = "application/json; charset=UTF-8"
     )
     public List<AlertDTO> alerts(
-            int deviceId,
+            Integer deviceId,
+            String selectedDate,
             HttpSession session
     ) {
-
         log.info("@# alerts()");
         log.info("@# deviceId => {}", deviceId);
 

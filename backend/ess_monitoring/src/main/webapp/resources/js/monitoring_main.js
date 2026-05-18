@@ -1,31 +1,17 @@
 /*
  * =========================
- * 실시간 모니터링 JS
+ * 상세 모니터링 메인 JS
  * monitoring_main.js
  * =========================
  */
 
-/* 출력 그래프 객체 */
-let powerChart;
-
-/* SOC 그래프 객체 */
-let socChart;
-
-/* 자동 갱신 타이머 */
 let autoRefreshTimer = null;
+let autoRefreshEnabled = true;
 
-/* 출력 그래프 데이터 */
-const powerLabels = [];
-const powerData = [];
+/* =========================
+   공통 유틸
+========================= */
 
-/* SOC 그래프 데이터 */
-const socLabels = [];
-const socData = [];
-
-/*
- * 숫자 포맷
- * null, undefined, 빈값 방지
- */
 function formatNumber(value, digit) {
 
     if (value === null || value === undefined || value === '') {
@@ -41,10 +27,21 @@ function formatNumber(value, digit) {
     return num.toFixed(digit);
 }
 
-/*
- * timestamp(ms) 또는 날짜 문자열 → HH:mm 변환
- * 그래프 X축 표시용
- */
+function formatComma(value) {
+
+    if (value === null || value === undefined || value === '') {
+        return '-';
+    }
+
+    const num = Number(value);
+
+    if (isNaN(num)) {
+        return '-';
+    }
+
+    return num.toLocaleString();
+}
+
 function formatTimeLabel(recordTime) {
 
     if (!recordTime) {
@@ -66,13 +63,9 @@ function formatTimeLabel(recordTime) {
     const hour = String(date.getHours()).padStart(2, '0');
     const minute = String(date.getMinutes()).padStart(2, '0');
 
-    return `${hour}:${minute}`;
+    return hour + ':' + minute;
 }
 
-/*
- * timestamp(ms) 또는 날짜 문자열 → yyyy-MM-dd HH:mm:ss 변환
- * 상세 측정 시간 표시용
- */
 function formatTimestamp(recordTime) {
 
     if (!recordTime) {
@@ -98,297 +91,174 @@ function formatTimestamp(recordTime) {
     const minute = String(date.getMinutes()).padStart(2, '0');
     const second = String(date.getSeconds()).padStart(2, '0');
 
-    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    return year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
 }
 
-/*
- * 마지막 갱신 시간 표시
- */
+function getTodayString() {
+
+    const today = new Date();
+
+    return today.getFullYear() +
+        '-' +
+        String(today.getMonth() + 1).padStart(2, '0') +
+        '-' +
+        String(today.getDate()).padStart(2, '0');
+}
+
+function isTodaySelected() {
+
+    return $('#selectedDate').val() === getTodayString();
+}
+
 function formatNow() {
 
     return new Date().toLocaleTimeString();
 }
 
-/*
- * 날씨 상태 아이콘 반환
- */
-function getWeatherIcon(skyStatus, rainType) {
+function getMonitoringParams() {
 
-    if (rainType && rainType !== '없음') {
-
-        if (rainType === '눈') {
-            return '❄️';
-        }
-
-        if (rainType === '비/눈') {
-            return '🌨️';
-        }
-
-        return '🌧️';
-    }
-
-    if (skyStatus === '맑음') {
-        return '☀️';
-    }
-
-    if (skyStatus === '구름많음') {
-        return '⛅';
-    }
-
-    if (skyStatus === '흐림') {
-        return '☁️';
-    }
-
-    return '🌡️';
+    return {
+        groupId: $('#groupSelect').val(),
+        deviceId: $('#deviceSelect').val(),
+        selectedDate: $('#selectedDate').val()
+    };
 }
 
-/*
- * Chart.js 초기화
- */
-function initCharts() {
+/* =========================
+   화면 상태 처리
+========================= */
 
-    const powerCtx = document.getElementById('powerChart').getContext('2d');
-    const socCtx = document.getElementById('socChart').getContext('2d');
+function setDeviceStatus(status) {
 
-    powerChart = new Chart(powerCtx, {
-        type: 'line',
-        data: {
-            labels: powerLabels,
-            datasets: [{
-                label: '출력(kW)',
-                data: powerData,
-                tension: 0.35,
-                borderWidth: 3,
-                pointRadius: 4
-            }]
-        },
-		options: {
-		    responsive: true,
-		    maintainAspectRatio: false,
-		    scales: {
-		        x: {
-		            ticks: {
-		                maxRotation: 0,
-		                autoSkip: true,
-		                maxTicksLimit: 10
-		            }
-		        }
-		    }
-		}
-    });
+    const $status = $('#deviceStatus');
 
-    socChart = new Chart(socCtx, {
-        type: 'line',
-        data: {
-            labels: socLabels,
-            datasets: [{
-                label: 'SOC(%)',
-                data: socData,
-                tension: 0.35,
-                borderWidth: 3,
-                pointRadius: 4
-            }]
-        },
-		options: {
-		    responsive: true,
-		    maintainAspectRatio: false,
-		    scales: {
-		        x: {
-		            ticks: {
-		                maxRotation: 0,
-		                autoSkip: true,
-		                maxTicksLimit: 10
-		            }
-		        }
-		    }
-		}
-    });
-}
+    $status.removeClass()
+           .addClass('card-value');
 
-/*
- * 최근 모니터링 이력 조회
- * 그래프 초기 데이터 생성
- */
-function loadMonitoringHistory() {
-
-    const deviceId = $('#deviceSelect').val();
-
-    if (!deviceId) {
+    if (status === 'WARNING') {
+        $status.addClass('status-warning').text('주의');
         return;
     }
 
+    if (status === 'ERROR') {
+        $status.addClass('status-error').text('이상');
+        return;
+    }
+
+    if (status === 'OFFLINE') {
+        $status.addClass('status-offline').text('오프라인');
+        return;
+    }
+
+    $status.addClass('status-normal').text('정상');
+}
+
+function updateAutoRefreshMode() {
+
+    if (isTodaySelected()) {
+        $('#autoRefreshBtn').prop('disabled', false);
+
+        if (autoRefreshEnabled) {
+            startAutoRefresh();
+        }
+
+        return;
+    }
+
+    stopAutoRefresh();
+    $('#autoRefreshBtn').prop('disabled', true).text('이력 조회 모드');
+}
+
+function setCompareText(selector, value, average, unit) {
+
+    const $target = $(selector);
+
+    if (!average || average <= 0) {
+        $target.removeClass().addClass('card-sub').text('7일 평균 대비 -');
+        return;
+    }
+
+    const diffRate = ((value - average) / average) * 100;
+    const absRate = Math.abs(diffRate).toFixed(1);
+
+    $target.removeClass().addClass('card-sub');
+
+    if (diffRate > 0) {
+        $target.addClass('compare-up')
+               .text('7일 평균 대비 ▲ ' + absRate + '%');
+        return;
+    }
+
+    if (diffRate < 0) {
+        $target.addClass('compare-down')
+               .text('7일 평균 대비 ▼ ' + absRate + '%');
+        return;
+    }
+
+    $target.addClass('compare-normal')
+           .text('7일 평균과 동일');
+}
+
+/* =========================
+   그룹 / 장비
+========================= */
+
+function loadDeviceList(callback) {
+
+    const groupId = $('#groupSelect').val();
+
     $.ajax({
-        url: contextPath + '/monitoring/history',
+        url: contextPath + '/monitoring/devices',
         type: 'GET',
         data: {
-            deviceId: deviceId
+            groupId: groupId
         },
         dataType: 'json',
 
         success: function(list) {
 
-            powerLabels.length = 0;
-            powerData.length = 0;
-            socLabels.length = 0;
-            socData.length = 0;
+            const $deviceSelect = $('#deviceSelect');
 
-            if (!list || list.length === 0) {
-                powerChart.update();
-                socChart.update();
-                return;
+            $deviceSelect.empty();
+            $deviceSelect.append('<option value="">장비 선택</option>');
+
+            if (list && list.length > 0) {
+                list.forEach(function(device) {
+                    $deviceSelect.append(
+                        '<option value="' + device.deviceId + '">' +
+                            device.deviceName +
+                        '</option>'
+                    );
+                });
             }
 
-            list.reverse();
-
-            list.forEach(function(item) {
-
-                const label = formatTimeLabel(item.recordTime);
-
-                powerLabels.push(label);
-                powerData.push(Number(item.powerOutput || 0));
-
-                socLabels.push(label);
-                socData.push(Number(item.soc || 0));
-            });
-
-            powerChart.update();
-            socChart.update();
+            if (callback) {
+                callback();
+            }
         },
 
         error: function() {
-            console.log('모니터링 이력 조회 실패');
+            console.log('장비 목록 조회 실패');
         }
     });
 }
 
-/*
- * 최신 모니터링 데이터 화면 반영
- */
-function updateMonitoring(data) {
+/* =========================
+   최신 / 일일 요약
+========================= */
 
-    if (!data) {
-        return;
-    }
-    
-	if (Number(data.powerOutput || 0) < 1.0) {
-    	$('#deviceStatus')
-        	.removeClass()
-        	.addClass('card-value status-error')
-        	.text('장비 이상');
-	} else {
-    	$('#deviceStatus')
-        .removeClass()
-        .addClass('card-value status-normal')
-        .text('정상');
-	}
-	
-    $('#soc').text(formatNumber(data.soc, 1) + '%');
+function loadMonitoringSummary() {
 
-    $('#powerOutput').text(formatNumber(data.powerOutput, 1) + ' kW');
+    const params = getMonitoringParams();
 
-    $('#todayGeneration').text(
-        formatNumber(data.solarGenerationKwh, 1) + ' kWh'
-    );
-
-    $('#voltage').text(formatNumber(data.voltage, 1) + ' V');
-
-    $('#currentA').text(formatNumber(data.currentA, 1) + ' A');
-
-    $('#powerOutputDetail').text(
-        formatNumber(data.powerOutput, 1) + ' kW'
-    );
-
-    $('#recordTime').text(formatTimestamp(data.recordTime));
-	
-    addLatestChartData(data);
-}
-
-/*
- * 최신 데이터 그래프 추가
- */
-function addLatestChartData(data) {
-
-    if (!data) {
-        return;
-    }
-
-    const label = formatTimeLabel(data.recordTime);
-
-    if (
-        powerLabels.length > 0 &&
-        powerLabels[powerLabels.length - 1] === label
-    ) {
-        powerData[powerData.length - 1] = Number(data.powerOutput || 0);
-        socData[socData.length - 1] = Number(data.soc || 0);
-    } else {
-        powerLabels.push(label);
-        powerData.push(Number(data.powerOutput || 0));
-
-        socLabels.push(label);
-        socData.push(Number(data.soc || 0));
-    }
-
-    while (powerLabels.length > 10) {
-        powerLabels.shift();
-        powerData.shift();
-    }
-
-    while (socLabels.length > 10) {
-        socLabels.shift();
-        socData.shift();
-    }
-
-    powerChart.update();
-    socChart.update();
-}
-
-/*
- * 최신 모니터링 데이터 조회
- */
-function loadLatestMonitoring() {
-
-    const deviceId = $('#deviceSelect').val();
-
-    if (!deviceId) {
+    if (!params.deviceId) {
         return;
     }
 
     $.ajax({
-        url: contextPath + '/monitoring/latest',
+        url: contextPath + '/monitoring/summary',
         type: 'GET',
-        data: {
-            deviceId: deviceId
-        },
-        dataType: 'json',
-
-        success: function(data) {
-            updateMonitoring(data);
-            $('#lastUpdateTime').text(formatNow());
-        },
-
-        error: function() {
-            console.log('최신 모니터링 조회 실패');
-        }
-    });
-}
-
-/*
- * 현재 날씨 조회
- */
-function loadWeather() {
-
-    const deviceId = $('#deviceSelect').val();
-
-    if (!deviceId) {
-        return;
-    }
-
-    $.ajax({
-        url: contextPath + '/monitoring/weather/current',
-        type: 'GET',
-        data: {
-            deviceId: deviceId
-        },
+        data: params,
         dataType: 'json',
 
         success: function(data) {
@@ -397,285 +267,301 @@ function loadWeather() {
                 return;
             }
 
-            $('#weatherIcon').text(
-                getWeatherIcon(data.skyStatus, data.rainType)
-            );
+            setDeviceStatus(data.deviceStatus || 'NORMAL');
 
-            $('#temperature').text(
-                formatNumber(data.temperature, 1) + '℃'
-            );
+            $('#soc').text(formatNumber(data.soc, 1) + ' %');
+            $('#powerOutput').text(formatNumber(data.powerOutput, 1) + ' kW');
+            $('#todayGeneration').text(formatNumber(data.dailyKwh, 1) + ' kWh');
+            $('#todaySavedCost').text(formatComma(data.savedCost) + ' 원');
 
-            $('#skyStatus').text(data.skyStatus || '-');
+            $('#voltage').text(formatNumber(data.voltage, 1) + ' V');
+            $('#currentA').text(formatNumber(data.currentA, 1) + ' A');
+            $('#powerOutputDetail').text(formatNumber(data.powerOutput, 1) + ' kW');
+            $('#socDetail').text(formatNumber(data.soc, 1) + ' %');
+            $('#recordTime').text(formatTimestamp(data.recordTime));
 
-            $('#rainProb').text((data.rainProb || '-') + '%');
+            if (data.generationSevenDayAvg !== undefined) {
+                setCompareText(
+                    '#generationCompareText',
+                    Number(data.dailyKwh || 0),
+                    Number(data.generationSevenDayAvg || 0),
+                    'kWh'
+                );
+            }
 
-            $('#humidity').text((data.humidity || '-') + '%');
+            if (data.costSevenDayAvg !== undefined) {
+                setCompareText(
+                    '#costCompareText',
+                    Number(data.savedCost || 0),
+                    Number(data.costSevenDayAvg || 0),
+                    '원'
+                );
+            }
 
-            $('#windSpeed').text(
-                formatNumber(data.windSpeed, 1) + ' m/s'
-            );
-
-            $('#solarRadiation').text(
-                formatNumber(data.solarRadiation, 1)
-            );
-
-            $('#sunTime').text(
-                (data.sunrise || '-') + ' / ' + (data.sunset || '-')
-            );
-
-            $('#essStatus').text(data.essStatus || '-');
+            $('#lastUpdateTime').text(formatNow());
 
             updateOperationSummary(data);
         },
 
         error: function() {
-            console.log('날씨 조회 실패');
+            console.log('모니터링 요약 조회 실패');
         }
     });
 }
 
-/*
- * 운영 판단 요약
- */
-function updateOperationSummary(weather) {
+/* =========================
+   시간별 차트
+========================= */
 
-    let operationCondition = '-';
-    let batteryCondition = '-';
-    let recommendAction = '-';
+function loadDailyCharts() {
 
-    /*
-     * 현재 SOC 읽기
-     */
-    const socText =
-        $('#soc')
-            .text()
-            .replace('%', '');
+    const params = getMonitoringParams();
 
-    const soc = Number(socText);
-
-    /*
-     * 발전 조건 판단
-     */
-    if (weather.rainType &&
-        weather.rainType !== '없음') {
-
-        operationCondition = '발전량 낮음';
-
-    } else if (weather.skyStatus === '맑음') {
-
-        operationCondition = '발전 양호';
-
-    } else if (weather.skyStatus === '흐림') {
-
-        operationCondition = '발전 보통';
-
-    } else {
-
-        operationCondition = '상태 확인 필요';
-    }
-
-    /*
-     * 배터리 상태
-     */
-    if (!isNaN(soc)) {
-
-        if (soc >= 80) {
-
-            batteryCondition =
-                '충전 상태 양호';
-
-        } else if (soc >= 40) {
-
-            batteryCondition =
-                '배터리 상태 보통';
-
-        } else if (soc >= 20) {
-
-            batteryCondition =
-                '충전 필요';
-
-        } else {
-
-            batteryCondition =
-                '저전력 경고';
-        }
-    }
-
-    /*
-     * 권장 조치
-     */
-    if (soc < 20) {
-
-        recommendAction =
-            '절전 모드 권장';
-
-    } else if (
-        operationCondition === '발전량 낮음'
-    ) {
-
-        recommendAction =
-            'ESS 충전 상태 확인 권장';
-
-    } else if (
-        operationCondition === '발전 양호'
-    ) {
-
-        recommendAction =
-            '현재 상태 유지';
-
-    } else {
-
-        recommendAction =
-            '상태 모니터링 필요';
-    }
-
-    /*
-     * 화면 반영
-     */
-    $('#operationCondition')
-        .text(operationCondition);
-
-    $('#batteryCondition')
-        .text(batteryCondition);
-
-    $('#recommendAction')
-        .text(recommendAction);
-}
-/*
- * 최근 알림 조회
- */
-function loadAlerts() {
-
-    const deviceId =
-        $('#deviceSelect').val();
-
-    if (!deviceId) {
+    if (!params.deviceId) {
         return;
     }
 
     $.ajax({
-
-        url:
-            contextPath +
-            '/monitoring/alerts',
-
+        url: contextPath + '/monitoring/history',
         type: 'GET',
+        data: params,
+        dataType: 'json',
 
-        data: {
-            deviceId: deviceId
+        success: function(list) {
+
+            list = list || [];
+
+            const labels = [];
+            const powerValues = [];
+            const socValues = [];
+            const generationValues = [];
+
+            list.forEach(function(row) {
+
+                labels.push(formatTimeLabel(row.recordTime));
+
+                powerValues.push(Number(row.powerOutput || 0));
+                socValues.push(Number(row.soc || 0));
+                generationValues.push(Number(row.solarGenerationKwh || 0));
+            });
+
+            updatePowerChart(labels, powerValues);
+            updateSocChart(labels, socValues);
+            updateGenerationChart(labels, generationValues);
         },
 
+        error: function() {
+            console.log('모니터링 이력 차트 조회 실패');
+        }
+    });
+}
+
+/* =========================
+   최근 7일 차트
+========================= */
+
+function loadWeeklyCharts() {
+
+    const params = getMonitoringParams();
+
+    if (!params.deviceId) {
+        return;
+    }
+
+    $.ajax({
+        url: contextPath + '/monitoring/weekly',
+        type: 'GET',
+        data: params,
+        dataType: 'json',
+
+        success: function(list) {
+
+            list = list || [];
+
+            const labels = [];
+            const generationValues = [];
+            const costValues = [];
+
+            list.forEach(function(row) {
+                labels.push(row.label || row.logDate);
+                generationValues.push(Number(row.dailyKwh || row.value || 0));
+                costValues.push(Number(row.cost || row.savedCost || 0));
+            });
+
+            updateWeeklyGenerationChart(labels, generationValues);
+            updateWeeklyCostChart(labels, costValues);
+        },
+
+        error: function() {
+            console.log('최근 7일 차트 조회 실패');
+        }
+    });
+}
+
+/* =========================
+   최근 알림
+========================= */
+
+function loadAlerts() {
+
+    const params = getMonitoringParams();
+
+    if (!params.deviceId) {
+        return;
+    }
+
+    $.ajax({
+        url: contextPath + '/monitoring/alerts',
+        type: 'GET',
+        data: params,
         dataType: 'json',
 
         success: function(list) {
 
             let html = '';
 
-            /*
-             * 알림 없을 경우
-             */
             if (!list || list.length === 0) {
 
                 html +=
                     '<div class="alert-item">' +
-
-                        '<span class="alert-badge info">' +
-                            '정보' +
-                        '</span>' +
-
-                        '<span class="alert-message">' +
-                            '최근 알림이 없습니다.' +
-                        '</span>' +
-
+                        '<span class="alert-badge info">정보</span>' +
+                        '<div class="alert-content">' +
+                            '<div class="alert-message">최근 알림이 없습니다.</div>' +
+                        '</div>' +
                     '</div>';
 
                 $('#alertList').html(html);
-
                 return;
             }
 
-            /*
-             * 알림 목록 출력
-             */
-		list.forEach(function(alert) {
-		
-		    let levelClass = 'info';
-		    let levelText = '정보';
-		
-		    if (alert.alertLevel === 'WARNING') {
-		        levelClass = 'warning';
-		        levelText = '경고';
-		    }
-		
-		    if (alert.alertLevel === 'CRITICAL') {
-		        levelClass = 'danger';
-		        levelText = '위험';
-		    }
-		
-		    const createdAt =
-		        formatTimestamp(alert.createdAt);
-		
-		    html +=
-		        '<div class="alert-item alert-click" ' +
-		             'onclick="location.href=\'' + contextPath +
-		             '/alert/detail?alertId=' + alert.alertId + '\'">' +
-		
-		            '<span class="alert-badge ' + levelClass + '">' +
-		                levelText +
-		            '</span>' +
-		
-		            '<div class="alert-content">' +
-		                '<div class="alert-message">' +
-		                    alert.message +
-		                '</div>' +
-		
-		                '<div class="alert-time">' +
-		                    createdAt +
-		                '</div>' +
-		            '</div>' +
-		
-		        '</div>';
-		});
+            list.forEach(function(alert) {
+
+                let levelClass = 'info';
+                let levelText = '정보';
+
+                if (alert.alertLevel === 'WARNING') {
+                    levelClass = 'warning';
+                    levelText = '경고';
+                }
+
+                if (alert.alertLevel === 'CRITICAL') {
+                    levelClass = 'danger';
+                    levelText = '위험';
+                }
+
+                html +=
+                    '<div class="alert-item alert-click" ' +
+                         'onclick="location.href=\'' + contextPath +
+                         '/alert/detail?alertId=' + alert.alertId + '\'">' +
+
+                        '<span class="alert-badge ' + levelClass + '">' +
+                            levelText +
+                        '</span>' +
+
+                        '<div class="alert-content">' +
+                            '<div class="alert-message">' +
+                                (alert.message || '-') +
+                            '</div>' +
+                            '<div class="alert-time">' +
+                                formatTimestamp(alert.createdAt) +
+                            '</div>' +
+                        '</div>' +
+
+                    '</div>';
+            });
 
             $('#alertList').html(html);
         },
 
         error: function() {
-
             console.log('알림 조회 실패');
         }
     });
 }
-/*
- * 전체 실시간 데이터 조회
- */
-function loadRealtimeData() {
 
-    loadLatestMonitoring();
+/* =========================
+   운영 판단 요약
+========================= */
 
-    loadWeather();
+function updateOperationSummary(data) {
 
-    loadAlerts();
+    const soc = Number(data.soc || 0);
+    const powerOutput = Number(data.powerOutput || 0);
+    const dailyKwh = Number(data.dailyKwh || 0);
+    const avgKwh = Number(data.generationSevenDayAvg || 0);
+
+    let operationCondition = '발전 상태 분석 준비 중';
+    let batteryCondition = '배터리 상태 분석 준비 중';
+    let recommendAction = '운영 권장 조치 분석 준비 중';
+
+    if (powerOutput <= 0) {
+        operationCondition = '현재 출력이 낮아 발전 상태 확인이 필요합니다.';
+    } else {
+        operationCondition = '현재 발전 출력이 정상적으로 수신되고 있습니다.';
+    }
+
+    if (soc >= 80) {
+        batteryCondition = '배터리 SOC가 충분한 상태입니다.';
+    } else if (soc >= 40) {
+        batteryCondition = '배터리 SOC가 적정 범위에 있습니다.';
+    } else if (soc >= 20) {
+        batteryCondition = '배터리 충전 상태가 낮아 주의가 필요합니다.';
+    } else {
+        batteryCondition = '배터리 저전력 상태입니다.';
+    }
+
+    if (avgKwh > 0 && dailyKwh >= avgKwh) {
+        recommendAction = '선택일 발전량이 7일 평균 이상으로 양호합니다.';
+    } else if (avgKwh > 0) {
+        recommendAction = '선택일 발전량이 7일 평균보다 낮아 원인 확인이 필요합니다.';
+    } else {
+        recommendAction = '데이터가 누적되면 발전량 비교 분석이 가능합니다.';
+    }
+
+    $('#operationCondition').text(operationCondition);
+    $('#batteryCondition').text(batteryCondition);
+    $('#recommendAction').text(recommendAction);
 }
 
-/*
- * 자동 갱신 시작
- */
+/* =========================
+   전체 조회
+========================= */
+
+function reloadMonitoring() {
+
+    loadMonitoringSummary();
+    loadDailyCharts();
+    loadWeeklyCharts();
+    loadAlerts();
+    updateAutoRefreshMode();
+}
+
+/* =========================
+   자동 갱신
+========================= */
+
 function startAutoRefresh() {
 
     stopAutoRefresh();
 
-    autoRefreshTimer = setInterval(loadRealtimeData, 10000);
+    autoRefreshEnabled = true;
+
+    autoRefreshTimer = setInterval(function() {
+
+        if (isTodaySelected()) {
+            loadMonitoringSummary();
+            loadDailyCharts();
+            loadAlerts();
+        }
+
+    }, 10000);
 
     $('#autoRefreshBtn').text('자동갱신 OFF');
 }
 
-/*
- * 자동 갱신 중지
- */
 function stopAutoRefresh() {
 
-    if (autoRefreshTimer != null) {
+    if (autoRefreshTimer !== null) {
         clearInterval(autoRefreshTimer);
         autoRefreshTimer = null;
     }
@@ -683,24 +569,28 @@ function stopAutoRefresh() {
     $('#autoRefreshBtn').text('자동갱신 ON');
 }
 
-/*
- * 자동 갱신 토글
- */
 function toggleAutoRefresh() {
 
+    if (!isTodaySelected()) {
+        return;
+    }
+
     if (autoRefreshTimer) {
+        autoRefreshEnabled = false;
         stopAutoRefresh();
     } else {
+        autoRefreshEnabled = true;
         startAutoRefresh();
     }
 }
 
-/*
- * 페이지 초기 실행
- */
+/* =========================
+   초기 실행
+========================= */
+
 $(document).ready(function() {
 
-    initCharts();
+    initMonitoringCharts();
 
     if (selectedDeviceId) {
         $('#deviceSelect').val(selectedDeviceId);
@@ -708,29 +598,49 @@ $(document).ready(function() {
         $('#deviceSelect option:eq(1)').prop('selected', true);
     }
 
-    loadMonitoringHistory();
+    if (!$('#selectedDate').val()) {
+        $('#selectedDate').val(getTodayString());
+    }
 
-    loadRealtimeData();
+    reloadMonitoring();
 
-    startAutoRefresh();
+    $('#searchBtn').on('click', function() {
+        reloadMonitoring();
+    });
 
     $('#refreshBtn').on('click', function() {
-        loadRealtimeData();
+        reloadMonitoring();
+    });
+
+    $('#groupSelect').on('change', function() {
+
+        loadDeviceList(function() {
+
+            if ($('#deviceSelect option').length > 1) {
+                $('#deviceSelect option:eq(1)').prop('selected', true);
+            }
+
+            reloadMonitoring();
+        });
     });
 
     $('#deviceSelect').on('change', function() {
-        loadMonitoringHistory();
-        loadRealtimeData();
+        reloadMonitoring();
     });
 
-    $('#autoRefreshBtn').on('click', toggleAutoRefresh);
+    $('#selectedDate').on('change', function() {
+        reloadMonitoring();
+    });
+
+    $('#autoRefreshBtn').on('click', function() {
+        toggleAutoRefresh();
+    });
 
     const sidebar = document.getElementById('sidebar');
     const main = document.querySelector('.main');
     const toggleBtn = document.getElementById('sidebarToggle');
 
     if (sidebar && main && toggleBtn) {
-
         toggleBtn.addEventListener('click', function() {
             sidebar.classList.toggle('collapsed');
             main.classList.toggle('collapsed');

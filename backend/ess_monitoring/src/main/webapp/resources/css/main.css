@@ -36,8 +36,7 @@ a {
             rgba(2, 6, 23, 0.96) 0%,
             rgba(15, 23, 42, 0.86) 52%,
             rgba(15, 23, 42, 0.55) 100%
-        ),
-        url('../img/solar-main.jpg') center/cover no-repeat;
+        );
     display: flex;
     align-items: center;
 }
