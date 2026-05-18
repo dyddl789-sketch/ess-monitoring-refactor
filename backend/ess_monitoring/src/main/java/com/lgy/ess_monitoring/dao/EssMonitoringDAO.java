@@ -77,4 +77,16 @@ public interface EssMonitoringDAO {
     List<AlertDTO> getMonitoringAlerts(
             @Param("deviceId") Integer deviceId
     );
+    
+    MonitoringSummaryDTO getMonitoringSummaryFromEnergyLog(
+            @Param("memberId") Integer memberId,
+            @Param("deviceId") Integer deviceId,
+            @Param("selectedDate") String selectedDate
+    );
+    
+    List<DashboardChartDTO> getHistoryFromEnergyLog(
+            @Param("memberId") Integer memberId,
+            @Param("deviceId") Integer deviceId,
+            @Param("selectedDate") String selectedDate
+    );
 }

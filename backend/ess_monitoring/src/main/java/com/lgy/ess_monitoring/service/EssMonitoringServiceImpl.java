@@ -1,7 +1,7 @@
 package com.lgy.ess_monitoring.service;
 
 import java.util.List;
-
+import java.time.LocalDate;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,9 @@ public class EssMonitoringServiceImpl
 
     @Autowired
     private SqlSession sqlSession;
+    
+    @Autowired
+    private EnergyLogService energyLogService;
 
     // DAO 가져오기
     private EssMonitoringDAO getDao() {
@@ -209,5 +212,55 @@ public class EssMonitoringServiceImpl
 
         return getDao()
             .getMonitoringAlerts(deviceId);
+    }
+    
+    @Override
+    public void insertMonitoring(EssMonitoringDTO dto) {
+
+        log.info("insertMonitoring() deviceId={}", dto.getDeviceId());
+
+        getDao().insertMonitoring(dto);
+
+        energyLogService.aggregateDailyEnergyLog(
+                dto.getDeviceId(),
+                LocalDate.now().toString()
+        );
+    }
+    
+    @Override
+    public MonitoringSummaryDTO getMonitoringSummaryFromEnergyLog(
+            Integer memberId,
+            Integer deviceId,
+            String selectedDate
+    ) {
+        log.info("getMonitoringSummaryFromEnergyLog() deviceId={}, selectedDate={}",
+                deviceId,
+                selectedDate
+        );
+
+        return getDao().getMonitoringSummaryFromEnergyLog(
+                memberId,
+                deviceId,
+                selectedDate
+        );
+    }
+    
+    @Override
+    public List<DashboardChartDTO> getHistoryFromEnergyLog(
+            Integer memberId,
+            Integer deviceId,
+            String selectedDate
+    ) {
+
+        log.info("getHistoryFromEnergyLog() deviceId={}, selectedDate={}",
+                deviceId,
+                selectedDate
+        );
+
+        return getDao().getHistoryFromEnergyLog(
+                memberId,
+                deviceId,
+                selectedDate
+        );
     }
 }

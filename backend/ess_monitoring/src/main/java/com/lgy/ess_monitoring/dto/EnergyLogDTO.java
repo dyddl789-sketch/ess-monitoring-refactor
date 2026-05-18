@@ -1,21 +1,21 @@
 package com.lgy.ess_monitoring.dto;
 
+import java.sql.Date;
+
 import lombok.Data;
 
 @Data
-public class DashboardChartDTO {
+public class EnergyLogDTO {
 
-    private String label;
-
-    private Double monthlyKwh;
-    private Double savedCost;
-    private Double efficiency;
+    private int logId;
+    private int deviceId;
 
     private Double dailyKwh;
     private Double cost;
+    private Double efficiency;
+
+    private Date logDate;
 
     private String deviceName;
     private String groupName;
-
-    private Double value;
 }

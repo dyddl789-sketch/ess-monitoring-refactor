@@ -32,8 +32,6 @@ public class DashboardServiceImpl implements DashboardService {
             Integer groupId,
             Integer deviceId
     ) {
-        log.info("getDashboardSummary() memberId={}, selectedMonth={}", memberId, selectedMonth);
-
         return getDao().getDashboardSummary(
                 memberId,
                 selectedMonth,
@@ -48,8 +46,6 @@ public class DashboardServiceImpl implements DashboardService {
             Integer groupId,
             Integer deviceId
     ) {
-        log.info("getDashboardDeviceStatusList() memberId={}", memberId);
-
         return getDao().getDashboardDeviceStatusList(
                 memberId,
                 groupId,
@@ -59,8 +55,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<EssGroupDTO> getGroups(int memberId) {
-        log.info("getGroups() memberId={}", memberId);
-
         return getDao().getGroups(memberId);
     }
 
@@ -71,8 +65,6 @@ public class DashboardServiceImpl implements DashboardService {
             Integer groupId,
             Integer deviceId
     ) {
-        log.info("getMonthlyGenerationChart() selectedMonth={}", selectedMonth);
-
         return getDao().getMonthlyGenerationChart(
                 memberId,
                 selectedMonth,
@@ -88,8 +80,6 @@ public class DashboardServiceImpl implements DashboardService {
             Integer groupId,
             Integer deviceId
     ) {
-        log.info("getMonthlyCostChart() selectedMonth={}", selectedMonth);
-
         return getDao().getMonthlyCostChart(
                 memberId,
                 selectedMonth,
@@ -105,8 +95,6 @@ public class DashboardServiceImpl implements DashboardService {
             Integer groupId,
             Integer deviceId
     ) {
-        log.info("getTopDeviceGenerationChart() selectedMonth={}", selectedMonth);
-
         return getDao().getTopDeviceGenerationChart(
                 memberId,
                 selectedMonth,

@@ -75,4 +75,5 @@ public class EssMemberServiceImpl implements EssMemberService {
 
         return getDao().updatePassword(params);
     }
+    
 }

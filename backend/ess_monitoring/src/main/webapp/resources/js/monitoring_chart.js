@@ -256,6 +256,7 @@ function initMonitoringCharts() {
 }
 
 function updateLineChart(chart, labels, values) {
+
     if (!chart) {
         return;
     }
@@ -283,4 +284,25 @@ function updateWeeklyGenerationChart(labels, values) {
 
 function updateWeeklyCostChart(labels, values) {
     updateLineChart(weeklyCostChart, labels, values);
+}
+
+// 이력/실시간 제목 변경
+function updateMonitoringModeTitle() {
+
+    if (isHistoryMode()) {
+
+        $('.power-chart-title')
+            .text('선택일 운영 이력');
+
+        $('.soc-chart-title')
+            .text('일별 통계 기준');
+
+        return;
+    }
+
+    $('.power-chart-title')
+        .text('실시간 출력 그래프');
+
+    $('.soc-chart-title')
+        .text('SOC 변화 그래프');
 }

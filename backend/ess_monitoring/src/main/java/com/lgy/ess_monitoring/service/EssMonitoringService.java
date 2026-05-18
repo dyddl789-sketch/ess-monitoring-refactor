@@ -70,4 +70,19 @@ public interface EssMonitoringService {
     List<AlertDTO> getMonitoringAlerts(
             Integer deviceId
     );
+    
+ // 모니터링 데이터 저장
+    void insertMonitoring(EssMonitoringDTO dto);
+    
+    MonitoringSummaryDTO getMonitoringSummaryFromEnergyLog(
+            Integer memberId,
+            Integer deviceId,
+            String selectedDate
+    );
+    
+    List<DashboardChartDTO> getHistoryFromEnergyLog(
+            Integer memberId,
+            Integer deviceId,
+            String selectedDate
+    );
 }

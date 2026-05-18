@@ -301,6 +301,10 @@ function loadMonitoringSummary() {
             $('#lastUpdateTime').text(formatNow());
 
             updateOperationSummary(data);
+            
+            if (isHistoryMode()) {
+			    applyHistoryModeView();
+			}
         },
 
         error: function() {
@@ -534,6 +538,8 @@ function reloadMonitoring() {
     loadWeeklyCharts();
     loadAlerts();
     updateAutoRefreshMode();
+
+    updateMonitoringModeTitle();
 }
 
 /* =========================
@@ -647,3 +653,33 @@ $(document).ready(function() {
         });
     }
 });
+
+// 현재 날짜 여부
+function isHistoryMode() {
+
+    return $('#selectedDate').val() !== getTodayString();
+}
+
+
+// 이력 조회 모드 표시
+function applyHistoryModeView() {
+
+    if (!isHistoryMode()) {
+        return;
+    }
+
+    setDeviceStatus('NORMAL');
+
+    $('#soc').text('이력');
+    $('#powerOutput').text('조회');
+
+    $('#voltage').text('이력 데이터');
+    $('#currentA').text('일별 통계');
+    $('#powerOutputDetail').text('실시간 데이터 없음');
+    $('#socDetail').text('energy_log 기준');
+    $('#recordTime').text($('#selectedDate').val());
+
+    $('#autoRefreshBtn')
+        .prop('disabled', true)
+        .text('이력 조회 모드');
+}

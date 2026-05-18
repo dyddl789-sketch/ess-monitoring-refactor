@@ -1,71 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.lgy.ess_monitoring.dao.DashboardDAO">
 
-    <!-- 대시보드 요약 -->
+    <!-- 상단 요약 카드 -->
     <select id="getDashboardSummary"
             resultType="com.lgy.ess_monitoring.dto.DashboardSummaryDTO">
 
         SELECT
+            COUNT(DISTINCT d.device_id)
+                AS totalDeviceCount,
+
             COUNT(DISTINCT CASE
-			    WHEN d.deleted_yn = 'N'
-			    THEN d.device_id
-			END) AS totalDeviceCount,
+                WHEN d.status != 'OFFLINE'
+                THEN d.device_id
+            END)
+                AS operatingDeviceCount,
 
-			COUNT(DISTINCT CASE
-			    WHEN d.deleted_yn = 'N'
-			     AND d.status != 'OFFLINE'
-			    THEN d.device_id
-			END) AS operatingDeviceCount,
-
-			COUNT(DISTINCT CASE
-			    WHEN d.deleted_yn = 'N'
-			     AND d.status = 'OFFLINE'
-			    THEN d.device_id
-			END) AS offlineDeviceCount,
+            COUNT(DISTINCT CASE
+                WHEN d.status = 'OFFLINE'
+                THEN d.device_id
+            END)
+                AS offlineDeviceCount,
 
             COUNT(DISTINCT CASE
                 WHEN el.log_id IS NOT NULL
                 THEN d.device_id
-            END) AS loggedDeviceCount,
-            
-            COUNT(DISTINCT CASE
-			    WHEN d.deleted_yn = 'Y'
-			    THEN d.device_id
-			END) AS deletedDeviceCount,
+            END)
+                AS loggedDeviceCount,
 
-            IFNULL(SUM(el.daily_kwh), 0) AS monthlyGenerationKwh,
+            IFNULL(SUM(el.daily_kwh), 0)
+                AS monthlyGenerationKwh,
 
-            IFNULL(SUM(el.cost), 0) AS monthlySavedCost,
+            IFNULL(SUM(el.cost), 0)
+                AS monthlySavedCost,
 
-            IFNULL(AVG(el.efficiency), 0) AS averageEfficiency
+            IFNULL(AVG(el.efficiency), 0)
+                AS averageEfficiency
 
         FROM ess_device d
 
         LEFT JOIN energy_log el
           ON d.device_id = el.device_id
-         AND DATE_FORMAT(el.log_date, '%Y-%m') = #{selectedMonth}
+         AND DATE_FORMAT(el.log_date, '%Y-%m')
+             = #{selectedMonth}
 
         WHERE d.member_id = #{memberId}
-
-		AND d.install_date <![CDATA[ <= ]]>
-		    LAST_DAY(
-		        STR_TO_DATE(
-		            CONCAT(#{selectedMonth}, '-01'),
-		            '%Y-%m-%d'
-		        )
-		    )
-		
-		AND (
-		    d.deleted_yn = 'N'
-		    OR d.deleted_at >=
-		        STR_TO_DATE(
-		            CONCAT(#{selectedMonth}, '-01'),
-		            '%Y-%m-%d'
-		        )
-		)
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
 
         <if test="groupId != null">
             AND d.group_id = #{groupId}
@@ -78,7 +61,7 @@
     </select>
 
 
-    <!-- 장비 셀렉트 목록 -->
+    <!-- 장비 목록 -->
     <select id="getDashboardDeviceStatusList"
             resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
 
@@ -86,16 +69,17 @@
             d.device_id,
             d.device_name,
             d.group_id,
-            g.group_name,
             d.status,
-            d.is_main
+            d.is_main,
+            g.group_name
+
         FROM ess_device d
 
         LEFT JOIN ess_device_group g
           ON d.group_id = g.group_id
 
         WHERE d.member_id = #{memberId}
-  			AND d.deleted_yn = 'N'
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
 
         <if test="groupId != null">
             AND d.group_id = #{groupId}
@@ -117,32 +101,29 @@
         SELECT
             group_id,
             group_name
+
         FROM ess_device_group
+
         WHERE member_id = #{memberId}
+
         ORDER BY group_id ASC
 
     </select>
 
 
-    <!-- 회원 유형 -->
-    <select id="getUserType"
-            resultType="string">
-
-        SELECT user_type
-        FROM ess_member
-        WHERE member_id = #{memberId}
-
-    </select>
-
-
-    <!-- 최근 6개월 월별 발전량 -->
+    <!-- 최근 6개월 발전량 -->
     <select id="getMonthlyGenerationChart"
             resultType="com.lgy.ess_monitoring.dto.DashboardChartDTO">
 
         SELECT
-            DATE_FORMAT(el.log_date, '%Y-%m') AS label,
-            IFNULL(SUM(el.daily_kwh), 0) AS monthlyKwh,
-            IFNULL(SUM(el.daily_kwh), 0) AS value
+            DATE_FORMAT(el.log_date, '%Y-%m')
+                AS label,
+
+            IFNULL(SUM(el.daily_kwh), 0)
+                AS monthlyKwh,
+
+            IFNULL(SUM(el.daily_kwh), 0)
+                AS value
 
         FROM energy_log el
 
@@ -150,11 +131,15 @@
           ON el.device_id = d.device_id
 
         WHERE d.member_id = #{memberId}
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
 
-          AND el.log_date <![CDATA[ >= ]]>
+          AND el.log_date >=
               DATE_FORMAT(
                   DATE_SUB(
-                      STR_TO_DATE(CONCAT(#{selectedMonth}, '-01'), '%Y-%m-%d'),
+                      STR_TO_DATE(
+                          CONCAT(#{selectedMonth}, '-01'),
+                          '%Y-%m-%d'
+                      ),
                       INTERVAL 5 MONTH
                   ),
                   '%Y-%m-01'
@@ -162,7 +147,10 @@
 
           AND el.log_date <![CDATA[ <= ]]>
               LAST_DAY(
-                  STR_TO_DATE(CONCAT(#{selectedMonth}, '-01'), '%Y-%m-%d')
+                  STR_TO_DATE(
+                      CONCAT(#{selectedMonth}, '-01'),
+                      '%Y-%m-%d'
+                  )
               )
 
         <if test="groupId != null">
@@ -174,19 +162,25 @@
         </if>
 
         GROUP BY DATE_FORMAT(el.log_date, '%Y-%m')
+
         ORDER BY label ASC
 
     </select>
 
 
-    <!-- 최근 6개월 월별 절감 금액 -->
+    <!-- 최근 6개월 절감 금액 -->
     <select id="getMonthlyCostChart"
             resultType="com.lgy.ess_monitoring.dto.DashboardChartDTO">
 
         SELECT
-            DATE_FORMAT(el.log_date, '%Y-%m') AS label,
-            IFNULL(SUM(el.cost), 0) AS savedCost,
-            IFNULL(SUM(el.cost), 0) AS value
+            DATE_FORMAT(el.log_date, '%Y-%m')
+                AS label,
+
+            IFNULL(SUM(el.cost), 0)
+                AS savedCost,
+
+            IFNULL(SUM(el.cost), 0)
+                AS value
 
         FROM energy_log el
 
@@ -194,11 +188,15 @@
           ON el.device_id = d.device_id
 
         WHERE d.member_id = #{memberId}
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
 
-          AND el.log_date <![CDATA[ >= ]]>
+          AND el.log_date >=
               DATE_FORMAT(
                   DATE_SUB(
-                      STR_TO_DATE(CONCAT(#{selectedMonth}, '-01'), '%Y-%m-%d'),
+                      STR_TO_DATE(
+                          CONCAT(#{selectedMonth}, '-01'),
+                          '%Y-%m-%d'
+                      ),
                       INTERVAL 5 MONTH
                   ),
                   '%Y-%m-01'
@@ -206,7 +204,10 @@
 
           AND el.log_date <![CDATA[ <= ]]>
               LAST_DAY(
-                  STR_TO_DATE(CONCAT(#{selectedMonth}, '-01'), '%Y-%m-%d')
+                  STR_TO_DATE(
+                      CONCAT(#{selectedMonth}, '-01'),
+                      '%Y-%m-%d'
+                  )
               )
 
         <if test="groupId != null">
@@ -218,21 +219,29 @@
         </if>
 
         GROUP BY DATE_FORMAT(el.log_date, '%Y-%m')
+
         ORDER BY label ASC
 
     </select>
 
 
-    <!-- 장비별 월간 발전량 TOP5 -->
+    <!-- 장비별 TOP5 -->
     <select id="getTopDeviceGenerationChart"
             resultType="com.lgy.ess_monitoring.dto.DashboardChartDTO">
 
         SELECT
             d.device_name AS label,
+
             d.device_name AS deviceName,
-            IFNULL(g.group_name, '미지정 그룹') AS groupName,
-            IFNULL(SUM(el.daily_kwh), 0) AS monthlyKwh,
-            IFNULL(SUM(el.daily_kwh), 0) AS value
+
+            IFNULL(g.group_name, '미지정')
+                AS groupName,
+
+            IFNULL(SUM(el.daily_kwh), 0)
+                AS monthlyKwh,
+
+            IFNULL(SUM(el.daily_kwh), 0)
+                AS value
 
         FROM ess_device d
 
@@ -241,10 +250,11 @@
 
         LEFT JOIN energy_log el
           ON d.device_id = el.device_id
-         AND DATE_FORMAT(el.log_date, '%Y-%m') = #{selectedMonth}
+         AND DATE_FORMAT(el.log_date, '%Y-%m')
+             = #{selectedMonth}
 
-		WHERE d.member_id = #{memberId}
-		  AND d.deleted_yn = 'N'
+        WHERE d.member_id = #{memberId}
+          AND IFNULL(d.deleted_yn, 'N') = 'N'
 
         <if test="groupId != null">
             AND d.group_id = #{groupId}
@@ -254,8 +264,13 @@
             AND d.device_id = #{deviceId}
         </if>
 
-        GROUP BY d.device_id, d.device_name, g.group_name
+        GROUP BY
+            d.device_id,
+            d.device_name,
+            g.group_name
+
         ORDER BY monthlyKwh DESC
+
         LIMIT 5
 
     </select>

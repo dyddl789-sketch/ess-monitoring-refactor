@@ -241,9 +241,9 @@
             <!-- 출력 그래프 -->
             <div class="card">
 
-                <div class="section-title">
-                    실시간 출력 그래프
-                </div>
+				<div class="section-title power-chart-title">
+				    실시간 출력 그래프
+				</div>
 
                 <div class="chart-box">
 
@@ -303,9 +303,9 @@
             <!-- SOC -->
             <div class="card">
 
-                <div class="section-title">
-                    SOC 변화 그래프
-                </div>
+				<div class="section-title soc-chart-title">
+				    SOC 변화 그래프
+				</div>
 
                 <div class="chart-box">
 
@@ -476,8 +476,8 @@
         '${deviceId}';
 
 </script>
-<script src="${pageContext.request.contextPath}/resources/js/monitoring_chart.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/monitoring_main.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/monitoring_chart.js"></script>
 
 </body>
 </html>

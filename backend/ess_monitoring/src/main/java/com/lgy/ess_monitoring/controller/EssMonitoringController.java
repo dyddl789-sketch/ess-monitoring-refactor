@@ -117,39 +117,42 @@ public class EssMonitoringController {
             String selectedDate,
             HttpSession session
     ) {
-        log.info("@# getMonitoringSummary()");
-        log.info("@# deviceId => {}", deviceId);
-        log.info("@# selectedDate => {}", selectedDate);
-
         Integer memberId =
-            (Integer) session.getAttribute("memberId");
+                (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
             return null;
         }
 
-        if (selectedDate == null
-                || selectedDate.isEmpty()) {
-
-            selectedDate =
-                LocalDate.now().toString();
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            selectedDate = LocalDate.now().toString();
         }
 
-        return monitoringService.getMonitoringSummary(
-            memberId,
-            deviceId,
-            selectedDate
+        String today = LocalDate.now().toString();
+
+        if (selectedDate.equals(today)) {
+            return monitoringService.getMonitoringSummary(
+                    memberId,
+                    deviceId,
+                    selectedDate
+            );
+        }
+
+        return monitoringService.getMonitoringSummaryFromEnergyLog(
+                memberId,
+                deviceId,
+                selectedDate
         );
     }
 
-    // 시간별 모니터링 이력
+ // 시간별 모니터링 이력
     @ResponseBody
     @RequestMapping(
         value = "/history",
         method = RequestMethod.GET,
         produces = "application/json; charset=UTF-8"
     )
-    public List<EssMonitoringDTO> monitoringHistory(
+    public Object monitoringHistory(
             Integer deviceId,
             String selectedDate,
             HttpSession session
@@ -172,7 +175,21 @@ public class EssMonitoringController {
                 LocalDate.now().toString();
         }
 
-        return monitoringService.getMonitoringHistory(
+        String today =
+            LocalDate.now().toString();
+
+        // 오늘 날짜 → monitoring 실시간 이력
+        if (selectedDate.equals(today)) {
+
+            return monitoringService.getMonitoringHistory(
+                memberId,
+                deviceId,
+                selectedDate
+            );
+        }
+
+        // 과거 날짜 → energy_log 집계 데이터
+        return monitoringService.getHistoryFromEnergyLog(
             memberId,
             deviceId,
             selectedDate
@@ -241,4 +258,5 @@ public class EssMonitoringController {
         return alertService
             .getRecentAlertsByDeviceId(deviceId);
     }
+    
 }

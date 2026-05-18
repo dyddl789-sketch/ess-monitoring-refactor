@@ -45,21 +45,28 @@ public class DashboardController {
 
     // 대시보드 화면
     @RequestMapping(value = "/main", method = RequestMethod.GET)
-    public String dashboardMain(HttpSession session, Model model) {
+    public String dashboardMain(
+            HttpSession session,
+            Model model
+    ) {
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
 
-        Integer memberId = (Integer) session.getAttribute("memberId");
-        String memberAddress = (String) session.getAttribute("memberAddress");
+        String memberAddress =
+                (String) session.getAttribute("memberAddress");
 
         if (memberId == null) {
             return "redirect:/login_view";
         }
 
         String selectedMonth =
-                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+                LocalDate.now()
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM"));
 
         String selectedDate =
                 LocalDate.now().toString();
 
+        // 필터 데이터
         List<EssGroupDTO> groupList =
                 dashboardService.getGroups(memberId);
 
@@ -75,11 +82,12 @@ public class DashboardController {
         model.addAttribute("groupList", groupList);
         model.addAttribute("deviceList", deviceList);
 
-        // 날씨
+        // 대표 날씨
         String weatherAddress = memberAddress;
         String weatherBaseText = "회원 주소 기준";
 
-        EssDeviceDTO mainDevice = deviceService.getMainDevice(memberId);
+        EssDeviceDTO mainDevice =
+                deviceService.getMainDevice(memberId);
 
         if (mainDevice != null
                 && mainDevice.getLocation() != null
@@ -110,6 +118,7 @@ public class DashboardController {
         return "dashboard_main";
     }
 
+
     // 요약 카드
     @ResponseBody
     @RequestMapping(
@@ -123,7 +132,8 @@ public class DashboardController {
             Integer deviceId,
             HttpSession session
     ) {
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
             return null;
@@ -131,7 +141,8 @@ public class DashboardController {
 
         if (selectedMonth == null || selectedMonth.isEmpty()) {
             selectedMonth =
-                    LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+                    LocalDate.now()
+                            .format(DateTimeFormatter.ofPattern("yyyy-MM"));
         }
 
         return dashboardService.getDashboardSummary(
@@ -141,6 +152,7 @@ public class DashboardController {
                 deviceId
         );
     }
+
 
     // 장비 셀렉트
     @ResponseBody
@@ -154,7 +166,8 @@ public class DashboardController {
             Integer deviceId,
             HttpSession session
     ) {
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
             return null;
@@ -166,6 +179,7 @@ public class DashboardController {
                 deviceId
         );
     }
+
 
     // 월별 발전량
     @ResponseBody
@@ -180,7 +194,8 @@ public class DashboardController {
             Integer deviceId,
             HttpSession session
     ) {
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
             return null;
@@ -188,7 +203,8 @@ public class DashboardController {
 
         if (selectedMonth == null || selectedMonth.isEmpty()) {
             selectedMonth =
-                    LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+                    LocalDate.now()
+                            .format(DateTimeFormatter.ofPattern("yyyy-MM"));
         }
 
         return dashboardService.getMonthlyGenerationChart(
@@ -198,6 +214,7 @@ public class DashboardController {
                 deviceId
         );
     }
+
 
     // 월별 절감 금액
     @ResponseBody
@@ -212,7 +229,8 @@ public class DashboardController {
             Integer deviceId,
             HttpSession session
     ) {
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
             return null;
@@ -220,7 +238,8 @@ public class DashboardController {
 
         if (selectedMonth == null || selectedMonth.isEmpty()) {
             selectedMonth =
-                    LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+                    LocalDate.now()
+                            .format(DateTimeFormatter.ofPattern("yyyy-MM"));
         }
 
         return dashboardService.getMonthlyCostChart(
@@ -230,6 +249,7 @@ public class DashboardController {
                 deviceId
         );
     }
+
 
     // 장비별 TOP5
     @ResponseBody
@@ -244,7 +264,8 @@ public class DashboardController {
             Integer deviceId,
             HttpSession session
     ) {
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
             return null;
@@ -252,7 +273,8 @@ public class DashboardController {
 
         if (selectedMonth == null || selectedMonth.isEmpty()) {
             selectedMonth =
-                    LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+                    LocalDate.now()
+                            .format(DateTimeFormatter.ofPattern("yyyy-MM"));
         }
 
         return dashboardService.getTopDeviceGenerationChart(
@@ -262,6 +284,7 @@ public class DashboardController {
                 deviceId
         );
     }
+
 
     // 최근 알림
     @ResponseBody
@@ -276,7 +299,8 @@ public class DashboardController {
             Integer deviceId,
             HttpSession session
     ) {
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Integer memberId =
+                (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
             return null;

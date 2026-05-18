@@ -1,7 +1,9 @@
-/**
+/*
  * 대시보드 차트 JS
- * - selectedMonth 기준
- * - 월별 발전량 / 월별 절감 금액 / 장비별 TOP5
+ * - 최근 6개월 발전량
+ * - 최근 6개월 절감 금액
+ * - 장비별 발전량 TOP5
+ * - 상대 축 범위 적용
  */
 
 let monthlyGenerationChart;
@@ -12,46 +14,22 @@ let deviceTopChart;
 // 차트 요청 파라미터
 function getDashboardChartParams() {
 
-    const params = {};
-
-    let selectedMonth = $('#selectedMonth').val();
-
-    if (!selectedMonth) {
-        const today = new Date();
-
-        selectedMonth =
-            today.getFullYear() +
-            '-' +
-            String(today.getMonth() + 1).padStart(2, '0');
-
-        $('#selectedMonth').val(selectedMonth);
+    if (typeof getDashboardParams === 'function') {
+        return getDashboardParams();
     }
 
-    params.selectedMonth = selectedMonth;
-
-    const groupId = $('#groupSelect').val();
-    const deviceId = $('#deviceSelect').val();
-
-    if (groupId) {
-        params.groupId = groupId;
-    }
-
-    if (deviceId) {
-        params.deviceId = deviceId;
-    }
-
-    return params;
+    return {};
 }
 
 
-// 공통 차트 옵션
-function commonChartOptions() {
+// 공통 옵션
+function commonDashboardChartOptions(unit) {
 
     return {
         responsive: true,
         maintainAspectRatio: false,
         animation: {
-            duration: 400
+            duration: 350
         },
         plugins: {
             legend: {
@@ -77,129 +55,110 @@ function commonChartOptions() {
                 }
             },
             y: {
-                beginAtZero: true,
+                beginAtZero: false,
                 grid: {
                     color: '#e5e7eb'
                 },
                 ticks: {
-                    color: '#64748b'
+                    color: '#64748b',
+                    stepSize: unit
                 }
             }
         }
     };
 }
 
-// 상대적 축 범위 적용
-function applyRelativeYAxis(chart, values, unit = 200) {
 
-    if (!values || values.length === 0) {
+// 상대 y축 범위 적용
+function applyRelativeYAxis(chart, values, unit) {
+
+    if (!chart || !values || values.length === 0) {
         return;
     }
 
-    const maxValue = Math.max(...values);
-    const minValue = Math.min(...values);
+    const nums = values
+        .map(function(value) {
+            return Number(value || 0);
+        })
+        .filter(function(value) {
+            return !isNaN(value);
+        });
 
-    if (maxValue <= 0) {
+    if (nums.length === 0) {
+        return;
+    }
+
+    const maxValue = Math.max.apply(null, nums);
+    const minValue = Math.min.apply(null, nums);
+
+    if (maxValue === 0 && minValue === 0) {
+        chart.options.scales.y.min = 0;
+        chart.options.scales.y.max = unit;
+        chart.options.scales.y.ticks.stepSize = unit;
         return;
     }
 
     const upperPadding = maxValue * 0.12;
     const lowerPadding = maxValue * 0.05;
 
-    const min =
-        Math.floor((minValue - lowerPadding) / unit) * unit;
-
-    const max =
-        Math.ceil((maxValue + upperPadding) / unit) * unit;
-
-    chart.options.scales.y.beginAtZero = false;
+    const rawMin = Math.max(0, minValue - lowerPadding);
+    const rawMax = maxValue + upperPadding;
 
     chart.options.scales.y.min =
-        Math.max(0, min);
+        Math.floor(rawMin / unit) * unit;
 
     chart.options.scales.y.max =
-        max;
+        Math.ceil(rawMax / unit) * unit;
+
+    chart.options.scales.y.ticks.stepSize = unit;
 }
 
 
-// 가로 차트용 축 범위
-function applyRelativeXAxis(chart, values, unit = 100) {
-
-    if (!values || values.length === 0) {
-        return;
-    }
-
-    const maxValue = Math.max(...values);
-    const minValue = Math.min(...values);
-
-    if (maxValue <= 0) {
-        return;
-    }
-
-    const upperPadding = maxValue * 0.12;
-    const lowerPadding = maxValue * 0.05;
-
-    const min =
-        Math.floor((minValue - lowerPadding) / unit) * unit;
-
-    const max =
-        Math.ceil((maxValue + upperPadding) / unit) * unit;
-
-    chart.options.scales.x.beginAtZero = false;
-
-    chart.options.scales.x.min =
-        Math.max(0, min);
-
-    chart.options.scales.x.max =
-        max;
-}
-
-
-
-// 최근 6개월 발전량
+// 월별 발전량 차트 생성
 function initMonthlyGenerationChart() {
 
-    const ctx = document.getElementById('monthlyGenerationChart');
+    const canvas =
+        document.getElementById('monthlyGenerationChart');
 
-    if (!ctx) {
+    if (!canvas) {
         return;
     }
 
-    monthlyGenerationChart = new Chart(ctx.getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: [],
-            datasets: [
-                {
-                    label: '월별 발전량',
+    monthlyGenerationChart =
+        new Chart(canvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '월별 발전량(kWh)',
                     data: [],
                     backgroundColor: 'rgba(37, 99, 235, 0.75)',
-                    borderRadius: 4,
+                    borderRadius: 6,
                     barThickness: 28
-                }
-            ]
-        },
-        options: commonChartOptions()
-    });
+                }]
+            },
+            options: commonDashboardChartOptions(200)
+        });
 }
 
 
-// 최근 6개월 절감 금액
+// 월별 절감 금액 차트 생성
 function initMonthlyCostChart() {
 
-    const ctx = document.getElementById('monthlyCostChart');
+    const canvas =
+        document.getElementById('monthlyCostChart');
 
-    if (!ctx) {
+    if (!canvas) {
         return;
     }
 
-    monthlyCostChart = new Chart(ctx.getContext('2d'), {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [
-                {
-                    label: '월별 절감 금액',
+    monthlyCostChart =
+        new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '월별 절감 금액(원)',
                     data: [],
                     borderColor: '#16a34a',
                     backgroundColor: 'rgba(22, 163, 74, 0.10)',
@@ -208,45 +167,38 @@ function initMonthlyCostChart() {
                     pointHoverRadius: 5,
                     tension: 0.3,
                     fill: true
-                }
-            ]
-        },
-        options: commonChartOptions()
-    });
+                }]
+            },
+            options: commonDashboardChartOptions(20000)
+        });
 }
 
 
-// 장비별 TOP5
+// 장비별 TOP5 차트 생성
 function initDeviceTopChart() {
 
-    const ctx = document.getElementById('deviceTopChart');
+    const canvas =
+        document.getElementById('deviceTopChart');
 
-    if (!ctx) {
+    if (!canvas) {
         return;
     }
 
-    deviceTopChart = new Chart(ctx.getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: [],
-            datasets: [
-                {
-                    label: '장비별 발전량',
+    deviceTopChart =
+        new Chart(canvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '장비별 발전량(kWh)',
                     data: [],
-                    backgroundColor: 'rgba(37, 99, 235, 0.75)',
-                    borderRadius: 4,
-                    barThickness: 22
-                }
-            ]
-        },
-        options: Object.assign(
-            {},
-            commonChartOptions(),
-            {
-                indexAxis: 'y'
-            }
-        )
-    });
+                    backgroundColor: 'rgba(124, 58, 237, 0.75)',
+                    borderRadius: 6,
+                    barThickness: 28
+                }]
+            },
+            options: commonDashboardChartOptions(100)
+        });
 }
 
 
@@ -275,16 +227,12 @@ function loadMonthlyGenerationChart() {
                 values.push(Number(row.monthlyKwh || row.value || 0));
             });
 
-			monthlyGenerationChart.data.labels = labels;
-			monthlyGenerationChart.data.datasets[0].data = values;
-			
-		applyRelativeYAxis(
-		    monthlyGenerationChart,
-		    values,
-		    200
-		);
-			
-			monthlyGenerationChart.update();
+            monthlyGenerationChart.data.labels = labels;
+            monthlyGenerationChart.data.datasets[0].data = values;
+
+            applyRelativeYAxis(monthlyGenerationChart, values, 200);
+
+            monthlyGenerationChart.update();
         },
 
         error: function() {
@@ -319,16 +267,12 @@ function loadMonthlyCostChart() {
                 values.push(Number(row.savedCost || row.value || 0));
             });
 
-			monthlyCostChart.data.labels = labels;
-			monthlyCostChart.data.datasets[0].data = values;
-			
-		applyRelativeYAxis(
-		    monthlyCostChart,
-		    values,
-		    20000
-		);
-			
-			monthlyCostChart.update();
+            monthlyCostChart.data.labels = labels;
+            monthlyCostChart.data.datasets[0].data = values;
+
+            applyRelativeYAxis(monthlyCostChart, values, 20000);
+
+            monthlyCostChart.update();
         },
 
         error: function() {
@@ -363,16 +307,12 @@ function loadDeviceTopChart() {
                 values.push(Number(row.monthlyKwh || row.value || 0));
             });
 
-			deviceTopChart.data.labels = labels;
-			deviceTopChart.data.datasets[0].data = values;
-			
-		applyRelativeXAxis(
-		    deviceTopChart,
-		    values,
-		    100
-		);
-			
-			deviceTopChart.update();
+            deviceTopChart.data.labels = labels;
+            deviceTopChart.data.datasets[0].data = values;
+
+            applyRelativeYAxis(deviceTopChart, values, 100);
+
+            deviceTopChart.update();
         },
 
         error: function() {
@@ -382,7 +322,7 @@ function loadDeviceTopChart() {
 }
 
 
-// 전체 차트 갱신
+// 전체 차트 조회
 function loadDashboardCharts() {
 
     loadMonthlyGenerationChart();
@@ -391,7 +331,7 @@ function loadDashboardCharts() {
 }
 
 
-// 초기 로딩
+// 초기 실행
 $(document).ready(function() {
 
     initMonthlyGenerationChart();

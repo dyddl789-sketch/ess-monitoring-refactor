@@ -355,5 +355,72 @@
         LIMIT 5
 
     </select>
-
+	
+	<!-- 과거 날짜 energy_log 기반 요약 -->
+	<select id="getMonitoringSummaryFromEnergyLog"
+	        resultType="com.lgy.ess_monitoring.dto.MonitoringSummaryDTO">
+	
+	    SELECT
+	        d.status AS deviceStatus,
+	
+	        NULL AS soc,
+	        NULL AS powerOutput,
+	        NULL AS voltage,
+	        NULL AS currentA,
+	        NULL AS recordTime,
+	
+	        IFNULL(el.daily_kwh, 0) AS dailyKwh,
+	        IFNULL(el.cost, 0) AS savedCost,
+	
+	        IFNULL(avg7.generationSevenDayAvg, 0) AS generationSevenDayAvg,
+	        IFNULL(avg7.costSevenDayAvg, 0) AS costSevenDayAvg
+	
+	    FROM ess_device d
+	
+	    LEFT JOIN energy_log el
+	      ON d.device_id = el.device_id
+	     AND el.log_date = #{selectedDate}
+	
+	    LEFT JOIN (
+	        SELECT
+	            device_id,
+	            AVG(daily_kwh) AS generationSevenDayAvg,
+	            AVG(cost) AS costSevenDayAvg
+	        FROM energy_log
+	        WHERE log_date BETWEEN DATE_SUB(#{selectedDate}, INTERVAL 6 DAY)
+	                           AND #{selectedDate}
+	        GROUP BY device_id
+	    ) avg7
+	      ON d.device_id = avg7.device_id
+	
+	    WHERE d.member_id = #{memberId}
+	      AND d.device_id = #{deviceId}
+	      AND IFNULL(d.deleted_yn, 'N') = 'N'
+	
+	</select>
+	
+	<!-- 과거 날짜 energy_log 기반 차트 -->
+	<select id="getHistoryFromEnergyLog"
+	        resultType="com.lgy.ess_monitoring.dto.DashboardChartDTO">
+	
+	    SELECT
+	        DATE_FORMAT(el.log_date, '%m-%d') AS label,
+	
+	        IFNULL(el.daily_kwh, 0) AS dailyKwh,
+	
+	        IFNULL(el.daily_kwh, 0) AS value,
+	
+	        IFNULL(el.cost, 0) AS savedCost
+	
+	    FROM energy_log el
+	
+	    JOIN ess_device d
+	      ON el.device_id = d.device_id
+	
+	    WHERE d.member_id = #{memberId}
+	      AND el.device_id = #{deviceId}
+	      AND el.log_date = #{selectedDate}
+	      AND IFNULL(d.deleted_yn, 'N') = 'N'
+	
+	</select>
 </mapper>
