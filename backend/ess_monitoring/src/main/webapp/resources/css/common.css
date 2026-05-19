@@ -205,3 +205,62 @@
     color: #64748b;
     font-weight: 700;
 }
+.device-name-link {
+    font-weight: 700;
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.device-name-link:hover {
+    text-decoration: underline;
+}
+
+.group-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    color: #334155;
+    background: #e2e8f0;
+}
+
+.main-device-badge {
+    display: inline-flex;
+    align-items: center;
+
+    margin-left: 8px;
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    color: #ffffff;
+    background: #2563eb;
+}
+
+.btn-main-set {
+    padding: 6px 10px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #dbeafe;
+    color: #2563eb;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.btn-main-set:hover {
+    opacity: 0.85;
+}

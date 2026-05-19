@@ -199,6 +199,74 @@ function setCompareText(selector, value, average, unit) {
            .text('7일 평균과 동일');
 }
 
+function updateMonitoringAlertBanner(data) {
+
+    const $banner = $('#monitoringAlertBanner');
+    const $icon = $('#monitoringAlertIcon');
+    const $title = $('#monitoringAlertTitle');
+    const $message = $('#monitoringAlertMessage');
+    const $btn = $('#monitoringAlertMoveBtn');
+
+    const status = data.deviceStatus || 'NORMAL';
+    const soc = Number(data.soc || 0);
+    const powerOutput = Number(data.powerOutput || 0);
+
+    $banner.removeClass('normal warning danger offline');
+
+    if (status === 'ERROR') {
+        $banner.addClass('danger');
+        $icon.text('!');
+        $title.text('위험 상태 감지');
+        $message.text('장비 이상 상태가 감지되었습니다. 즉시 점검이 필요합니다.');
+        return;
+    }
+
+    if (status === 'WARNING') {
+        $banner.addClass('warning');
+        $icon.text('!');
+        $title.text('주의 상태 감지');
+        $message.text('장비 상태가 주의 단계입니다. 최근 알림과 운영 상태를 확인하세요.');
+        return;
+    }
+
+    if (status === 'OFFLINE') {
+        $banner.addClass('offline');
+        $icon.text('-');
+        $title.text('장비 오프라인');
+        $message.text('장비 데이터 수신이 중단되었습니다. 통신 상태를 확인하세요.');
+        return;
+    }
+
+    if (soc <= 20) {
+        $banner.addClass('danger');
+        $icon.text('!');
+        $title.text('배터리 저전력 위험');
+        $message.text('SOC가 20% 이하입니다. 충전 상태 확인이 필요합니다.');
+        return;
+    }
+
+    if (soc <= 40) {
+        $banner.addClass('warning');
+        $icon.text('!');
+        $title.text('배터리 잔량 주의');
+        $message.text('SOC가 낮은 편입니다. 발전량과 사용량을 확인하세요.');
+        return;
+    }
+
+    if (powerOutput <= 0 && isTodaySelected()) {
+        $banner.addClass('warning');
+        $icon.text('!');
+        $title.text('현재 출력 낮음');
+        $message.text('현재 발전 출력이 낮습니다. 날씨 또는 일몰 시간 영향일 수 있습니다.');
+        return;
+    }
+
+    $banner.addClass('normal');
+    $icon.text('●');
+    $title.text('정상 운영 중');
+    $message.text('현재 장비에서 확인된 주요 경고가 없습니다.');
+}
+
 /* =========================
    그룹 / 장비
 ========================= */
@@ -268,7 +336,8 @@ function loadMonitoringSummary() {
             }
 
             setDeviceStatus(data.deviceStatus || 'NORMAL');
-
+			updateMonitoringAlertBanner(data);
+			
             $('#soc').text(formatNumber(data.soc, 1) + ' %');
             $('#powerOutput').text(formatNumber(data.powerOutput, 1) + ' kW');
             $('#todayGeneration').text(formatNumber(data.dailyKwh, 1) + ' kWh');
@@ -489,19 +558,38 @@ function loadAlerts() {
 
 function updateOperationSummary(data) {
 
+    if (isHistoryMode()) {
+        $('#operationCondition').text('선택한 날짜의 이력 데이터를 조회 중입니다.');
+        $('#batteryCondition').text('실시간 배터리 상태는 오늘 날짜에서만 판단합니다.');
+        $('#recommendAction').text('이전 날짜는 energy_log 기준 통계 확인용으로 활용하세요.');
+        return;
+    }
+
+    const status = data.deviceStatus || 'NORMAL';
     const soc = Number(data.soc || 0);
     const powerOutput = Number(data.powerOutput || 0);
     const dailyKwh = Number(data.dailyKwh || 0);
     const avgKwh = Number(data.generationSevenDayAvg || 0);
 
-    let operationCondition = '발전 상태 분석 준비 중';
-    let batteryCondition = '배터리 상태 분석 준비 중';
-    let recommendAction = '운영 권장 조치 분석 준비 중';
+    let operationCondition = '';
+    let batteryCondition = '';
+    let recommendAction = '';
 
-    if (powerOutput <= 0) {
-        operationCondition = '현재 출력이 낮아 발전 상태 확인이 필요합니다.';
+    if (status === 'ERROR') {
+        operationCondition = '장비 이상 상태가 감지되었습니다.';
+        recommendAction = '즉시 장비 점검 및 최근 알림 확인이 필요합니다.';
+    } else if (status === 'WARNING') {
+        operationCondition = '장비가 주의 상태로 운영 중입니다.';
+        recommendAction = '최근 알림과 발전량 저하 여부를 확인하세요.';
+    } else if (status === 'OFFLINE') {
+        operationCondition = '장비 데이터 수신이 중단되었습니다.';
+        recommendAction = '통신 상태 또는 장비 전원 상태를 확인하세요.';
+    } else if (powerOutput <= 0) {
+        operationCondition = '현재 발전 출력이 낮거나 수신되지 않고 있습니다.';
+        recommendAction = '날씨, 일몰 시간, 장비 상태를 함께 확인하세요.';
     } else {
         operationCondition = '현재 발전 출력이 정상적으로 수신되고 있습니다.';
+        recommendAction = '현재 운영 상태는 양호합니다.';
     }
 
     if (soc >= 80) {
@@ -509,17 +597,18 @@ function updateOperationSummary(data) {
     } else if (soc >= 40) {
         batteryCondition = '배터리 SOC가 적정 범위에 있습니다.';
     } else if (soc >= 20) {
-        batteryCondition = '배터리 충전 상태가 낮아 주의가 필요합니다.';
+        batteryCondition = '배터리 SOC가 낮아 주의가 필요합니다.';
     } else {
-        batteryCondition = '배터리 저전력 상태입니다.';
+        batteryCondition = '배터리 저전력 위험 상태입니다.';
+        recommendAction = '충전 상태를 우선 확인하고 방전 운전을 제한하세요.';
     }
 
-    if (avgKwh > 0 && dailyKwh >= avgKwh) {
-        recommendAction = '선택일 발전량이 7일 평균 이상으로 양호합니다.';
-    } else if (avgKwh > 0) {
-        recommendAction = '선택일 발전량이 7일 평균보다 낮아 원인 확인이 필요합니다.';
-    } else {
-        recommendAction = '데이터가 누적되면 발전량 비교 분석이 가능합니다.';
+    if (avgKwh > 0) {
+        if (dailyKwh < avgKwh * 0.7) {
+            recommendAction = '선택일 발전량이 7일 평균보다 크게 낮습니다. 날씨 또는 장비 이상 여부를 확인하세요.';
+        } else if (dailyKwh >= avgKwh * 1.1) {
+            recommendAction = '선택일 발전량이 7일 평균보다 높아 운영 상태가 양호합니다.';
+        }
     }
 
     $('#operationCondition').text(operationCondition);
@@ -539,7 +628,6 @@ function reloadMonitoring() {
     loadAlerts();
     updateAutoRefreshMode();
 
-    updateMonitoringModeTitle();
 }
 
 /* =========================
@@ -641,7 +729,12 @@ $(document).ready(function() {
     $('#autoRefreshBtn').on('click', function() {
         toggleAutoRefresh();
     });
-
+    
+	$('#monitoringAlertMoveBtn').on('click', function() {
+	    $('html, body').animate({
+	        scrollTop: $('#alertList').offset().top - 120
+	    }, 300);
+	});
     const sidebar = document.getElementById('sidebar');
     const main = document.querySelector('.main');
     const toggleBtn = document.getElementById('sidebarToggle');
@@ -665,6 +758,13 @@ function isHistoryMode() {
 function applyHistoryModeView() {
 
     if (!isHistoryMode()) {
+
+        $('.power-chart-title')
+            .text('실시간 출력 그래프');
+
+        $('.soc-chart-title')
+            .text('SOC 변화 그래프');
+
         return;
     }
 
@@ -682,4 +782,16 @@ function applyHistoryModeView() {
     $('#autoRefreshBtn')
         .prop('disabled', true)
         .text('이력 조회 모드');
+
+    $('.power-chart-title')
+        .text('선택일 출력 이력 그래프');
+
+    $('.soc-chart-title')
+        .text('선택일 SOC 변화');
+
+    $('#monitoringAlertTitle')
+        .text('이력 조회 모드');
+
+    $('#monitoringAlertMessage')
+        .text('선택한 날짜 기준 저장된 이력 데이터를 조회 중입니다.');
 }

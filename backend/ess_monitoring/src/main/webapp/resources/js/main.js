@@ -84,6 +84,17 @@ function loadRegister() {
         "ESS 장비 등록",
         "<p>장비 등록 화면을 불러오는 중 오류가 발생했습니다.</p>"
     );
+
+    const params = new URLSearchParams(location.search);
+    const mode = params.get("mode");
+
+    if (mode === "csv") {
+        setTimeout(function() {
+            if (typeof showRegisterMode === "function") {
+                showRegisterMode("csv");
+            }
+        }, 300);
+    }
 }
 
 

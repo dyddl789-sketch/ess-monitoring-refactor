@@ -422,3 +422,117 @@ body {
         height: 260px;
     }
 }
+/* =========================
+   실시간 경고 배너
+========================= */
+
+.monitoring-alert-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+
+    margin-bottom: 18px;
+    padding: 18px 22px;
+
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.monitoring-alert-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.monitoring-alert-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.monitoring-alert-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.monitoring-alert-message {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.monitoring-alert-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 9px 14px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+    background: #0f172a;
+    color: #ffffff;
+}
+
+.monitoring-alert-banner.normal {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+}
+
+.monitoring-alert-banner.normal .monitoring-alert-icon {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.monitoring-alert-banner.warning {
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+.monitoring-alert-banner.warning .monitoring-alert-icon {
+    background: #f59e0b;
+    color: #ffffff;
+}
+
+.monitoring-alert-banner.danger {
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+.monitoring-alert-banner.danger .monitoring-alert-icon {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.monitoring-alert-banner.offline {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+.monitoring-alert-banner.offline .monitoring-alert-icon {
+    background: #64748b;
+    color: #ffffff;
+}
+
+@media (max-width: 900px) {
+    .monitoring-alert-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .monitoring-alert-btn {
+        width: 100%;
+    }
+}

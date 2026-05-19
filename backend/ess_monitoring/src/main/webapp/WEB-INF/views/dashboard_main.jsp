@@ -59,11 +59,23 @@
       <div class="summary-sub" id="generationSubInfo">월간 발전량 합계</div>
     </div>
 
-    <div class="summary-card">
-      <div class="summary-title">선택 월 절감 금액</div>
-      <div class="summary-value" id="monthlySavedCost">-</div>
-      <div class="summary-sub" id="savedCostSubInfo">월간 절감 금액 합계</div>
-    </div>
+	<div class="summary-card saving-card">
+	  <div class="summary-title">선택 월 절감 금액</div>
+	
+	  <div class="summary-value saving-value"
+	       id="monthlySavedCost">-</div>
+	
+	  <div class="summary-sub"
+	       id="savedCostSubInfo">
+	    월간 절감 금액 합계
+	  </div>
+	
+	  <div class="saving-effect-box">
+	    <span class="saving-effect-label">절감 효과</span>
+	    <span class="saving-effect-value"
+	          id="savedCostEffectText">-</span>
+	  </div>
+	</div>
 
     <div class="summary-card">
       <div class="summary-title">평균 효율</div>

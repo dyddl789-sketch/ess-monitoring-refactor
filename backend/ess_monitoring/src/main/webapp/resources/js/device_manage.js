@@ -55,21 +55,43 @@ function renderDeviceManageTable(list) {
     filteredList.forEach(function (device) {
         const statusInfo = getDeviceStatusInfo(device.status);
 
-        const mainBadge =
-            device.isMain === 'Y'
-                ? '<span class="main-device-badge">대표 ESS</span>'
-                : '-';
+	const mainBadge =
+	    device.isMain === 'Y'
+	
+	        ? '<span class="main-device-badge">대표 ESS</span>'
+	
+	        : '<button type="button" ' +
+	              'class="btn-main-set" ' +
+	              'onclick="setMainDevice(' + device.deviceId + ')">' +
+	                '대표 설정' +
+	          '</button>';
 
         const row =
             '<tr>' +
 
-                '<td>' +
-                    '<a href="' + contextPath + '/monitoring/main?deviceId=' + device.deviceId + '">' +
-                        escapeHtml(device.deviceName) +
-                    '</a>' +
-                '</td>' +
+				'<td>' +
+				
+				    '<a class="device-name-link" ' +
+				       'href="' + contextPath +
+				       '/monitoring/main?deviceId=' + device.deviceId + '">' +
+				
+				        escapeHtml(device.deviceName) +
+				
+				    '</a>' +
+				
+				    (
+				        device.isMain === 'Y'
+				        ? '<span class="main-device-badge">대표 ESS</span>'
+				        : ''
+				    ) +
+				
+				'</td>' +
 
-                '<td>' + escapeHtml(device.groupName || '-') + '</td>' +
+                '<td>' +
+				    '<span class="group-badge">' +
+				        escapeHtml(device.groupName || '미지정 그룹') +
+				    '</span>' +
+				'</td>' +
 
                 '<td>' + escapeHtml(device.location || '-') + '</td>' +
 
@@ -219,7 +241,51 @@ function escapeHtml(value) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
 }
+function setMainDevice(deviceId) {
 
+    if (!confirm('이 장비를 대표 ESS로 설정하시겠습니까?')) {
+        return;
+    }
+
+    $.ajax({
+
+        url: contextPath + '/device/main/set',
+
+        type: 'POST',
+
+        data: {
+            deviceId: deviceId
+        },
+
+        success: function(result) {
+
+            if (result === 'success') {
+
+                alert('대표 ESS가 변경되었습니다.');
+
+                loadDeviceManageList();
+
+                return;
+            }
+
+            if (result === 'login_required') {
+
+                alert('로그인이 필요합니다.');
+
+                location.href =
+                    contextPath + '/login_view';
+
+                return;
+            }
+
+            alert('대표 ESS 설정에 실패했습니다.');
+        },
+
+        error: function() {
+            alert('대표 ESS 설정 중 오류가 발생했습니다.');
+        }
+    });
+}
 $(document).ready(function () {
     loadDeviceManageList();
 

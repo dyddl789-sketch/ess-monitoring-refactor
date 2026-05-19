@@ -87,7 +87,10 @@ function loadDashboardSummary() {
 
             $('#savedCostSubInfo')
                 .text('선택 월 절감 금액 합계');
-
+                
+			$('#savedCostEffectText')
+  				.text(getSavedCostEffectText(monthlySavedCost));
+  				
             $('#efficiencySubInfo')
                 .text('선택 월 평균 효율');
 
@@ -102,7 +105,29 @@ function loadDashboardSummary() {
     });
 }
 
+// 절감 효과 문구
+function getSavedCostEffectText(savedCost) {
 
+    const cost = Number(savedCost || 0);
+
+    if (cost <= 0) {
+        return '절감 데이터 없음';
+    }
+
+    if (cost >= 1000000) {
+        return '월 100만원 이상 절감';
+    }
+
+    if (cost >= 500000) {
+        return '월 50만원 이상 절감';
+    }
+
+    if (cost >= 100000) {
+        return '월 10만원 이상 절감';
+    }
+
+    return '절감 효과 누적 중';
+}
 // 요약 카드 초기화
 function setEmptyDashboardSummary() {
 
@@ -115,6 +140,8 @@ function setEmptyDashboardSummary() {
     $('#savedCostSubInfo').text('절감 금액 데이터 없음');
     $('#efficiencySubInfo').text('효율 데이터 없음');
     $('#deviceSubInfo').text('장비 데이터 없음');
+    
+    $('#savedCostEffectText').text('-');
 }
 
 

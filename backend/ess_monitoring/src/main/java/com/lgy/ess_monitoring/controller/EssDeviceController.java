@@ -142,28 +142,28 @@ public class EssDeviceController {
         return "device_manage";
     }
 
-    // 대표 장비 설정
+ // 대표 장비 설정
     @ResponseBody
     @RequestMapping(value = "/main/set", method = RequestMethod.POST)
     public String setMainDevice(
             @RequestParam("deviceId") int deviceId,
             HttpSession session
     ) {
+
         log.info("@# setMainDevice()");
         log.info("@# deviceId => {}", deviceId);
 
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Integer memberId =
+            (Integer) session.getAttribute("memberId");
 
         if (memberId == null) {
-            log.info("@# 대표 디바이스 설정 실패: 로그인 필요");
             return "login_required";
         }
 
-        log.info("@# memberId => {}", memberId);
-
-        deviceService.setMainDevice(memberId, deviceId);
-
-        log.info("@# 대표 디바이스 설정 성공");
+        deviceService.setMainDevice(
+            memberId,
+            deviceId
+        );
 
         return "success";
     }

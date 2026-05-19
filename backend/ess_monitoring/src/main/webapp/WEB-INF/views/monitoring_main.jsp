@@ -116,7 +116,41 @@
 
         </div>
 
-
+		<!-- =========================
+		     실시간 경고 배너
+		========================== -->
+		
+		<div id="monitoringAlertBanner"
+		     class="monitoring-alert-banner normal">
+		
+		    <div class="monitoring-alert-left">
+		
+		        <span id="monitoringAlertIcon"
+		              class="monitoring-alert-icon">
+		            ●
+		        </span>
+		
+		        <div>
+		            <div id="monitoringAlertTitle"
+		                 class="monitoring-alert-title">
+		                정상 운영 중
+		            </div>
+		
+		            <div id="monitoringAlertMessage"
+		                 class="monitoring-alert-message">
+		                현재 장비에서 확인된 주요 경고가 없습니다.
+		            </div>
+		        </div>
+		
+		    </div>
+		
+		    <button type="button"
+		            id="monitoringAlertMoveBtn"
+		            class="monitoring-alert-btn">
+		        알림 확인
+		    </button>
+		
+		</div>
         <!-- =========================
              상태 카드
         ========================== -->
@@ -476,8 +510,8 @@
         '${deviceId}';
 
 </script>
-<script src="${pageContext.request.contextPath}/resources/js/monitoring_main.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/monitoring_chart.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/monitoring_main.js"></script>
 
 </body>
 </html>

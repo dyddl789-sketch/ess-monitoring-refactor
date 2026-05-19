@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lgy.ess_monitoring.dao.SchedulerDAO">
+
+    <!-- 스케줄러 대상 장비 조회 -->
+    <select id="getActiveDeviceList"
+            resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+
+		SELECT
+		    device_id,
+		    member_id,
+		    group_id,
+		    device_name,
+		    location,
+		    capacity_kw,
+		    device_type,
+		    status,
+		    install_date,
+		    nx,
+		    ny,
+		    is_main,
+		    ess_capacity_kwh,
+		    current_charge_kwh,
+		    charge_efficiency,
+		    discharge_efficiency,
+		    electricity_rate
+		FROM ess_device
+		WHERE IFNULL(deleted_yn, 'N') = 'N'
+		  AND status != 'OFFLINE'
+		ORDER BY device_id ASC
+
+    </select>
+
+
+    <!-- 모니터링 데이터 저장 -->
+    <insert id="insertMonitoring"
+            parameterType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
+
+        INSERT INTO monitoring (
+            device_id,
+            voltage,
+            current_a,
+            soc,
+            power_output,
+            solar_generation_kwh,
+            charged_energy_kwh,
+            used_energy_kwh,
+            saved_cost,
+            record_time
+        ) VALUES (
+            #{deviceId},
+            #{voltage},
+            #{currentA},
+            #{soc},
+            #{powerOutput},
+            #{solarGenerationKwh},
+            #{chargedEnergyKwh},
+            #{usedEnergyKwh},
+            #{savedCost},
+            NOW()
+        )
+
+    </insert>
+
+
+    <!-- 일일 에너지 로그 누적 저장 -->
+    <insert id="upsertEnergyLog">
+
+        INSERT INTO energy_log (
+            device_id,
+            daily_kwh,
+            cost,
+            efficiency,
+            log_date
+        ) VALUES (
+            #{deviceId},
+            #{dailyKwh},
+            #{cost},
+            #{efficiency},
+            CURDATE()
+        )
+        ON DUPLICATE KEY UPDATE
+            daily_kwh = daily_kwh + VALUES(daily_kwh),
+            cost = cost + VALUES(cost),
+            efficiency = VALUES(efficiency)
+
+    </insert>
+
+
+    <!-- 장비 상태 갱신 -->
+    <update id="updateDeviceRuntimeState">
+
+        UPDATE ess_device
+        SET
+            current_charge_kwh = #{currentChargeKwh},
+            status = #{status}
+        WHERE device_id = #{deviceId}
+
+    </update>
+
+
+    <!-- 최근 10분 내 같은 알림 중복 방지 -->
+    <insert id="insertAlertIfNotExists">
+
+        INSERT INTO ess_alert (
+            device_id,
+            alert_type,
+            alert_level,
+            message,
+            status,
+            created_at
+        )
+        SELECT
+            #{deviceId},
+            #{alertType},
+            #{alertLevel},
+            #{message},
+            #{status},
+            NOW()
+        FROM DUAL
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM ess_alert
+            WHERE device_id = #{deviceId}
+              AND alert_type = #{alertType}
+              AND created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
+        )
+
+    </insert>
+	
+	<!-- 현재 시간 기준 가장 가까운 날씨 예보 조회 -->
+	<select id="getLatestWeatherForScheduler"
+	        resultType="com.lgy.ess_monitoring.dto.WeatherDataDTO">
+	
+	    SELECT
+	        weather_id,
+	        device_id,
+	        base_date,
+	        base_time,
+	        fcst_date,
+	        fcst_time,
+	        sky_status,
+	        rain_type,
+	        rain_prob,
+	        temperature,
+	        humidity,
+	        wind_speed,
+	        solar_radiation,
+	        sunrise,
+	        sunset,
+	        ess_status,
+	        created_at
+	    FROM weather_data
+	    WHERE device_id = #{deviceId}
+	      AND fcst_date = #{fcstDate}
+	      AND fcst_time >= #{fcstTime}
+	    ORDER BY fcst_time ASC, base_date DESC, base_time DESC
+	    LIMIT 1
+	
+	</select>
+</mapper>
