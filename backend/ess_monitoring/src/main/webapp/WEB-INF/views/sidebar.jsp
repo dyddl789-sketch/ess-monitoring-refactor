@@ -20,7 +20,11 @@
 
         <div class="menu-section">
             <div class="menu-title">운영 관리</div>
-
+            
+		    <a href="${pageContext.request.contextPath}/main"
+		       class="menu-item">
+		        <span class="menu-text">메인 홈</span>
+		    </a>
             <a href="${pageContext.request.contextPath}/dashboard/main"
                class="menu-item">
                 <span class="menu-text">메인 대시보드</span>

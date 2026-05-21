@@ -260,35 +260,35 @@
 
 
     <!-- 선택일 시간별 모니터링 이력 -->
-    <select id="getMonitoringHistory"
-            resultType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
-
-        SELECT
-            m.monitor_id,
-            m.device_id,
-            m.voltage,
-            m.current_a,
-            m.soc,
-            m.power_output,
-            m.solar_generation_kwh,
-            m.charged_energy_kwh,
-            m.used_energy_kwh,
-            m.saved_cost,
-            m.record_time
-
-        FROM monitoring m
-
-        JOIN ess_device d
-          ON m.device_id = d.device_id
-
-        WHERE d.member_id = #{memberId}
-          AND m.device_id = #{deviceId}
-          AND DATE(m.record_time) = #{selectedDate}
-          AND IFNULL(d.deleted_yn, 'N') = 'N'
-
-        ORDER BY m.record_time ASC
-
-    </select>
+	<select id="getMonitoringHistory"
+	        resultType="com.lgy.ess_monitoring.dto.EssMonitoringDTO">
+	
+	    SELECT
+	        m.monitor_id AS monitorId,
+	        m.device_id AS deviceId,
+	        m.voltage AS voltage,
+	        m.current_a AS currentA,
+	        m.soc AS soc,
+	        m.power_output AS powerOutput,
+	        m.solar_generation_kwh AS solarGenerationKwh,
+	        m.charged_energy_kwh AS chargedEnergyKwh,
+	        m.used_energy_kwh AS usedEnergyKwh,
+	        m.saved_cost AS savedCost,
+	        m.record_time AS recordTime
+	
+	    FROM monitoring m
+	
+	    JOIN ess_device d
+	      ON m.device_id = d.device_id
+	
+	    WHERE d.member_id = #{memberId}
+	      AND m.device_id = #{deviceId}
+	      AND DATE(m.record_time) = #{selectedDate}
+	      AND IFNULL(d.deleted_yn, 'N') = 'N'
+	
+	    ORDER BY m.record_time ASC
+	
+	</select>
 
 
     <!-- 오늘 누적 발전량 조회 -->

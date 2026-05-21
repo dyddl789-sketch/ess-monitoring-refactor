@@ -20,66 +20,58 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private SqlSession sqlSession;
 
+    private BoardDAO getDao() {
+        return sqlSession.getMapper(BoardDAO.class);
+    }
+
     @Override
     public List<BoardDTO> list() {
-        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
-        List<BoardDTO> boardList = boardDao.list();
-
-        return boardList;
+        return getDao().list();
     }
 
     @Override
     public List<BoardDTO> listWithPaging(Criteria criteria) {
-        log.info("@# criteria => " + criteria);
-
-        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
-        return boardDao.listWithPaging(criteria);
+        log.info("@# listWithPaging criteria => {}", criteria);
+        return getDao().listWithPaging(criteria);
     }
 
     @Override
     public void write(HashMap<String, String> params) {
-        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
-        boardDao.write(params);
+        getDao().write(params);
     }
 
     @Override
     public BoardDTO contentView(HashMap<String, String> params) {
-        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
-        BoardDTO boardDto = boardDao.contentView(params);
-
-        return boardDto;
+        return getDao().contentView(params);
     }
 
     @Override
     public void modify(HashMap<String, String> params) {
-        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
-        boardDao.modify(params);
+        getDao().modify(params);
     }
 
     @Override
     public void delete(HashMap<String, String> params) {
-        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
-        boardDao.delete(params);
+        getDao().delete(params);
     }
 
     @Override
     public int getTotalCount(Criteria criteria) {
-        log.info("@# getTotalCount()");
-        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
-        return boardDao.getTotalCount(criteria);
+        return getDao().getTotalCount(criteria);
     }
 
     @Override
     public void increaseHit(int boardNo) {
-        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
-        boardDao.increaseHit(boardNo);
+        getDao().increaseHit(boardNo);
     }
 
     @Override
     public int getWriterMemberId(int boardNo) {
-        log.info("@# getWriterMemberId()");
+        return getDao().getWriterMemberId(boardNo);
+    }
 
-        BoardDAO boardDao = sqlSession.getMapper(BoardDAO.class);
-        return boardDao.getWriterMemberId(boardNo);
+    @Override
+    public List<BoardDTO> getRecentNoticeList() {
+        return getDao().getRecentNoticeList();
     }
 }

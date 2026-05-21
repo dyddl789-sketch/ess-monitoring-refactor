@@ -4,25 +4,40 @@
 
 <mapper namespace="com.lgy.ess_monitoring.dao.AlertDAO">
 
-    <!-- 알림 목록 조회 -->
-    <select id="getAlertList"
-            resultType="com.lgy.ess_monitoring.dto.AlertDTO">
-        SELECT
-            a.alert_id,
-            a.device_id,
-            d.device_name,
-            a.alert_type,
-            a.alert_level,
-            a.message,
-            a.status,
-            a.control_action,
-            a.created_at
-        FROM ess_alert a
-        JOIN ess_device d
-          ON a.device_id = d.device_id
-        WHERE d.member_id = #{memberId}
-        ORDER BY a.created_at DESC
-    </select>
+	<!-- 알림 목록 조회 -->
+	<select id="getAlertList"
+	        resultType="com.lgy.ess_monitoring.dto.AlertDTO">
+	
+	    SELECT
+	        a.alert_id AS alertId,
+	        a.device_id AS deviceId,
+	        d.device_name AS deviceName,
+	        a.alert_type AS alertType,
+	        a.alert_level AS alertLevel,
+	        a.message,
+	        a.status,
+	        a.control_action AS controlAction,
+	        a.created_at AS createdAt
+	
+	    FROM ess_alert a
+	
+	    JOIN ess_device d
+	      ON a.device_id = d.device_id
+	
+	    WHERE d.member_id = #{memberId}
+	      AND IFNULL(d.deleted_yn, 'N') = 'N'
+	
+	    <if test="alertLevel != null and alertLevel != ''">
+	        AND a.alert_level = #{alertLevel}
+	    </if>
+	
+	    <if test="status != null and status != ''">
+	        AND a.status = #{status}
+	    </if>
+	
+	    ORDER BY a.created_at DESC
+	
+	</select>
 
     <!-- 알림 상세 조회 -->
     <select id="getAlertDetail"
@@ -73,14 +88,14 @@
             message,
             status,
             control_action
-        ) VALUES (
-            #{deviceId},
-            #{alertType},
-            #{alertLevel},
-            #{message},
-            #{status},
-            #{controlAction}
-        )
+		) VALUES (
+		    #{deviceId},
+		    #{alertType},
+		    #{alertLevel},
+		    #{message},
+		    'OPEN',
+		    #{controlAction}
+		)
     </insert>
     
     <!-- 특정 장비 최근 알림 조회 -->
@@ -136,4 +151,23 @@
 	    LIMIT 5
 	
 	</select>
+	
+	
+	
+	<!-- 알림 처리완료 -->
+	<update id="confirmAlert">
+	
+	    UPDATE ess_alert a
+	
+	    JOIN ess_device d
+	      ON a.device_id = d.device_id
+	
+	    SET
+	        a.status = 'RESOLVED',
+	        a.control_action = '장비 확인'
+	
+	    WHERE a.alert_id = #{alertId}
+	      AND d.member_id = #{memberId}
+	
+	</update>
 </mapper>

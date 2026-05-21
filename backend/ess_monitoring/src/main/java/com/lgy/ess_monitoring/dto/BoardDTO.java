@@ -13,12 +13,16 @@ public class BoardDTO {
 
     private int boardNo;
     private int memberId;
+
+    // NOTICE / QNA
+    private String boardType;
+
     private String boardTitle;
     private int boardHit;
     private String boardContent;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    // ess_member 조인용
+    // 작성자명
     private String memberName;
 }

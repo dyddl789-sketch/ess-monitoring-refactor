@@ -102,34 +102,35 @@
     </update>
 
 
-    <!-- 최근 10분 내 같은 알림 중복 방지 -->
-    <insert id="insertAlertIfNotExists">
-
-        INSERT INTO ess_alert (
-            device_id,
-            alert_type,
-            alert_level,
-            message,
-            status,
-            created_at
-        )
-        SELECT
-            #{deviceId},
-            #{alertType},
-            #{alertLevel},
-            #{message},
-            #{status},
-            NOW()
-        FROM DUAL
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM ess_alert
-            WHERE device_id = #{deviceId}
-              AND alert_type = #{alertType}
-              AND created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
-        )
-
-    </insert>
+	<!-- 최근 10분 내 같은 알림 중복 방지 -->
+	<insert id="insertAlertIfNotExists">
+	
+	    INSERT INTO ess_alert (
+	        device_id,
+	        alert_type,
+	        alert_level,
+	        message,
+	        status,
+	        created_at
+	    )
+	    SELECT
+	        #{deviceId},
+	        #{alertType},
+	        #{alertLevel},
+	        #{message},
+	        'OPEN',
+	        NOW()
+	    FROM DUAL
+	    WHERE NOT EXISTS (
+	        SELECT 1
+	        FROM ess_alert
+	        WHERE device_id = #{deviceId}
+	          AND alert_type = #{alertType}
+	          AND status = 'OPEN'
+	          AND created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
+	    )
+	
+	</insert>
 	
 	<!-- 현재 시간 기준 가장 가까운 날씨 예보 조회 -->
 	<select id="getLatestWeatherForScheduler"

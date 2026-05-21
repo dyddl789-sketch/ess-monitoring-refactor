@@ -16,7 +16,6 @@ import com.lgy.ess_monitoring.dto.AlertDTO;
 import com.lgy.ess_monitoring.dto.DashboardChartDTO;
 import com.lgy.ess_monitoring.dto.EssDeviceDTO;
 import com.lgy.ess_monitoring.dto.EssGroupDTO;
-import com.lgy.ess_monitoring.dto.EssMonitoringDTO;
 import com.lgy.ess_monitoring.dto.MonitoringSummaryDTO;
 import com.lgy.ess_monitoring.service.AlertService;
 import com.lgy.ess_monitoring.service.EssDeviceService;
@@ -175,25 +174,13 @@ public class EssMonitoringController {
                 LocalDate.now().toString();
         }
 
-        String today =
-            LocalDate.now().toString();
 
-        // 오늘 날짜 → monitoring 실시간 이력
-        if (selectedDate.equals(today)) {
 
-            return monitoringService.getMonitoringHistory(
-                memberId,
-                deviceId,
-                selectedDate
-            );
-        }
-
-        // 과거 날짜 → energy_log 집계 데이터
-        return monitoringService.getHistoryFromEnergyLog(
-            memberId,
-            deviceId,
-            selectedDate
-        );
+        return monitoringService.getMonitoringHistory(
+        	    memberId,
+        	    deviceId,
+        	    selectedDate
+        	);
     }
 
     // 최근 7일 차트

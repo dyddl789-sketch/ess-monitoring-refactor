@@ -1,13 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.lgy.ess_monitoring.dao.BoardDAO">
 
-    <!-- 공통 SELECT 컬럼 -->
     <sql id="boardColumns">
         b.board_no,
         b.member_id,
+        b.board_type,
         m.member_name,
         b.board_title,
         b.board_content,
@@ -16,14 +17,18 @@
         b.updated_at
     </sql>
 
-    <!-- 공통 FROM / JOIN -->
     <sql id="boardFrom">
-        from board b
-        join ess_member m
-          on b.member_id = m.member_id
+        FROM board b
+        JOIN ess_member m
+          ON b.member_id = m.member_id
     </sql>
 
-    <!-- 공통 검색 조건 -->
+    <sql id="boardTypeCriteria">
+        <if test="boardType != null and boardType != ''">
+            AND b.board_type = #{boardType}
+        </if>
+    </sql>
+
     <sql id="searchCriteria">
         <if test="keyword != null and keyword != '' and type != null and type != ''">
             <choose>
@@ -64,92 +69,137 @@
         </if>
     </sql>
 
-    <!-- 전체 목록 -->
-    <select id="list" resultType="com.lgy.ess_monitoring.dto.BoardDTO">
-        select
+    <select id="list"
+            resultType="com.lgy.ess_monitoring.dto.BoardDTO">
+
+        SELECT
             <include refid="boardColumns"/>
+
         <include refid="boardFrom"/>
-        order by b.board_no desc
+
+        ORDER BY b.board_no DESC
+
     </select>
 
-    <!-- 페이징 + 검색 목록 -->
     <select id="listWithPaging"
             parameterType="com.lgy.ess_monitoring.dto.Criteria"
             resultType="com.lgy.ess_monitoring.dto.BoardDTO">
-        select
+
+        SELECT
             <include refid="boardColumns"/>
+
         <include refid="boardFrom"/>
+
         <where>
+            <include refid="boardTypeCriteria"/>
             <include refid="searchCriteria"/>
         </where>
-        order by b.board_no desc
-        limit #{amount}
-        offset #{pageStart}
+
+        ORDER BY
+		    CASE
+		        WHEN b.board_type = 'NOTICE' THEN 0
+		        ELSE 1
+		    END,
+		    b.board_no DESC
+
+        LIMIT #{amount}
+        OFFSET #{pageStart}
+
     </select>
 
-    <!-- 검색 조건 포함 전체 개수 -->
     <select id="getTotalCount"
             parameterType="com.lgy.ess_monitoring.dto.Criteria"
             resultType="int">
-        select count(*)
+
+        SELECT COUNT(*)
+
         <include refid="boardFrom"/>
+
         <where>
+            <include refid="boardTypeCriteria"/>
             <include refid="searchCriteria"/>
         </where>
+
     </select>
 
-    <!-- 글쓰기 -->
     <insert id="write" parameterType="hashmap">
-        insert into board (
+
+        INSERT INTO board (
             member_id,
+            board_type,
             board_title,
             board_content
-        ) values (
+        ) VALUES (
             #{memberId},
+            #{boardType},
             #{boardTitle},
             #{boardContent}
         )
+
     </insert>
 
-    <!-- 상세보기 -->
     <select id="contentView"
             parameterType="hashmap"
             resultType="com.lgy.ess_monitoring.dto.BoardDTO">
-        select
+
+        SELECT
             <include refid="boardColumns"/>
+
         <include refid="boardFrom"/>
-        where b.board_no = #{boardNo}
+
+        WHERE b.board_no = #{boardNo}
+
     </select>
 
-    <!-- 수정 -->
     <update id="modify" parameterType="hashmap">
-        update board
-           set board_title = #{boardTitle},
+
+        UPDATE board
+           SET board_title = #{boardTitle},
                board_content = #{boardContent},
-               updated_at = now()
-         where board_no = #{boardNo}
+               updated_at = NOW()
+         WHERE board_no = #{boardNo}
+
     </update>
 
-    <!-- 삭제 -->
     <delete id="delete" parameterType="hashmap">
-        delete from board
-         where board_no = #{boardNo}
+
+        DELETE FROM board
+         WHERE board_no = #{boardNo}
+
     </delete>
 
-    <!-- 조회수 증가 -->
     <update id="increaseHit" parameterType="int">
-        update board
-           set board_hit = board_hit + 1
-         where board_no = #{value}
+
+        UPDATE board
+           SET board_hit = board_hit + 1
+         WHERE board_no = #{value}
+
     </update>
 
-    <!-- 게시글 작성자 회원번호 조회 -->
     <select id="getWriterMemberId"
             parameterType="int"
             resultType="int">
-        select member_id
-          from board
-         where board_no = #{value}
+
+        SELECT member_id
+          FROM board
+         WHERE board_no = #{value}
+
+    </select>
+
+    <select id="getRecentNoticeList"
+            resultType="com.lgy.ess_monitoring.dto.BoardDTO">
+
+        SELECT
+            <include refid="boardColumns"/>
+
+        <include refid="boardFrom"/>
+
+        WHERE b.board_type = 'NOTICE'
+
+        ORDER BY b.board_no DESC
+
+        LIMIT 5
+
     </select>
 
 </mapper>

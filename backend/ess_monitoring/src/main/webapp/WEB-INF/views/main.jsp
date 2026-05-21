@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -181,20 +181,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 			</c:if>
 			
 			<div class="main-guide-card"
-			     onclick="checkLogin(function(){ moveView('deviceList', loadDeviceList); })">
-			
-			    <div class="main-guide-icon">
-			        <i class="fa-solid fa-car-battery"></i>
-			    </div>
-			
-			    <h4>ESS 관리</h4>
-			
-			    <p>
-			        등록된 ESS 목록을 확인하고 상세 모니터링으로 이동합니다.
-			    </p>
-			</div>
-			
-			<div class="main-guide-card"
 			     onclick="checkLogin(function(){ location.href='${pageContext.request.contextPath}/dashboard/main'; })">
 			
 			    <div class="main-guide-icon">
@@ -211,58 +197,92 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
             </div>
         </section>
 
-        <section class="content-section notice-section">
-
-            <div class="section-title">
-                <span>NOTICE</span>
-
-                <h3>공지사항</h3>
-
-                <p>
-                    ESS-M.S의 주요 안내와 업데이트 소식을 확인하세요.
-                </p>
-            </div>
-
-            <table class="fake-table">
-
-                <tr>
-                    <th>번호</th>
-                    <th>제목</th>
-                    <th>작성일</th>
-                </tr>
-
-                <tr>
-                    <td>1</td>
-                    <td>
-                        <a href="#" onclick="loadBoard(); return false;">
-                            ESS-M.S 시스템 오픈 안내
-                        </a>
-                    </td>
-                    <td>2025-01-01</td>
-                </tr>
-
-                <tr>
-                    <td>2</td>
-                    <td>
-                        <a href="#" onclick="loadBoard(); return false;">
-                            실시간 모니터링 기능 업데이트 안내
-                        </a>
-                    </td>
-                    <td>2025-01-10</td>
-                </tr>
-
-                <tr>
-                    <td>3</td>
-                    <td>
-                        <a href="#" onclick="loadBoard(); return false;">
-                            정기 점검 안내
-                        </a>
-                    </td>
-                    <td>2025-01-15</td>
-                </tr>
-
-            </table>
-        </section>
+		<section class="content-section notice-section">
+		
+		    <div class="section-title">
+		        <span>NOTICE</span>
+		
+		        <h3>공지사항</h3>
+		
+		        <p>
+		            ESS-M.S의 주요 안내와 업데이트 소식을 확인하세요.
+		        </p>
+		    </div>
+		
+		    <table class="fake-table">
+		
+		        <thead>
+		            <tr>
+		                <th style="width:100px;">번호</th>
+		                <th>제목</th>
+		                <th style="width:160px;">작성일</th>
+		            </tr>
+		        </thead>
+		
+		        <tbody>
+		
+		            <c:choose>
+		
+		                <c:when test="${empty recentNoticeList}">
+		                    <tr>
+		                        <td colspan="3" class="empty-row">
+		                            등록된 공지사항이 없습니다.
+		                        </td>
+		                    </tr>
+		                </c:when>
+		
+		                <c:otherwise>
+		
+		                    <c:forEach var="notice" items="${recentNoticeList}">
+		
+		                        <tr>
+		
+		                            <td>
+		                                ${notice.boardNo}
+		                            </td>
+		
+		                            <td class="title-cell">
+		
+		                                <a href="${pageContext.request.contextPath}/board_content_view?boardNo=${notice.boardNo}&boardType=NOTICE">
+		
+		                                    <span class="notice-badge">
+		                                        공지
+		                                    </span>
+		
+		                                    ${notice.boardTitle}
+		
+		                                </a>
+		
+		                            </td>
+		
+		                            <td>
+		                                <fmt:formatDate value="${notice.createdAt}"
+		                                                pattern="yyyy-MM-dd"/>
+		                            </td>
+		
+		                        </tr>
+		
+		                    </c:forEach>
+		
+		                </c:otherwise>
+		
+		            </c:choose>
+		
+		        </tbody>
+		
+		    </table>
+		
+		    <div style="margin-top:24px; text-align:right;">
+		
+		        <a href="${pageContext.request.contextPath}/notice_list"
+		           class="hero-btn secondary"
+		           style="display:inline-flex; align-items:center; justify-content:center; min-width:140px;">
+		            공지사항 전체보기
+		        </a>
+		
+		    </div>
+		
+		</section>
 
     </div>
 </div>
@@ -274,7 +294,18 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 <script src="${pageContext.request.contextPath}/resources/js/main.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/registerForm.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/group_manage.js"></script>
+<script>
+$(document).ready(function() {
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get("view");
 
+    if (view === "register") {
+        checkLogin(function() {
+            moveView('register', loadRegister);
+        });
+    }
+});
+</script>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 
 </body>
