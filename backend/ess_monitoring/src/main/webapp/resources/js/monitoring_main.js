@@ -62,8 +62,9 @@ function formatTimeLabel(recordTime) {
 
     const hour = String(date.getHours()).padStart(2, '0');
     const minute = String(date.getMinutes()).padStart(2, '0');
+    const second = String(date.getSeconds()).padStart(2, '0');
 
-    return hour + ':' + minute;
+    return hour + ':' + minute + ':' + second;
 }
 
 function formatTimestamp(recordTime) {
@@ -407,16 +408,19 @@ function loadDailyCharts() {
             const labels = [];
             const powerValues = [];
             const socValues = [];
-            const generationValues = [];
-
-            list.forEach(function(row) {
-
-                labels.push(formatTimeLabel(row.recordTime));
-
-                powerValues.push(Number(row.powerOutput || 0));
-                socValues.push(Number(row.soc || 0));
-                generationValues.push(Number(row.solarGenerationKwh || 0));
-            });
+			const generationValues = [];
+			let cumulativeGeneration = 0;
+			
+			list.forEach(function(row) {
+			
+			    labels.push(formatTimeLabel(row.recordTime));
+			
+			    powerValues.push(Number(row.powerOutput || 0));
+			    socValues.push(Number(row.soc || 0));
+			
+			    cumulativeGeneration += Number(row.solarGenerationKwh || 0);
+			    generationValues.push(Number(cumulativeGeneration.toFixed(2)));
+			});
 
             updatePowerChart(labels, powerValues);
             updateSocChart(labels, socValues);

@@ -38,15 +38,15 @@
 
             <button type="button" id="searchBtn">조회</button>
 
-            <button type="button"
-                    onclick="location.href='${pageContext.request.contextPath}/device/registerForm'">
-                장비 등록
-            </button>
-
-            <button type="button"
-                    onclick="location.href='${pageContext.request.contextPath}/devices/csv'">
-                CSV 일괄 등록
-            </button>
+			<button type="button"
+			        onclick="location.href='${pageContext.request.contextPath}/main?view=register'">
+			    장비 등록
+			</button>
+			
+			<button type="button"
+			        onclick="location.href='${pageContext.request.contextPath}/main?view=register&mode=csv'">
+			    CSV 일괄 등록
+			</button>
         </div>
 
         <div class="card">

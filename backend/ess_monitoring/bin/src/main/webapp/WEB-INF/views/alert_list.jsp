@@ -27,22 +27,52 @@
             </div>
         </div>
 
-        <div class="filter-box">
-            <select id="levelFilter">
-                <option value="">전체 등급</option>
-                <option value="INFO">정보</option>
-                <option value="WARNING">경고</option>
-                <option value="CRITICAL">심각</option>
-            </select>
-
-            <select id="statusFilter">
-                <option value="">전체 처리상태</option>
-                <option value="OPEN">미처리</option>
-                <option value="RESOLVED">처리완료</option>
-            </select>
-
-            <button type="button" id="searchBtn">조회</button>
-        </div>
+	<form method="get"
+	      action="${pageContext.request.contextPath}/alert/list"
+	      class="filter-box">
+	
+	    <select id="levelFilter"
+	            name="alertLevel">
+	
+	        <option value="">전체 등급</option>
+	
+	        <option value="WARNING"
+	            ${param.alertLevel eq 'WARNING' ? 'selected' : ''}>
+	            경고
+	        </option>
+	
+	        <option value="CRITICAL"
+	            ${param.alertLevel eq 'CRITICAL' ? 'selected' : ''}>
+	            심각
+	        </option>
+	
+	    </select>
+	
+	    <select id="statusFilter"
+	            name="status">
+	
+	        <option value="">전체 처리상태</option>
+	
+	        <option value="OPEN"
+	            ${param.status eq 'OPEN' ? 'selected' : ''}>
+	            미처리
+	        </option>
+	
+	        <option value="RESOLVED"
+	            ${param.status eq 'RESOLVED' ? 'selected' : ''}>
+	            처리완료
+	        </option>
+	
+	    </select>
+	
+	    <button type="submit"
+	            id="searchBtn">
+	
+	        조회
+	
+	    </button>
+	
+	</form>
 
         <div class="card">
             <table class="data-table">
@@ -56,7 +86,6 @@
                         <th>자동 제어</th>
                         <th>처리 상태</th>
                         <th>장비 확인</th>
-                        <th>상세</th>
                     </tr>
                 </thead>
 
@@ -65,7 +94,7 @@
 
                         <c:when test="${empty alertList}">
                             <tr>
-                                <td colspan="9">조회된 알림이 없습니다.</td>
+                                <td colspan="8">조회된 알림이 없습니다.</td>
                             </tr>
                         </c:when>
 
@@ -78,19 +107,31 @@
 
                                     <td>${alert.deviceName}</td>
 
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${alert.alertLevel eq 'CRITICAL'}">
-                                                <span class="badge-danger">심각</span>
-                                            </c:when>
-                                            <c:when test="${alert.alertLevel eq 'WARNING'}">
-                                                <span class="badge-warning">경고</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="badge-info">정보</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
+                                  
+									<td>
+									
+									    <c:choose>
+									
+									        <c:when test="${alert.alertLevel eq 'CRITICAL'}">
+									
+									            <span class="badge-danger">
+									                심각
+									            </span>
+									
+									        </c:when>
+									
+									        <c:otherwise>
+									
+									            <span class="badge-warning">
+									                경고
+									            </span>
+									
+									        </c:otherwise>
+									
+									    </c:choose>
+									
+									</td>
+                                    
 
                                     <td>${alert.alertType}</td>
 
@@ -122,18 +163,13 @@
                                     </td>
 
                                     <td>
-                                        <a class="btn-link"
-                                           href="${pageContext.request.contextPath}/monitoring/main?deviceId=${alert.deviceId}">
-                                            장비 확인
-                                        </a>
+										<a href="${pageContext.request.contextPath}/alert/confirm?alertId=${alert.alertId}&deviceId=${alert.deviceId}"
+										   class="alert-action-btn"
+										   onclick="return confirm('이 알림을 처리완료로 변경하고 장비 화면으로 이동하시겠습니까?');">
+										    장비 확인
+										</a>
                                     </td>
 
-                                    <td>
-                                        <a class="btn-link"
-                                           href="${pageContext.request.contextPath}/alert/detail?alertId=${alert.alertId}">
-                                            상세
-                                        </a>
-                                    </td>
                                 </tr>
                             </c:forEach>
                         </c:otherwise>

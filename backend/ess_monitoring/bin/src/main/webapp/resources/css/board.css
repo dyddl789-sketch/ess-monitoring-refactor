@@ -419,3 +419,65 @@
 .board-toolbar-right .board-input {
     width: 220px;
 }
+
+.board-tab-menu {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.board-tab-menu a {
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.board-tab-menu a.active {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.notice-badge,
+.qna-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.notice-badge {
+    background: rgba(37, 99, 235, 0.12);
+    color: #2563eb;
+}
+
+.qna-badge {
+    background: rgba(22, 163, 74, 0.12);
+    color: #16a34a;
+}
+
+.board-table .title-cell a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.board-table .title-cell a:visited {
+    color: #ffffff;
+}
+
+.board-table .title-cell a:hover {
+    color: #60a5fa;
+}
+
+.board-table .title-cell a:active {
+    color: #93c5fd;
+}

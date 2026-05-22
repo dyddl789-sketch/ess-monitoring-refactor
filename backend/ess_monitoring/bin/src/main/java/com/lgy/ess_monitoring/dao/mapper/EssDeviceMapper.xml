@@ -38,7 +38,7 @@
             #{capacityKw},
             #{deviceType},
             #{status},
-            #{installDate},
+            COALESCE(#{installDate}, CURRENT_DATE),
             #{latitude},
             #{longitude},
             #{nx},
@@ -52,36 +52,51 @@
         )
     </insert>
 
-    <!-- ============================= -->
-    <!-- 기기 목록 -->
-    <!-- ============================= -->
-    <select id="getDeviceList"
-            parameterType="int"
-            resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
-        select
-            device_id as deviceId,
-            member_id as memberId,
-            group_id as groupId,
-            device_name as deviceName,
-            location,
-            capacity_kw as capacityKw,
-            device_type as deviceType,
-            status,
-            install_date as installDate,
-            latitude,
-            longitude,
-            nx,
-            ny,
-            is_main as isMain,
-            ess_capacity_kwh as essCapacityKwh,
-            current_charge_kwh as currentChargeKwh,
-            charge_efficiency as chargeEfficiency,
-            discharge_efficiency as dischargeEfficiency,
-            electricity_rate as electricityRate
-        from ess_device
-        where member_id = #{_parameter}
-        order by device_id desc
-    </select>
+<!-- ============================= -->
+<!-- 기기 목록 -->
+<!-- ============================= -->
+	<select id="getDeviceList"
+	        parameterType="int"
+	        resultType="com.lgy.ess_monitoring.dto.EssDeviceDTO">
+	
+	    select
+	        d.device_id as deviceId,
+	        d.member_id as memberId,
+	        d.group_id as groupId,
+	
+	        ifnull(g.group_name, '미지정 그룹') as groupName,
+	
+	        d.device_name as deviceName,
+	        d.location,
+	        d.capacity_kw as capacityKw,
+	        d.device_type as deviceType,
+	        d.status,
+	        d.install_date as installDate,
+	        d.latitude,
+	        d.longitude,
+	        d.nx,
+	        d.ny,
+	        d.is_main as isMain,
+	        d.ess_capacity_kwh as essCapacityKwh,
+	        d.current_charge_kwh as currentChargeKwh,
+	        d.charge_efficiency as chargeEfficiency,
+	        d.discharge_efficiency as dischargeEfficiency,
+	        d.electricity_rate as electricityRate
+	
+	    from ess_device d
+	
+	    left join ess_device_group g
+	      on d.group_id = g.group_id
+	
+	    where d.member_id = #{_parameter}
+	      and d.deleted_yn = 'N'
+	
+	    order by
+	        g.group_name asc,
+	        d.is_main desc,
+	        d.device_id desc
+	
+	</select>
 
     <!-- ============================= -->
     <!-- 기기 수 -->
@@ -91,17 +106,21 @@
             resultType="int">
         select count(*)
         from ess_device
-        where member_id = #{_parameter}
+		where member_id = #{_parameter}
+		  and deleted_yn = 'N'
     </select>
 
     <!-- ============================= -->
     <!-- 기기 삭제 -->
     <!-- ============================= -->
-    <delete id="deleteDevice">
-        delete from ess_device
-        where device_id = #{deviceId}
-          and member_id = #{memberId}
-    </delete>
+	<update id="deleteDevice">
+	    UPDATE ess_device
+		SET deleted_yn = 'Y',
+		    deleted_at = NOW(),
+		    is_main = 'N'
+	    WHERE device_id = #{deviceId}
+	      AND member_id = #{memberId}
+	</update>
 
     <!-- ============================= -->
     <!-- 기기 상세 -->
@@ -131,6 +150,7 @@
             electricity_rate as electricityRate
         from ess_device
         where device_id = #{_parameter}
+  			and deleted_yn = 'N'
     </select>
 
     <!-- ============================= -->
@@ -171,7 +191,8 @@
                 from monitoring m2
                 where m2.device_id = d.device_id
            )
-        where d.member_id = #{memberId}
+		where d.member_id = #{memberId}
+		  and d.deleted_yn = 'N'
 
         <if test="groupId != null">
             and d.group_id = #{groupId}
@@ -211,29 +232,36 @@
             discharge_efficiency as dischargeEfficiency,
             electricity_rate as electricityRate
         from ess_device
-        where member_id = #{_parameter}
-          and is_main = 'Y'
+		where member_id = #{_parameter}
+		  and is_main = 'Y'
+		  and deleted_yn = 'N'
         limit 1
     </select>
 
-    <!-- ============================= -->
-    <!-- 기존 대표 디바이스 해제 -->
-    <!-- ============================= -->
-    <update id="clearMainDevice">
-        update ess_device
-           set is_main = 'N'
-         where member_id = #{memberId}
-    </update>
+	<!-- 기존 대표 디바이스 해제 -->
+	<update id="clearMainDevice">
+	
+	    update ess_device
+	
+	       set is_main = 'N'
+	
+	     where member_id = #{memberId}
+	       and deleted_yn = 'N'
+	
+	</update>
 
-    <!-- ============================= -->
-    <!-- 선택한 디바이스를 대표로 설정 -->
-    <!-- ============================= -->
-    <update id="setMainDevice">
-        update ess_device
-           set is_main = 'Y'
-         where member_id = #{memberId}
-           and device_id = #{deviceId}
-    </update>
+<!-- 선택한 디바이스를 대표로 설정 -->
+	<update id="setMainDevice">
+	
+	    update ess_device
+	
+	       set is_main = 'Y'
+	
+	     where member_id = #{memberId}
+	       and device_id = #{deviceId}
+	       and deleted_yn = 'N'
+	
+	</update>
 	
 	<!-- ============================= -->
 	<!-- 전체 활성 장비 조회 -->

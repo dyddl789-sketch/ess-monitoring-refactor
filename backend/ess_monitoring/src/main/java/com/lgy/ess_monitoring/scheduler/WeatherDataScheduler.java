@@ -32,7 +32,7 @@ public class WeatherDataScheduler {
      * 테스트용: 1분마다
      * 운영용: 30분~1시간 추천
      */
-    @Scheduled(cron = "0 */1 * * * *")
+    //@Scheduled(cron = "0 */1 * * * *")
     public void collectWeatherData() {
 
         log.info("WeatherDataScheduler start");

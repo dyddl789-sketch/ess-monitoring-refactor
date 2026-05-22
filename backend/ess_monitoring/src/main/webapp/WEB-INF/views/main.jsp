@@ -70,21 +70,24 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
                 <div class="hero-weather-card ${currentWeather.weatherTheme}">
                     <div class="hero-weather-overlay">
 
-                        <div class="hero-weather-top">
-                            <div>
-                                <h3>${currentWeather.city}</h3>
-                            </div>
-
-                            <span class="hero-weather-badge">
-                                대표 ESS 위치 기준
-                            </span>
-                                <c:if test="${not empty mainDevice}">
-							        <div class="hero-main-device">
-							            대표 장비 :
-							            <strong>${mainDevice.deviceName}</strong>
-							        </div>
-							    </c:if>
-                        </div>
+						<div class="hero-weather-top">
+						
+						    <div>
+						        <h3>${currentWeather.city}</h3>
+						
+						        <c:if test="${not empty mainDevice}">
+						            <div class="hero-main-device">
+						                대표 장비 :
+						                <strong>${mainDevice.deviceName}</strong>
+						            </div>
+						        </c:if>
+						    </div>
+						
+						    <span class="hero-weather-badge">
+						        대표 ESS 위치 기준
+						    </span>
+						
+						</div>
 
                         <div class="hero-weather-main">
 							<div class="hero-weather-icon">

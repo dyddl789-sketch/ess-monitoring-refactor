@@ -34,6 +34,7 @@ public class EssMonitoringScheduler {
      * true  : SOC가 자연스럽게 하락해서 알림 테스트 가능
      * false : 일반 운영 모드
      */
+    private static final boolean DEMO_DAY_MODE = true;
     private static final boolean DEMO_DRAIN_MODE = true;
 
     private SchedulerDAO getDao() {
@@ -70,7 +71,14 @@ public class EssMonitoringScheduler {
     // 장비별 모니터링 데이터 생성
     private void createDeviceMonitoring(EssDeviceDTO device) {
 
-        LocalTime now = LocalTime.now();
+//        LocalTime now = LocalTime.now();
+        LocalTime now;
+        if (DEMO_DAY_MODE) {
+            // 영상 시연용: 항상 오후 1시 기준
+            now = LocalTime.of(13, 0);
+        } else {
+            now = LocalTime.now();
+        }
 
         double capacityKw = safe(device.getCapacityKw());
         double essCapacityKwh = safe(device.getEssCapacityKwh());
@@ -88,26 +96,51 @@ public class EssMonitoringScheduler {
                 getSolarFactor(weather, now);
 
         double weatherNoise =
-                0.90 + random.nextDouble() * 0.15;
+                0.97 + random.nextDouble() * 0.04;
 
         double powerOutput =
                 round(capacityKw * solarFactor * weatherNoise);
+     // 드레인 모드일 때 출력도 일부 감소
+        if (DEMO_DRAIN_MODE) {
 
+            powerOutput =
+                    round(powerOutput * 0.88);
+
+        }
         double generatedKwh =
-                round(powerOutput / 60.0);
+                round(powerOutput / 360.0);
 
         double usedEnergyKwh;
 
         if (DEMO_DRAIN_MODE) {
+            // 드레인 모드: 사용량 증가로 SOC 감소 유도
             usedEnergyKwh =
-                    round(capacityKw * (0.08 + random.nextDouble() * 0.05));
+                    round(capacityKw * (0.008 + random.nextDouble() * 0.004));
         } else {
+            // 정상 낮 모드: 사용량을 작게 설정하여 SOC 유지/상승
             usedEnergyKwh =
-                    round(capacityKw * (0.01 + random.nextDouble() * 0.02));
+                    round(capacityKw * (0.001 + random.nextDouble() * 0.001));
         }
 
-        double chargedEnergyKwh =
-                round(Math.max(generatedKwh - usedEnergyKwh, 0));
+        double chargedEnergyKwh;
+
+        if (DEMO_DAY_MODE) {
+
+            if (DEMO_DRAIN_MODE) {
+                // 드레인 모드: 발전은 되지만 충전 효율이 낮은 상태
+                chargedEnergyKwh =
+                        round(generatedKwh * (0.10 + random.nextDouble() * 0.10));
+            } else {
+                // 정상 낮 모드: 발전량의 상당 부분이 ESS에 충전
+            	chargedEnergyKwh =
+            	        round(generatedKwh * (1.20 + random.nextDouble() * 0.30));
+            }
+
+        } else {
+            // 일반 운영 모드: 발전 후 사용하고 남은 전력만 충전
+            chargedEnergyKwh =
+                    round(Math.max(generatedKwh - usedEnergyKwh, 0));
+        }
 
         double newChargeKwh =
                 currentChargeKwh + chargedEnergyKwh - usedEnergyKwh;
@@ -372,6 +405,10 @@ public class EssMonitoringScheduler {
             WeatherDataDTO weather,
             LocalTime now
     ) {
+
+        if (DEMO_DAY_MODE) {
+            return 0.85;
+        }
 
         if (weather == null || weather.getSolarRadiation() == null) {
             return getFallbackSolarFactor(now);

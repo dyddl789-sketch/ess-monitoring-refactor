@@ -4,15 +4,49 @@
 
 // contextPath 통일
 function getContextPath() {
-    if (typeof contextPath !== 'undefined') {
+    if (typeof contextPath !== "undefined") {
         return contextPath;
     }
 
-    if (typeof ctx !== 'undefined') {
+    if (typeof ctx !== "undefined") {
         return ctx;
     }
 
-    return '';
+    return "";
+}
+
+// ===============================
+// 등록 방식 전환
+// ===============================
+function showRegisterMode(mode) {
+    const singleSection = document.getElementById("singleRegisterSection");
+    const csvSection = document.getElementById("csvRegisterSection");
+    const buttons = document.querySelectorAll(".mode-btn");
+
+    if (!singleSection || !csvSection) {
+        console.log("@# register section not found");
+        return;
+    }
+
+    buttons.forEach(function (btn) {
+        btn.classList.remove("active");
+    });
+
+    if (mode === "single") {
+        singleSection.style.display = "block";
+        csvSection.style.display = "none";
+
+        if (buttons.length > 0) {
+            buttons[0].classList.add("active");
+        }
+    } else {
+        singleSection.style.display = "none";
+        csvSection.style.display = "block";
+
+        if (buttons.length > 1) {
+            buttons[1].classList.add("active");
+        }
+    }
 }
 
 // ===============================
@@ -77,7 +111,6 @@ function validateDeviceForm() {
     const capacityKw = $("#capacityKw").val();
     const essCapacityKwh = $("#essCapacityKwh").val();
     const deviceType = $("#deviceType").val();
-    const status = $("#status").val();
 
     const latitude = $("#latitude").val();
     const longitude = $("#longitude").val();
@@ -114,12 +147,6 @@ function validateDeviceForm() {
     if (deviceType === "") {
         alert("시스템 유형을 선택해주세요.");
         $("#deviceType").focus();
-        return false;
-    }
-
-    if (status === "") {
-        alert("현재 상태를 선택해주세요.");
-        $("#status").focus();
         return false;
     }
 
@@ -176,7 +203,6 @@ function updateDeviceCount() {
 
 // ===============================
 // 주소 정보 세팅
-// 주소검색 API에서 호출
 // ===============================
 function setDeviceAddressInfo(roadAddress, latitude, longitude) {
     $("#location").val(roadAddress);
@@ -251,3 +277,86 @@ function searchDeviceAddress(address) {
         }
     });
 }
+
+// ===============================
+// CSV 등록
+// ===============================
+function uploadDeviceCsv() {
+    console.log("@# uploadDeviceCsv()");
+
+    const fileInput = $("#csvFile")[0];
+
+    if (!fileInput || fileInput.files.length === 0) {
+        alert("업로드할 CSV 파일을 선택하세요.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("csvFile", fileInput.files[0]);
+
+    $.ajax({
+        type: "POST",
+        url: getContextPath() + "/device/csv/upload",
+        data: formData,
+        processData: false,
+        contentType: false,
+
+        success: function (result) {
+            console.log("@# csv upload result =>", result);
+
+            let html = "";
+            html += "<div class='csv-result'>";
+
+            if (result.failCount === 0) {
+                html += "<p>CSV 등록 완료: "
+                    + result.successCount
+                    + "개 장비가 등록되었습니다.</p>";
+            } else {
+                html += "<p>CSV 등록 완료</p>";
+                html += "<p>성공: "
+                    + result.successCount
+                    + "건 / 실패: "
+                    + result.failCount
+                    + "건</p>";
+            }
+
+            if (result.errorList && result.errorList.length > 0) {
+                html += "<ul>";
+
+                for (let i = 0; i < result.errorList.length; i++) {
+                    html += "<li>" + result.errorList[i] + "</li>";
+                }
+
+                html += "</ul>";
+            }
+
+            html += "</div>";
+
+            $("#csvResultBox").html(html);
+
+            if (result.successCount > 0) {
+                alert("CSV 등록이 완료되었습니다.");
+            }
+        },
+
+        error: function (xhr) {
+            console.log("@# csv upload error");
+            console.log(xhr.responseText);
+
+            alert("CSV 파일 업로드 중 오류가 발생했습니다.");
+        }
+    });
+}
+
+// ===============================
+// CSV 파일 선택 시 파일명 표시
+// ===============================
+$(document).on("change", "#csvFile", function () {
+
+    const fileName = this.files.length > 0
+        ? this.files[0].name
+        : "선택된 파일 없음";
+
+    $("#csvFileName").text(fileName);
+
+});

@@ -3,153 +3,148 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>그룹 관리</title>
+<section class="content-section group-manage-section">
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/sidebar.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common.css">
-</head>
+    <div class="section-title">
+        <span>GROUP MANAGEMENT</span>
 
-<body>
-<div class="layout">
+        <h3>그룹 관리</h3>
 
-    <%@ include file="/WEB-INF/views/sidebar.jsp" %>
+        <p>
+            기업 회원은 ESS 장비를 그룹 단위로 생성하고 관리할 수 있습니다.
+        </p>
+    </div>
 
-    <main class="main">
+    <c:if test="${not empty msg}">
+        <p class="success-message">
+            ${msg}
+        </p>
+    </c:if>
 
-        <div class="page-header">
-            <div>
-                <h2>그룹 관리</h2>
-                <p>기업 사용자의 장비 그룹을 생성하고 관리합니다.</p>
+    <c:if test="${not empty errorMsg}">
+        <p class="error-message">
+            ${errorMsg}
+        </p>
+    </c:if>
+
+    <!-- 그룹 등록 -->
+    <div class="card">
+        <h3>그룹 등록</h3>
+
+        <form action="${pageContext.request.contextPath}/group/insert"
+              method="post">
+
+            <div class="filter-box">
+
+                <input type="text"
+                       name="groupName"
+                       placeholder="그룹명"
+                       required>
+
+                <input type="text"
+                       name="description"
+                       placeholder="그룹 설명">
+
+                <button type="submit">
+                    등록
+                </button>
+
             </div>
-        </div>
 
-        <!-- 그룹 등록 -->
-        <div class="card">
-            <h3>그룹 등록</h3>
+        </form>
+    </div>
 
-            <form action="${pageContext.request.contextPath}/group/insert"
-                  method="post">
+    <br>
 
-                <div class="filter-box">
+    <!-- 그룹 목록 -->
+    <div class="card">
+        <h3>그룹 목록</h3>
 
-                    <input type="text"
-                           name="groupName"
-                           placeholder="그룹명"
-                           required>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>그룹명</th>
+                    <th>설명</th>
+                    <th>장비 수</th>
+                    <th>생성일</th>
+                    <th>관리</th>
+                </tr>
+            </thead>
 
-                    <input type="text"
-                           name="description"
-                           placeholder="그룹 설명">
+            <tbody>
+                <c:choose>
 
-                    <button type="submit">
-                        등록
-                    </button>
+                    <c:when test="${empty groupList}">
+                        <tr>
+                            <td colspan="5">
+                                등록된 그룹이 없습니다.
+                            </td>
+                        </tr>
+                    </c:when>
 
-                </div>
+                    <c:otherwise>
+                        <c:forEach var="group" items="${groupList}">
 
-            </form>
-        </div>
-
-        <br>
-
-        <!-- 그룹 목록 -->
-        <div class="card">
-            <h3>그룹 목록</h3>
-
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>그룹명</th>
-                        <th>설명</th>
-                        <th>장비 수</th>
-                        <th>생성일</th>
-                        <th>관리</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <c:choose>
-
-                        <c:when test="${empty groupList}">
                             <tr>
-                                <td colspan="5">
-                                    등록된 그룹이 없습니다.
+                                <td>
+                                    <input type="text"
+                                           form="updateForm${group.groupId}"
+                                           name="groupName"
+                                           value="${group.groupName}"
+                                           required>
+                                </td>
+
+                                <td>
+                                    <input type="text"
+                                           form="updateForm${group.groupId}"
+                                           name="description"
+                                           value="${group.description}">
+                                </td>
+
+                                <td>
+                                    <span class="main-device-badge">
+                                        ${group.deviceCount}대
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <fmt:formatDate value="${group.createdAt}"
+                                                    pattern="yyyy-MM-dd"/>
+                                </td>
+
+                                <td>
+                                    <div class="device-action-group">
+
+                                        <form id="updateForm${group.groupId}"
+                                              action="${pageContext.request.contextPath}/group/update"
+                                              method="post">
+
+                                            <input type="hidden"
+                                                   name="groupId"
+                                                   value="${group.groupId}">
+
+                                            <button type="submit"
+                                                    class="table-btn-primary">
+                                                수정
+                                            </button>
+                                        </form>
+
+                                        <a class="table-btn-danger"
+                                           href="${pageContext.request.contextPath}/group/delete?groupId=${group.groupId}"
+                                           onclick="return confirm('이 그룹을 삭제하시겠습니까? 그룹에 속한 장비는 그룹 없음 상태가 됩니다.');">
+                                            삭제
+                                        </a>
+
+                                    </div>
                                 </td>
                             </tr>
-                        </c:when>
 
-                        <c:otherwise>
-                            <c:forEach var="group" items="${groupList}">
+                        </c:forEach>
+                    </c:otherwise>
 
-                                <tr>
-                                    <td>
-                                        <input type="text"
-                                               form="updateForm${group.groupId}"
-                                               name="groupName"
-                                               value="${group.groupName}"
-                                               required>
-                                    </td>
+                </c:choose>
+            </tbody>
+        </table>
+    </div>
 
-                                    <td>
-                                        <input type="text"
-                                               form="updateForm${group.groupId}"
-                                               name="description"
-                                               value="${group.description}">
-                                    </td>
-
-                                    <td>
-                                        <span class="main-device-badge">
-                                            ${group.deviceCount}대
-                                        </span>
-                                    </td>
-
-                                    <td>
-                                        <fmt:formatDate value="${group.createdAt}"
-                                                        pattern="yyyy-MM-dd"/>
-                                    </td>
-
-                                    <td>
-                                        <div class="device-action-group">
-
-                                            <!-- 수정 form -->
-                                            <form id="updateForm${group.groupId}"
-                                                  action="${pageContext.request.contextPath}/group/update"
-                                                  method="post">
-
-                                                <input type="hidden"
-                                                       name="groupId"
-                                                       value="${group.groupId}">
-
-                                                <button type="submit"
-                                                        class="table-btn-primary">
-                                                    수정
-                                                </button>
-                                            </form>
-
-                                            <!-- 삭제 -->
-                                            <a class="table-btn-danger"
-                                               href="${pageContext.request.contextPath}/group/delete?groupId=${group.groupId}"
-                                               onclick="return confirm('이 그룹을 삭제하시겠습니까? 그룹에 속한 장비는 그룹 없음 상태가 됩니다.');">
-                                                삭제
-                                            </a>
-
-                                        </div>
-                                    </td>
-                                </tr>
-
-                            </c:forEach>
-                        </c:otherwise>
-
-                    </c:choose>
-                </tbody>
-            </table>
-        </div>
-
-    </main>
-</div>
-</body>
-</html>
+</section>

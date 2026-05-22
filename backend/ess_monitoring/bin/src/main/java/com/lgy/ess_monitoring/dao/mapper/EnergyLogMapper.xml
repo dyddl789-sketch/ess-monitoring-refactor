@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lgy.ess_monitoring.dao.EnergyLogDAO">
+
+    <select id="getEnergyLogByDeviceAndDate"
+            resultType="com.lgy.ess_monitoring.dto.EnergyLogDTO">
+
+        SELECT
+            el.log_id,
+            el.device_id,
+            el.daily_kwh,
+            el.cost,
+            el.efficiency,
+            el.log_date,
+            d.device_name,
+            g.group_name
+
+        FROM energy_log el
+
+        JOIN ess_device d
+          ON el.device_id = d.device_id
+
+        LEFT JOIN ess_device_group g
+          ON d.group_id = g.group_id
+
+        WHERE el.device_id = #{deviceId}
+          AND el.log_date = #{logDate}
+
+    </select>
+
+
+    <select id="getEnergyLogListByDevice"
+            resultType="com.lgy.ess_monitoring.dto.EnergyLogDTO">
+
+        SELECT
+            el.log_id,
+            el.device_id,
+            el.daily_kwh,
+            el.cost,
+            el.efficiency,
+            el.log_date,
+            d.device_name,
+            g.group_name
+
+        FROM energy_log el
+
+        JOIN ess_device d
+          ON el.device_id = d.device_id
+
+        LEFT JOIN ess_device_group g
+          ON d.group_id = g.group_id
+
+        WHERE el.device_id = #{deviceId}
+
+        ORDER BY el.log_date DESC
+
+    </select>
+
+
+    <insert id="insertEnergyLog"
+            parameterType="com.lgy.ess_monitoring.dto.EnergyLogDTO">
+
+        INSERT INTO energy_log (
+            device_id,
+            daily_kwh,
+            cost,
+            efficiency,
+            log_date
+        ) VALUES (
+            #{deviceId},
+            #{dailyKwh},
+            #{cost},
+            #{efficiency},
+            #{logDate}
+        )
+
+    </insert>
+
+
+    <update id="updateEnergyLog"
+            parameterType="com.lgy.ess_monitoring.dto.EnergyLogDTO">
+
+        UPDATE energy_log
+        SET
+            daily_kwh = #{dailyKwh},
+            cost = #{cost},
+            efficiency = #{efficiency}
+        WHERE device_id = #{deviceId}
+          AND log_date = #{logDate}
+
+    </update>
+
+
+    <insert id="upsertEnergyLog"
+            parameterType="com.lgy.ess_monitoring.dto.EnergyLogDTO">
+
+        INSERT INTO energy_log (
+            device_id,
+            daily_kwh,
+            cost,
+            efficiency,
+            log_date
+        ) VALUES (
+            #{deviceId},
+            #{dailyKwh},
+            #{cost},
+            #{efficiency},
+            #{logDate}
+        )
+        ON DUPLICATE KEY UPDATE
+            daily_kwh = VALUES(daily_kwh),
+            cost = VALUES(cost),
+            efficiency = VALUES(efficiency)
+
+    </insert>
+
+
+    <delete id="deleteEnergyLogByDevice">
+
+        DELETE FROM energy_log
+        WHERE device_id = #{deviceId}
+
+    </delete>
+    
+    <!-- monitoring 데이터를 하루 단위로 집계 -->
+	<select id="calculateDailyEnergyLog"
+	        resultType="com.lgy.ess_monitoring.dto.EnergyLogDTO">
+	
+	    SELECT
+	        #{deviceId} AS deviceId,
+	
+	        IFNULL(SUM(m.solar_generation_kwh), 0) AS dailyKwh,
+	
+	        IFNULL(SUM(m.saved_cost), 0) AS cost,
+	
+	        CASE
+	            WHEN IFNULL(SUM(m.used_energy_kwh), 0) = 0 THEN 80
+	            ELSE LEAST(
+	                100,
+	                ROUND(
+	                    (
+	                        IFNULL(SUM(m.solar_generation_kwh), 0)
+	                        / IFNULL(SUM(m.used_energy_kwh), 1)
+	                    ) * 100,
+	                    2
+	                )
+	            )
+	        END AS efficiency,
+	
+	        #{logDate} AS logDate
+	
+	    FROM monitoring m
+	
+	    WHERE m.device_id = #{deviceId}
+	      AND DATE(m.record_time) = #{logDate}
+	
+	</select>
+	
+	
+	<!-- 회원의 정상 장비 ID 목록 -->
+	<select id="getActiveDeviceIdsByMember"
+	        resultType="int">
+	
+	    SELECT device_id
+	    FROM ess_device
+	    WHERE member_id = #{memberId}
+	      AND IFNULL(deleted_yn, 'N') = 'N'
+	
+	    ORDER BY device_id ASC
+	
+	</select>
+
+</mapper>

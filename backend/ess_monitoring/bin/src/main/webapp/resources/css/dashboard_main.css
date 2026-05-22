@@ -1,46 +1,44 @@
 /* =========================
-   Dashboard Main CSS
+   Dashboard Theme
 ========================= */
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
 
 body {
   font-family: 'Noto Sans KR', sans-serif;
-  background: #f5f7fb;
-  color: #1f2937;
+  background: #f4f7fb;
+  color: #1e293b;
 }
-
-.layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* =========================
-   Main
-========================= */
 
 .main {
   flex: 1;
-  padding: 26px 32px;
+  padding: 28px 32px;
+
+  background:
+    radial-gradient(circle at top left,
+    rgba(37,99,235,0.04),
+    transparent 28%),
+    #f4f7fb;
 }
+
+/* =========================
+   Header
+========================= */
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .header h2 {
-  font-size: 24px;
+  font-size: 28px;
+  font-weight: 900;
+  color: #0f172a;
 }
 
 .user-box {
-  font-weight: 600;
+  font-weight: 700;
+  color: #334155;
 }
 
 /* =========================
@@ -49,257 +47,248 @@ body {
 
 .filter-box {
   display: flex;
-  gap: 14px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
 }
 
 .filter-box select,
 .filter-box input,
 .filter-box button {
-  height: 42px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 0 14px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid #dbe3f0;
   background: #ffffff;
+  padding: 0 16px;
+  font-size: 14px;
 }
 
 .filter-box button {
-  background: #111827;
+  background: #0f172a;
   color: #ffffff;
+  font-weight: 700;
+  border: none;
   cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.filter-box button:hover {
+  background: #1e293b;
 }
 
 /* =========================
-   Cards
+   Common Card
 ========================= */
 
-.card-grid {
+.card {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+/* =========================
+   Summary Cards
+========================= */
+
+.dashboard-summary-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
   margin-bottom: 22px;
 }
 
-.card {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 22px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+.summary-card {
+  position: relative;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.96),
+      rgba(248,250,255,0.96)
+    );
+
+  border: 1px solid #dbe7ff;
+  border-radius: 20px;
+  padding: 26px;
+  min-height: 140px;
+
+  box-shadow:
+    0 10px 30px rgba(15,23,42,0.05);
+
+  transition: 0.2s ease;
 }
 
-.card-title {
-  font-size: 15px;
-  color: #6b7280;
-  margin-bottom: 14px;
+.summary-card:hover {
+  transform: translateY(-2px);
 }
 
-.card-value {
-  font-size: 30px;
+.summary-title {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 16px;
   font-weight: 700;
 }
 
-.card-sub {
+.summary-value {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: #0f172a;
+}
+
+.summary-sub {
   margin-top: 12px;
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #94a3b8;
 }
 
 /* =========================
-   Content Grid
+   Dashboard Layout
 ========================= */
 
-.content-grid {
+.dashboard-main-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
   gap: 18px;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
+
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.9fr 0.9fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+/* =========================
+   Section Title
+========================= */
 
 .section-title {
-  font-size: 17px;
-  font-weight: 700;
-  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.section-subtitle {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 18px;
 }
 
 /* =========================
-   Chart
+   Chart Box
 ========================= */
 
-.bar-chart {
+.chart-box-large {
+  position: relative;
+  width: 100%;
+  height: 340px;
+}
+
+.chart-box {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
+
+.chart-box-large canvas,
+.chart-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* =========================
+   Dashboard Alert
+========================= */
+
+.dashboard-alert-item {
   display: flex;
-  align-items: flex-end;
-  gap: 34px;
-  height: 230px;
-  padding-top: 20px;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf2f7;
 }
 
-.bar-item {
+.dashboard-alert-badge {
+  min-width: 52px;
   text-align: center;
-  flex: 1;
-}
-
-.bar {
-  width: 58px;
-  margin: 0 auto 10px;
-  background: #2563eb;
-  border-radius: 8px 8px 0 0;
-}
-
-.bar-value {
-  font-size: 13px;
-  margin-bottom: 6px;
-}
-
-.bar-label {
-  max-width: 90px;
-  text-align: center;
-  font-size: 13px;
-  word-break: keep-all;
-  overflow-wrap: break-word;
-}
-
-.empty-chart {
-  width: 100%;
-  text-align: center;
-  color: #64748b;
-  padding: 80px 0;
-  font-size: 14px;
-}
-
-/* =========================
-   Table
-========================= */
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-th,
-td {
-  padding: 12px 8px;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
-}
-
-th {
-  color: #6b7280;
-  font-weight: 600;
-}
-
-/* =========================
-   Device Status
-========================= */
-
-.status-normal {
-  color: #16a34a;
-  font-weight: bold;
-}
-
-.status-warning {
-  color: #f59e0b;
-  font-weight: bold;
-}
-
-.status-danger {
-  color: #dc2626;
-  font-weight: bold;
-}
-
-.status-offline {
-  color: #6b7280;
-  font-weight: bold;
-}
-
-.status-nodata {
-  color: #9ca3af;
-  font-weight: bold;
-}
-
-.battery-status-guide {
-  margin-top: 12px;
-  padding: 10px;
-  font-size: 13px;
-  line-height: 1.8;
-  background: #f9fafb;
-  border-radius: 8px;
-  color: #374151;
-}
-
-.battery-status-guide span {
-  margin-right: 6px;
-}
-
-/* =========================
-   Main Device
-========================= */
-
-.main-device-btn {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 6px;
-  background: #2563eb;
-  color: #fff;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.main-device-btn:hover {
-  background: #1d4ed8;
-}
-
-.main-device-badge {
-  display: inline-block;
   padding: 6px 10px;
   border-radius: 999px;
-  background: #dcfce7;
-  color: #166534;
   font-size: 12px;
   font-weight: 800;
+  color: white;
+}
+
+.dashboard-alert-badge.info {
+  background: #64748b;
+}
+
+.dashboard-alert-badge.warning {
+  background: #f59e0b;
+}
+
+.dashboard-alert-badge.danger {
+  background: #ef4444;
+}
+
+.dashboard-alert-message {
+  font-size: 14px;
+  color: #334155;
 }
 
 /* =========================
-   Bottom Grid
+   Weather
 ========================= */
 
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
+.dashboard-weather-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 330px;
+
+  background-size: cover;
+  background-position: center;
 }
 
-.alert-list li {
-  list-style: none;
-  padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: 14px;
+.dashboard-weather-card.clear {
+  background-image: url("../img/clear.png");
 }
 
-.badge {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  margin-right: 8px;
-  background: #fef3c7;
-  color: #92400e;
+.dashboard-weather-card.cloud {
+  background-image: url("../img/cloudy.png");
 }
 
-.dashboard-note {
-  margin-top: 10px;
-  font-size: 12px;
-  color: #64748b;
-  line-height: 1.5;
+.dashboard-weather-card.rain {
+  background-image: url("../img/rain.png");
 }
 
-/* =============================
-   Dashboard Weather
-============================= */
+.dashboard-weather-card.snow {
+  background-image: url("../img/snow.png");
+}
 
-.dashboard-weather-box {
+.dashboard-weather-card.night {
+  background-image: url("../img/night.png");
+}
+
+.dashboard-weather-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: rgba(255,255,255,0.72);
+
+  z-index: 0;
+}
+
+.dashboard-weather-overlay {
+  position: relative;
+  z-index: 1;
   height: 100%;
 }
 
@@ -307,23 +296,16 @@ th {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 18px;
-}
 
-.dashboard-weather-header .section-title {
-  margin-bottom: 4px;
-}
-
-.dashboard-weather-header p {
-  margin: 0;
-  color: #64748b;
-  font-size: 13px;
+  margin-bottom: 22px;
 }
 
 .dashboard-weather-header span {
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: 999px;
-  background: rgba(37, 99, 235, 0.12);
+
+  background: rgba(37,99,235,0.10);
+
   color: #2563eb;
   font-size: 13px;
   font-weight: 800;
@@ -333,32 +315,59 @@ th {
   display: flex;
   align-items: center;
   gap: 22px;
-  margin-bottom: 24px;
+
+  margin-bottom: 20px;
 }
 
-.dashboard-weather-icon {
-  font-size: 58px;
-  line-height: 1;
+.dashboard-weather-icon img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.dashboard-weather-main-text {
+  min-width: 120px;
 }
 
 .dashboard-weather-temp {
-  font-size: 36px;
+  font-size: 42px;
   font-weight: 900;
   color: #0f172a;
 }
 
 .dashboard-weather-status {
   margin-top: 4px;
-  color: #475569;
+
+  font-size: 15px;
   font-weight: 700;
+
+  color: #475569;
 }
 
 .dashboard-weather-detail {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  color: #64748b;
+
   font-size: 13px;
+  color: #64748b;
+}
+
+.dashboard-main-device {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-bottom: 18px;
+  padding: 10px 14px;
+
+  border-radius: 999px;
+
+  background: rgba(255,255,255,0.80);
+
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .dashboard-weather-list {
@@ -368,198 +377,138 @@ th {
 }
 
 .dashboard-weather-item {
-  padding: 12px 8px;
+  background: rgba(255,255,255,0.72);
+
+  border: 1px solid #dbe7f3;
+  border-radius: 16px;
+
+  padding: 14px 10px;
+
   text-align: center;
-  background: #f8fafc;
-  border-radius: 12px;
+
+  backdrop-filter: blur(4px);
 }
 
-.dashboard-weather-item .weather-time {
-  margin-bottom: 6px;
-  color: #475569;
+.weather-time {
+  margin-bottom: 8px;
+
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
+
+  color: #64748b;
 }
 
-.dashboard-weather-item .weather-icon {
+.weather-icon img {
+  width: 40px;
+  height: 40px;
+
+  object-fit: contain;
+
   margin-bottom: 6px;
-  font-size: 22px;
 }
 
-.dashboard-weather-item .weather-temp {
+.weather-temp {
   margin-bottom: 4px;
+
   font-weight: 900;
   color: #0f172a;
 }
 
-.dashboard-weather-item .weather-status {
-  color: #64748b;
+.weather-status {
   font-size: 12px;
+  color: #64748b;
 }
 
-.weather-empty {
-  padding: 24px;
-  text-align: center;
-  color: #64748b;
-  background: #f8fafc;
-  border-radius: 12px;
+/* =========================
+   Footer Note
+========================= */
+
+.dashboard-note {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #94a3b8;
 }
 
 /* =========================
    Responsive
 ========================= */
 
-@media (max-width: 1100px) {
-  .card-grid,
-  .content-grid,
-  .bottom-grid {
+@media (max-width: 1200px) {
+
+  .dashboard-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-main-grid,
+  .dashboard-bottom-grid {
     grid-template-columns: 1fr;
   }
+}
 
-  .sidebar {
-    display: none;
+@media (max-width: 700px) {
+
+  .main {
+    padding: 20px;
   }
 
-  .filter-box {
-    flex-wrap: wrap;
-  }
-
-  .dashboard-weather-current {
-    flex-direction: column;
-    align-items: flex-start;
+  .dashboard-summary-grid {
+    grid-template-columns: 1fr;
   }
 
   .dashboard-weather-list {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+/* =========================
+   절감 금액 강조 카드
+========================= */
 
-@media (max-width: 700px) {
-  .main {
-    padding: 20px;
-  }
-
-  .card-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-weather-list {
-    grid-template-columns: 1fr;
-  }
+.saving-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #bbf7d0;
+    background:
+        linear-gradient(135deg, #f0fdf4 0%, #ffffff 58%);
 }
 
-.chart-header {
+.saving-card::after {
+    content: "SAVE";
+    position: absolute;
+    right: -8px;
+    top: 8px;
+    font-size: 44px;
+    font-weight: 800;
+    color: rgba(22, 163, 74, 0.05);
+    letter-spacing: -1px;
+}
+
+.saving-value {
+    color: #16a34a;
+    font-size: 34px;
+    font-weight: 800;
+}
+
+.saving-effect-box {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: rgba(22, 163, 74, 0.08);
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 18px;
+    gap: 10px;
 }
 
-.section-subtitle {
-    margin-top: 6px;
-    font-size: 13px;
-    color: #64748b;
-}
-
-.chart-tabs {
-    display: flex;
-    gap: 6px;
-    background: #f1f5f9;
-    padding: 4px;
-    border-radius: 10px;
-}
-
-.chart-tab {
-    border: none;
-    background: transparent;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 700;
-    color: #64748b;
-    cursor: pointer;
-}
-
-.chart-tab.active {
-    background: #ffffff;
-    color: #2563eb;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
-}
-
-/* 발전량 비교 차트 크게 보이게 */
-.wide-chart {
-    min-height: 460px;
-}
-
-.chart-box-large {
-    position: relative;
-    width: 100%;
-    height: 380px;
-    margin-top: 10px;
-}
-
-/* canvas가 부모 높이를 꽉 채우게 */
-.chart-box-large canvas,
-.chart-box canvas {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-.chart-box {
-    position: relative;
-    width: 100%;
-    height: 300px;
-}
-
-/* =========================
-   대시보드 최근 알림
-========================= */
-
-.dashboard-alert-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 13px 0;
-    border-bottom: 1px solid #e5e7eb;
-    cursor: pointer;
-}
-
-.dashboard-alert-item:hover {
-    background: #f8fafc;
-}
-
-.dashboard-alert-badge {
-    min-width: 48px;
-    text-align: center;
-    padding: 5px 9px;
-    border-radius: 999px;
+.saving-effect-label {
     font-size: 12px;
     font-weight: 700;
-    color: white;
+    color: #15803d;
 }
 
-.dashboard-alert-badge.info {
-    background: #64748b;
-}
-
-.dashboard-alert-badge.warning {
-    background: #f59e0b;
-}
-
-.dashboard-alert-badge.danger {
-    background: #ef4444;
-}
-
-.dashboard-alert-content {
-    flex: 1;
-}
-
-.dashboard-alert-message {
-    font-size: 14px;
-    color: #334155;
-}
-
-.dashboard-alert-time {
-    margin-top: 4px;
+.saving-effect-value {
     font-size: 12px;
-    color: #94a3b8;
+    font-weight: 700;
+    color: #166534;
+    text-align: right;
 }
