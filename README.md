@@ -1,4 +1,3 @@
-````md
 # ESS Monitoring System Refactoring
 
 Spring Legacy 기반 ESS 모니터링 프로젝트를 개인적으로 리팩토링 및 유지보수한 프로젝트입니다.
@@ -455,4 +454,4 @@ chore: 기타 작업
 - 운영 로그 구조 개선
 - Alert 처리 상태 관리 개선
 - 관리자 화면 기능 확장
-````
+
