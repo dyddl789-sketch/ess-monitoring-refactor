@@ -104,7 +104,7 @@ public class EssMonitoringScheduler {
         if (DEMO_DRAIN_MODE) {
 
             powerOutput =
-                    round(powerOutput * 0.88);
+                    round(powerOutput * 0.70);
 
         }
         double generatedKwh =
@@ -113,9 +113,9 @@ public class EssMonitoringScheduler {
         double usedEnergyKwh;
 
         if (DEMO_DRAIN_MODE) {
-            // 드레인 모드: 사용량 증가로 SOC 감소 유도
+            // 드레인 모드: 시연용으로 SOC 감소가 빠르게 보이도록 사용량 증가
             usedEnergyKwh =
-                    round(capacityKw * (0.008 + random.nextDouble() * 0.004));
+                    round(capacityKw * (0.030 + random.nextDouble() * 0.015));
         } else {
             // 정상 낮 모드: 사용량을 작게 설정하여 SOC 유지/상승
             usedEnergyKwh =
@@ -127,9 +127,9 @@ public class EssMonitoringScheduler {
         if (DEMO_DAY_MODE) {
 
             if (DEMO_DRAIN_MODE) {
-                // 드레인 모드: 발전은 되지만 충전 효율이 낮은 상태
+                // 드레인 모드: 충전 거의 안 되는 상태로 설정
                 chargedEnergyKwh =
-                        round(generatedKwh * (0.10 + random.nextDouble() * 0.10));
+                        round(generatedKwh * (0.02 + random.nextDouble() * 0.03));
             } else {
                 // 정상 낮 모드: 발전량의 상당 부분이 ESS에 충전
             	chargedEnergyKwh =
