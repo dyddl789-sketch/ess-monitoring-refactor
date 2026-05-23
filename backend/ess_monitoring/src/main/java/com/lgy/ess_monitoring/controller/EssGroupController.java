@@ -1,0 +1,84 @@
+package com.lgy.ess_monitoring.controller;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.lgy.ess_monitoring.dto.EssGroupDTO;
+import com.lgy.ess_monitoring.service.EssGroupService;
+
+@Controller
+@RequestMapping("/group")
+public class EssGroupController {
+
+    @Autowired
+    private EssGroupService groupService;
+
+    // 그룹 관리 화면
+    @RequestMapping("/manage")
+    public String manage(HttpSession session, Model model) {
+        Integer memberId = (Integer) session.getAttribute("memberId");
+        String userType = (String) session.getAttribute("userType");
+
+        if (memberId == null) {
+        	return "redirect:/login_view";
+        }
+        if (!"COMPANY".equals(userType)) {
+            return "redirect:/main";
+        }
+        
+
+        model.addAttribute("groupList", groupService.getGroupList(memberId));
+        System.out.println("memberId = " + memberId);
+        System.out.println("groupList = " + groupService.getGroupList(memberId));
+
+        return "group_manage";
+    }
+
+    // 그룹 등록
+    @RequestMapping("/insert")
+    public String insert(EssGroupDTO group, HttpSession session) {
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
+
+        group.setMemberId(memberId);
+        groupService.insertGroup(group);
+
+        return "redirect:/main";
+    }
+
+    // 그룹 수정
+    @RequestMapping("/update")
+    public String update(EssGroupDTO group, HttpSession session) {
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
+
+        group.setMemberId(memberId);
+        groupService.updateGroup(group);
+
+        return "redirect:/main";
+    }
+
+    // 그룹 삭제
+    @RequestMapping("/delete")
+    public String delete(Integer groupId, HttpSession session) {
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "redirect:/login_view";
+        }
+
+        groupService.deleteGroup(groupId, memberId);
+
+        return "redirect:/main";
+    }
+}

@@ -9,8 +9,12 @@ import com.lgy.ess_monitoring.dto.EnergyStatsDTO;
 
 public interface AlertDAO {
 
-    // 알림 목록 조회
-    List<AlertDTO> getAlertList(@Param("memberId") int memberId);
+	// 알림 목록 조회
+	List<AlertDTO> getAlertList(
+	        @Param("memberId") int memberId,
+	        @Param("alertLevel") String alertLevel,
+	        @Param("status") String status
+	);
 
     // 알림 상세 조회
     AlertDTO getAlertDetail(
@@ -59,4 +63,9 @@ public interface AlertDAO {
             @Param("groupId") Integer groupId,
             @Param("deviceId") Integer deviceId
     );
+    
+
+    // 알림 처리완료
+    int confirmAlert(@Param("alertId") int alertId,
+                     @Param("memberId") int memberId);
 }

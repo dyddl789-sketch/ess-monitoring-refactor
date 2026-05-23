@@ -1,0 +1,20 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"></stop>
+      <stop offset="100%" stop-color="#94a3b8"></stop>
+    </linearGradient>
+
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.35"></feDropShadow>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <circle cx="45" cy="58" r="18" fill="url(#cloudGrad)"></circle>
+    <circle cx="65" cy="50" r="24" fill="url(#cloudGrad)"></circle>
+    <circle cx="86" cy="60" r="18" fill="url(#cloudGrad)"></circle>
+
+    <rect x="32" y="58" width="70" height="24" rx="12" fill="url(#cloudGrad)"></rect>
+  </g>
+</svg>

@@ -7,8 +7,12 @@ import com.lgy.ess_monitoring.dto.AlertDTO;
 
 public interface AlertService {
 
-    // 알림 목록 조회
-    List<AlertDTO> getAlertList(int memberId);
+	// 알림 목록 조회
+	List<AlertDTO> getAlertList(
+	        int memberId,
+	        String alertLevel,
+	        String status
+	);
 
     // 알림 상세 조회
     AlertDTO getAlertDetail(int alertId, int memberId);
@@ -39,4 +43,7 @@ public interface AlertService {
             Integer groupId,
             Integer deviceId
     );
+
+    // 알림 처리완료
+    void confirmAlert(int alertId, int memberId);
 }

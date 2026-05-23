@@ -1,0 +1,35 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#cbd5e1"></stop>
+      <stop offset="100%" stop-color="#64748b"></stop>
+    </linearGradient>
+
+    <linearGradient id="rainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7dd3fc"></stop>
+      <stop offset="100%" stop-color="#0ea5e9"></stop>
+    </linearGradient>
+
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.35"></feDropShadow>
+    </filter>
+  </defs>
+
+  <!-- 구름 -->
+  <g filter="url(#shadow)">
+    <circle cx="45" cy="52" r="18" fill="url(#cloudGrad)"></circle>
+    <circle cx="66" cy="45" r="24" fill="url(#cloudGrad)"></circle>
+    <circle cx="88" cy="55" r="18" fill="url(#cloudGrad)"></circle>
+
+    <rect x="32" y="54" width="72" height="24" rx="12" fill="url(#cloudGrad)"></rect>
+  </g>
+
+  <!-- 빗방울 -->
+  <g fill="url(#rainGrad)">
+    <path d="M45 88 C45 80 52 75 52 68 C52 75 59 80 59 88 C59 94 54 98 52 98 C49 98 45 94 45 88Z"></path>
+    
+    <path d="M65 95 C65 87 72 82 72 75 C72 82 79 87 79 95 C79 101 74 105 72 105 C69 105 65 101 65 95Z"></path>
+
+    <path d="M84 88 C84 80 91 75 91 68 C91 75 98 80 98 88 C98 94 93 98 91 98 C88 98 84 94 84 88Z"></path>
+  </g>
+</svg>

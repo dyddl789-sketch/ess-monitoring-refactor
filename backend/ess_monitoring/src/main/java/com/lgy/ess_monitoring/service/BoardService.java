@@ -8,21 +8,23 @@ import com.lgy.ess_monitoring.dto.Criteria;
 
 public interface BoardService {
 
-    List<BoardDTO> list(); // 전체 목록
+    List<BoardDTO> list();
 
-    List<BoardDTO> listWithPaging(Criteria criteria); // 페이징 목록
+    List<BoardDTO> listWithPaging(Criteria criteria);
 
-    void write(HashMap<String, String> params); // 글쓰기
+    void write(HashMap<String, String> params);
 
-    BoardDTO contentView(HashMap<String, String> params); // 상세보기
+    BoardDTO contentView(HashMap<String, String> params);
 
-    void modify(HashMap<String, String> params); // 수정
+    void modify(HashMap<String, String> params);
 
-    void delete(HashMap<String, String> params); // 삭제
+    void delete(HashMap<String, String> params);
 
-    int getTotalCount(Criteria criteria); // 전체 게시글 수
+    int getTotalCount(Criteria criteria);
 
-    void increaseHit(int boardNo); // 조회수 증가
+    void increaseHit(int boardNo);
 
-    int getWriterMemberId(int boardNo); // 작성자 조회
+    int getWriterMemberId(int boardNo);
+
+    List<BoardDTO> getRecentNoticeList();
 }

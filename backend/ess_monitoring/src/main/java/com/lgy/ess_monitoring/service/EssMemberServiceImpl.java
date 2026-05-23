@@ -28,12 +28,19 @@ public class EssMemberServiceImpl implements EssMemberService {
     }
 
     // 로그인
+//    @Override
+//    public EssMemberDTO login(HashMap<String, String> params) {
+//
+//        return getDao().login(params);
+//    }
+    
+    // 아이디로 회원 조회 로그인
     @Override
-    public EssMemberDTO login(HashMap<String, String> params) {
+    public EssMemberDTO findByUserid(String memberUserid) {
 
-        return getDao().login(params);
+        return getDao().findByUserid(memberUserid);
     }
-
+    
     // 아이디 중복 체크
     @Override
     public int idCheck(String memberUserid) {
@@ -68,4 +75,5 @@ public class EssMemberServiceImpl implements EssMemberService {
 
         return getDao().updatePassword(params);
     }
+    
 }

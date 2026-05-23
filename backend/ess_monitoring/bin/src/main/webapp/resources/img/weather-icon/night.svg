@@ -1,0 +1,31 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"></stop>
+      <stop offset="100%" stop-color="#c4b5fd"></stop>
+    </linearGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="blur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 달 -->
+  <g filter="url(#glow)">
+    <circle cx="62" cy="52" r="28" fill="url(#moonGrad)"></circle>
+    <circle cx="74" cy="42" r="26" fill="#0f172a"></circle>
+  </g>
+
+  <!-- 별 -->
+  <g fill="#bfdbfe">
+    <circle cx="28" cy="32" r="2.5"></circle>
+    <circle cx="92" cy="26" r="2"></circle>
+    <circle cx="96" cy="62" r="2.5"></circle>
+    <circle cx="35" cy="78" r="2"></circle>
+    <circle cx="84" cy="88" r="1.8"></circle>
+  </g>
+</svg>

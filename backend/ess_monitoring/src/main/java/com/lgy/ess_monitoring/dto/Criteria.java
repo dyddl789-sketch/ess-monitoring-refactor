@@ -10,6 +10,7 @@ import lombok.ToString;
 public class Criteria {
 	private int pageNum; //페이지 번호
 	private int amount; //페이지당 글 개수
+	private String boardType;
 	
 	private String type; //검색 종류
 	private String keyword; // 검색어

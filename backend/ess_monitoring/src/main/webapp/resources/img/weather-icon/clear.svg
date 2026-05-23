@@ -1,0 +1,30 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff176"></stop>
+      <stop offset="55%" stop-color="#facc15"></stop>
+      <stop offset="100%" stop-color="#f97316"></stop>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="blur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g filter="url(#glow)">
+    <circle cx="60" cy="60" r="26" fill="url(#sunGrad)"></circle>
+    <g stroke="#facc15" stroke-width="6" stroke-linecap="round">
+      <line x1="60" y1="12" x2="60" y2="24"></line>
+      <line x1="60" y1="96" x2="60" y2="108"></line>
+      <line x1="12" y1="60" x2="24" y2="60"></line>
+      <line x1="96" y1="60" x2="108" y2="60"></line>
+      <line x1="26" y1="26" x2="35" y2="35"></line>
+      <line x1="85" y1="85" x2="94" y2="94"></line>
+      <line x1="94" y1="26" x2="85" y2="35"></line>
+      <line x1="35" y1="85" x2="26" y2="94"></line>
+    </g>
+  </g>
+</svg>

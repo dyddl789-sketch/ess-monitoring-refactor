@@ -24,8 +24,22 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public List<AlertDTO> getAlertList(int memberId) {
-        return getDao().getAlertList(memberId);
+    public List<AlertDTO> getAlertList(
+            int memberId,
+            String alertLevel,
+            String status
+    ) {
+
+        log.info("@# getAlertList()");
+        log.info("@# memberId => {}", memberId);
+        log.info("@# alertLevel => {}", alertLevel);
+        log.info("@# status => {}", status);
+
+        return getDao().getAlertList(
+                memberId,
+                alertLevel,
+                status
+        );
     }
 
     @Override
@@ -116,7 +130,7 @@ public class AlertServiceImpl implements AlertService {
                 createAlertIfNotExists(
                         deviceId,
                         "LOW_GENERATION",
-                        "INFO",
+                        "WARNING",
                         "현재 발전량이 매우 낮습니다.",
                         "WEATHER_CHECK"
                 );
@@ -205,5 +219,16 @@ public class AlertServiceImpl implements AlertService {
                 groupId,
                 deviceId
         );
+    }
+    
+
+
+    @Override
+    public void confirmAlert(int alertId, int memberId) {
+
+        AlertDAO dao =
+            sqlSession.getMapper(AlertDAO.class);
+
+        dao.confirmAlert(alertId, memberId);
     }
 }
