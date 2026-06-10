@@ -193,7 +193,8 @@
     </select>
 
 
-    <!-- 상단 카드 / 계측 요약 -->
+	<!-- 상단 카드 / 계측 요약 -->
+	<!-- 복합 인덱스(device_id, record_time)를 활용한 MAX(record_time) + JOIN 방식 최신 데이터 조회 -->
     <select id="getMonitoringSummary"
             resultType="com.lgy.ess_monitoring.dto.MonitoringSummaryDTO">
 
@@ -214,27 +215,27 @@
 
         FROM ess_device d
 
-        LEFT JOIN (
-            SELECT
-                m1.device_id,
-                m1.soc,
-                m1.power_output,
-                m1.voltage,
-                m1.current_a,
-                m1.record_time
-            FROM monitoring m1
-            JOIN (
-                SELECT
-                    device_id,
-                    MAX(record_time) AS max_record_time
-                FROM monitoring
-                WHERE DATE(record_time) = #{selectedDate}
-                GROUP BY device_id
-            ) m2
-              ON m1.device_id = m2.device_id
-             AND m1.record_time = m2.max_record_time
-        ) latest
-          ON d.device_id = latest.device_id
+		LEFT JOIN (
+		    SELECT
+		        m1.device_id,
+		        m1.soc,
+		        m1.power_output,
+		        m1.voltage,
+		        m1.current_a,
+		        m1.record_time
+		    FROM monitoring m1
+		    JOIN (
+		        SELECT
+		            device_id,
+		            MAX(record_time) AS max_record_time
+		        FROM monitoring
+		        WHERE DATE(record_time) = #{selectedDate}
+		        GROUP BY device_id
+		    ) m2
+		      ON m1.device_id = m2.device_id
+		     AND m1.record_time = m2.max_record_time
+		) latest
+		  ON d.device_id = latest.device_id
 
         LEFT JOIN energy_log el
           ON d.device_id = el.device_id
